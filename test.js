@@ -28,7 +28,7 @@ var app = koa();
 app.use(router(app));
 app.use(statics('./public',{
 	// buffer: true,
-	gzip: true
+	// gzip: true
 }));
 var render = views('views',{
     map:{html:'swig'}

@@ -25,21 +25,17 @@
     }
     .form{padding:6px;}
     .form span{display: inline-block; font-size:14px;cursor: pointer;}
-
-    .t6 {-webkit-animation:transform-6 1s ease 0s alternate none infinite;
-	-moz-animation:transform-6 1s ease 0s alternate none infinite;
-	animation:transform-6 1s ease 0s normal none 1; }
-	@-webkit-keyframes transform-6 { from{-webkit-transform:perspective(400px) rotateX(0deg); } to{-webkit-transform:perspective(400px) rotateX(360deg); } } 
-	@-moz-keyframes transform-6 { from{-moz-transform:perspective(400px) rotateX(0deg); } to{-moz-transform:perspective(400px) rotateX(360deg); } }
-	@keyframes transform-6 { from{transform:perspective(400px) rotateX(0deg); } to{transform:perspective(400px) rotateX(360deg); } }	
   </style>
   <link rel="stylesheet" type="text/css" href="css/github.css">
+  <link rel="stylesheet" type="text/css" href="css/prettify.min.css">
 <script type='text/javascript' src='js/jq183.js'></script>
 </head>
 <body>
+
 <script type='text/javascript' src='js/core.js'></script>
 <script type='text/javascript' src='js/toolkit.js'></script>
 <script type='text/javascript' src='js/epiceditor.min.js'></script>
+<script type='text/javascript' src='js/prettify.min.js'></script>
 <script type='text/javascript' src='js/gzgz.js'></script>
     
 <div class='outer' style="width:100%;height:auto;">
@@ -72,6 +68,10 @@ var epic_opts = {
     },    
     autogrow: false
 }
+$(window).load(function () {
+            $("code").addClass("prettyprint");
+            prettyPrint();
+});
 
 </script>
 </body>
@@ -93,6 +93,7 @@ var epic_opts = {
                             var uuu =$(unit.unit);
                             uuu.find('.md-body').remove();
                             uuu.prepend('<div class="md-wrap"><div class="md-body">'+unit.cnt+'</div></div>');
+                            // uuu.find('pre').addClass('prettyprint');
                             unit.unit = uuu[0].outerHTML;
                     }
                     looptpl[j]+=data[i].unit+'\n';

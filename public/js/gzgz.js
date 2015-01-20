@@ -127,12 +127,14 @@
 					tanbox("<div id='epiceditor' style='width:600px;height:300px;'></div><div class='form'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
 					var editor = new EpicEditor(epic_opts).load();
 					$('#submit').click(function(){
-						editor.preview();
-						var content = editor.getElement('previewer').body.innerHTML;
+						// editor.preview();
+						editor.save(true);
+						var content = editor.exportFile(null, 'html', true);
+						// var content = editor.getElement('previewer').body.innerHTML;
 						// console.log(content);
 						// var kbj = editor.open('epiceditor');
 						// var bbb = JSON.parse(kbj._storage.epiceditor);
-						// var content = bbb.epiceditor.content;
+						// var content = bbb.epiceditor.content;						
 						
 						if($(opdiv.div).find('.md-body').length){							
 							$(opdiv.div).find('.md-body').html(content);
@@ -329,7 +331,7 @@
 				'class' : unit.className,
 				'css'   : (function(){  var ncss,css; ncss = (css = unit.style.cssText.toLowerCase()).lastIndexOf(';')<(css.length-1) ? css+';' : css; return ncss;})(),
 				'cnt'   : (function(){ 
-							if($(unit).find('.markdown-body')) return $(unit).find('.markdown-body').html();
+							if($(unit).find('.md-body')) return $(unit).find('.md-body').html();
 							else return '';
 						  })(),
 				'unit'  : unit.outerHTML,
@@ -354,7 +356,10 @@
 		}else{
 			content = '';
 		}
-		if(!unit.hasOwnProperty('location')){			
+		if(!unit.hasOwnProperty('location')){
+			if($(unit).find('md-body').length){
+				content = $(unit).find('md-body').html();
+			}
 			obj = {
 				'gzindex':$(unit).attr('gzindex'),
 				'id'    : $(unit).attr('idindex'),
@@ -408,10 +413,11 @@
 			__put(opdiv.container);
 			return;
 		}
-
-	    init(zone,{
-			editstat:{'url':'/edit','data':JSON.stringify(obj)}
-		},editfun);		
+	    console.log('edit ok');
+	    __put(obj);
+	 //    init(zone,{
+		// 	editstat:{'url':'/edit','data':JSON.stringify(obj)}
+		// },editfun);		
 	}
 	var editfun = function(){
 		if(zone.editstat.responseText=='ok'){

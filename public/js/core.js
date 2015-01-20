@@ -182,21 +182,30 @@ function init(context,opts,callback){
     for(var iii in opts){            
         if(__getClass(opts[iii])=='Object'){
             if(opts[iii].jquery){
-                var ele = opts[iii][0];
+                var ele = opts[iii];
+                ctx['views'][iii] = ele;
                 // console.log(ele);
             }else{
-                req = opts[iii];
-                if(!req.url||req.url=='') return;
-                ajaxitem = $.extend({},defaults,req);
-                ajaxitem.vari = iii;
-                ajaxStack.push(ajaxitem);
-                ajaxVarStack.push(iii);
+                if(opts[iii].nodeType){
+                    ctx['views'][iii] = opts[iii];
+                }else{
+                    req = opts[iii];
+                    if(!req.url||req.url==''){
+                        ctx[iii] = opts[iii];
+                    }else{
+                        ajaxitem = $.extend({},defaults,req);
+                        ajaxitem.vari = iii;
+                        ajaxStack.push(ajaxitem);
+                        ajaxVarStack.push(iii);
+                    }
+                }                    
             }
         }else if(__getClass(opts[iii])=='Function'){
             var fun = opts[iii];
             funStack.push(fun);
             funVerStack.push(iii);
             add_action(iii,fun,fun.length,ctx);
+
         }else if(__getClass(opts[iii])=='Array'){                
             var ary = opts[iii];                
             if(__getClass(ary[0])!=='Function') return;                
@@ -305,7 +314,8 @@ function do_action(name){
     var tmp;
     var tmpary = [];
     var withargs;
-    var argmts = __arg2arr(arguments);               
+    var promptfun = false;  //是否带参函数
+    var argmts = __arg2arr(arguments);   
     if(actmap.containsKey(name)){
         funs = actmap.get(name);            
         if(funs.length>0){                                
@@ -313,19 +323,33 @@ function do_action(name){
                 tmp = funs[i];                        
                 if(__getClass(tmp.fun)!=='Function') {                    
                     if(__getClass(tmp.fun[0])!=='Function') return;                    
-                    withargs = tmp.fun[1];
-                    if(__getClass(withargs)!=='Array'){
-                        tmpary.push(withargs);
-                        withargs = tmpary;
+                    for(var _k=1; _k<tmp.fun.length;_k++){
+                        if(__getClass(tmp.fun[_k])!=='Function'){
+                            promptfun = true;
+                        }
                     }
-                    tmp.fun = tmp.fun[0];
+                    if(promptfun){
+                        withargs = tmp.fun[1];
+                        if(__getClass(withargs)!=='Array'){
+                            tmpary.push(withargs);
+                            withargs = tmpary;
+                        }
+                        tmp.fun = tmp.fun[0];
+                    }else{
+                        if(tmp.ctx=='ve')tmp.ctx = window;
+                        for(var _j=0; _j<tmp.fun.length; _j++){
+                            tmp.fun[_j].apply(tmp.ctx);
+                        }
+                        return;
+                    }
+                    
                 }                    
                 if(tmp.propnum&&tmp.propnum>0){                        
                     if(withargs){
                         argmts = withargs;
                     }else{
                         argmts = argmts.splice(1,(1+tmp.propnum));
-                    }
+                    }                        
                     // if(argmts.length>2&&argmts.length>tmp.propnum){
                     //     argmts = argmts.splice(1,(1+tmp.propnum));
                     // }else{
@@ -355,9 +379,9 @@ function do_action(name){
 * core.add_action('bbb',fun,2,ctx);
 */
 function add_action(name,fun,propnum,ctx){
-    clearTimeout(timeAddAction);
+    // clearTimeout(timeAddAction);
 
-    function addAct(){
+    // function addAct(){
         if(__getClass(fun)=='Function'||__getClass(fun)=='Array'){
             var funs=[];
             var tmp = {};
@@ -367,7 +391,6 @@ function add_action(name,fun,propnum,ctx){
             if(actmap.containsKey(name)){
                 funs = actmap.get(name);                
                 for(var j=0; j<funs.length; j++){                    
-                    console.log(funs[j].toString());   
                     if(__getClass(fun)=='Array'){                              
                         if(__obj2str(funs[j].fun)==__obj2str(fun[0])){
                             hasdefine=true;
@@ -391,10 +414,10 @@ function add_action(name,fun,propnum,ctx){
                 actmap.put(name,funs);
             }
         }
-    }
+    // }
 
-    var timeAddAction = setTimeout(addAct, 200);
-}    
+    // var timeAddAction = setTimeout(addAct, 200);
+}      
 
 /*
 * 消息弹出抽象函数
