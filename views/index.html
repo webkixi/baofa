@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Posts</title>
+  <style>
+    * {
+      padding: 0;
+      margin:0;
+    }
+    .wangwang{
+        z-index:1000;background-color:#fff;border:1px solid #ddd;
+    }
+    .wangwang .md-wrap{
+        margin:0px 10px;
+    }
+    .wangwang>.rzunit{
+    	width:8px;
+    	height: 8px;
+    	position: absolute;
+    	bottom: 0px;
+    	right: 0px;
+    	cursor:nw-resize;
+    	font-size: 0;
+    	background-color: red;
+    }
+    .form{padding:6px;}
+    .form span{display: inline-block; font-size:14px;cursor: pointer;}
+
+    .t6 {-webkit-animation:transform-6 1s ease 0s alternate none infinite;
+	-moz-animation:transform-6 1s ease 0s alternate none infinite;
+	animation:transform-6 1s ease 0s normal none 1; }
+	@-webkit-keyframes transform-6 { from{-webkit-transform:perspective(400px) rotateX(0deg); } to{-webkit-transform:perspective(400px) rotateX(360deg); } } 
+	@-moz-keyframes transform-6 { from{-moz-transform:perspective(400px) rotateX(0deg); } to{-moz-transform:perspective(400px) rotateX(360deg); } }
+	@keyframes transform-6 { from{transform:perspective(400px) rotateX(0deg); } to{transform:perspective(400px) rotateX(360deg); } }	
+  </style>
+  <link rel="stylesheet" type="text/css" href="css/github.css">
+<script type='text/javascript' src='js/jq183.js'></script>
+</head>
+<body>
+<script type='text/javascript' src='js/core.js'></script>
+<script type='text/javascript' src='js/toolkit.js'></script>
+<script type='text/javascript' src='js/epiceditor.min.js'></script>
+<script type='text/javascript' src='js/gzgz.js'></script>
+    
+<div class='outer' style="width:100%;height:auto;">
+    <div class='inner' style='width:1000px;margin:0 auto;height:auto;position:relative'>
+        <div class='gzgz' style='width:100%;height:2000px;background-color:#333;'>
+            
+        </div>
+    </div>
+</div>
+
+<div class='outer' style="width:100%;height:auto;margin-top:10px;">
+    <div class='inner' style='width:1000px;margin:0 auto;height:auto;position:relative'>
+        <div class='gzgz' style='width:100%;height:500px;background-color:#333;'>
+            
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+var epic_opts = {
+    container: 'epiceditor',
+    textarea: null,
+    basePath: 'js',
+    parser: marked,
+    file: {
+        name: 'epiceditor',
+        defaultContent: '',
+        autoSave: 100
+    },    
+    autogrow: false
+}
+
+</script>
+</body>
+</html>
+
+
+
+=================
+
+<script>	
+	//bc(data[0]);
+    var looptpl=[];
+    $('.gzgz').each(function(j,v){
+        if(data && data.length>0){
+            for(var i=0; i<data.length; i++){
+                var unit = data[i];
+                if(unit.gzindex==j){
+                    if(unit.cnt!=''){
+                            var uuu =$(unit.unit);
+                            uuu.find('.md-body').remove();
+                            uuu.prepend('<div class="md-wrap"><div class="md-body">'+unit.cnt+'</div></div>');
+                            unit.unit = uuu[0].outerHTML;
+                    }
+                    looptpl[j]+=data[i].unit+'\n';
+                }
+            }
+            //bc(data[0]);
+        }
+        $(this).html(looptpl[j]);
+    })
+    
+    bjs('idindex='+data.length);
+
+</script>
