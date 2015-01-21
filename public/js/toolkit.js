@@ -114,7 +114,7 @@ function tanbox(msg,cb){
     tan.tipsItem = function(){
         var subtip = document.createElement('div');
         subtip.id = 'tancontent'
-        subtip.style.cssText = 'width:100%;height:100%;text-align:center;display:'        
+        subtip.style.cssText = 'width:100%;height:100%;text-align:center;display:block;'        
         return subtip;
     };
     tan.anim = function(item,container){
@@ -150,7 +150,7 @@ var msgtips = function(msg,stat,cb){
         if(stat=='alert'){
             bgcolor='background-color:rgb(211, 13, 21);';
         }
-        tip.style.cssText = 'display:none;width:100%;text-align:center; margin-top:10px;color:#fff;line-height:40px;font-size:16px;'+bgcolor;
+        tip.style.cssText = 'display:none;width:100%;margin-top:10px;color:#fff;line-height:40px;font-size:16px;'+bgcolor;
         return tip;
     }
 
@@ -209,7 +209,7 @@ function tanbox(msg,stat,cb){
     tan.tipsItem = function(stat){
         var subtip = document.createElement('div');
         subtip.id = 'tancontent'
-        subtip.style.cssText = 'width:100%;height:100%;text-align:center;display:'        
+        subtip.style.cssText = 'width:100%;height:100%;display:block;'        
         return subtip;
     };
     tan.anim = function(item,container,stat){        
