@@ -1,6 +1,6 @@
 # baofa blog
 KOAJS blog system, NOSQL(ssdb) surport,very simple
-my english em......, so you know......
+my english em......, so......
 
 # Install
   *nodejs ## 0.11+
@@ -9,7 +9,6 @@ my english em......, so you know......
   *others moudle ## because some reason..., so you can open the test.js and npm install require file,^_^
 
 # Feature
-  *simple,simple,simple
   *Support Markdown
   *you can draw any size 'div' and drag/drop it and insert html that markdown parsed
   *front-end and back-end use jquery
