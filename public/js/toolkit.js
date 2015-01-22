@@ -197,7 +197,7 @@ function tanbox(msg,stat,cb){
         // var tip = document.createElement('div');        
         var msg_left = Math.round((parseInt(clientwidth)-600)/2);
         var msg_top = Math.round((parseInt(clientheight)-300)/2);
-        var tanboxhtml = '<div id="msgtan" style="overflow:auto;display:none;background-color:#fff;z-Index:10000;width:600px;height:auto;position:fixed;top:'+msg_top+'px;left:'+msg_left+'px;"></div>';
+        var tanboxhtml = '<div id="msgtan" style="display:none;background-color:#fff;z-Index:10000;width:600px;height:auto;position:fixed;top:'+msg_top+'px;left:'+msg_left+'px;"></div>';
         $('#msgtan').length ? 
         (function(){
             $('#msgtan').remove();

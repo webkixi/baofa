@@ -124,33 +124,32 @@
 					tips('clone ok',1000);
 				}
 				if(this.className.indexOf('edit')>-1){
-					// tanbox("<div id='epiceditor' style='width:600px;height:300px;'></div><div class='form'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
-					// var editor = new EpicEditor(epic_opts).load();
-					tanbox("<div id='editor' style='width:600px;height:300px;'>hello world</div><div class='form' style='text-align:center;'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
+					/*epiceditor*/
+					tanbox("<div id='epiceditor' style='width:600px;height:300px;'></div><div class='form'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
+					var editor = new EpicEditor(epic_opts).load();
+					/*ace editor*/
+					/*tanbox("<div id='editor' style='width:600px;height:300px;'>hello world\n\n\n\n\n\n\n</div><div class='form' style='text-align:center;'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
 					var editor = ace.edit("editor");
-				    editor.setTheme("ace/theme/tomorrow");
-				    editor.session.setMode("ace/mode/html");
-				    editor.setAutoScrollEditorIntoView(true);
-				    editor.setOption("maxLines", 60);				    
+				    	editor.setTheme("ace/theme/tomorrow");
+				    	editor.session.setMode("ace/mode/html");
+				    	editor.setAutoScrollEditorIntoView(true);
+				    	editor.setOption("maxLines", 60);	*/			    
 					$('#submit').click(function(){
-						// editor.save(true);
-						// var content = editor.exportFile(null, 'html', true);
-						// // var content = editor.getElement('previewer').body.innerHTML;
-						// // console.log(content);
-						// // var kbj = editor.open('epiceditor');
-						// // var bbb = JSON.parse(kbj._storage.epiceditor);
-						// // var content = bbb.epiceditor.content;						
+						// var content = editor.getElement('previewer').body.innerHTML;
+						// console.log(content);
+						// var kbj = editor.open('epiceditor');
+						// var bbb = JSON.parse(kbj._storage.epiceditor);
+						// var content = bbb.epiceditor.content;						
+						editor.save(true);
+						var content = editor.exportFile(null, 'html', true);
 						
-						// if($(opdiv.div).find('.md-body').length){							
-						// 	$(opdiv.div).find('.md-body').html(content);
-						// }else{							
-						// 	$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>')
-						// }
+						if($(opdiv.div).find('.md-body').length){							
+							$(opdiv.div).find('.md-body').html(content);
+						}else{							
+							$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>')
+						}
 						
-
-
-						
-						// __put(opdiv.div,content,'md');
+						__put(opdiv.div,content,'md');
 					});
 					$('#close').click(function(){						
 						$('body').trigger('closetanbox');
