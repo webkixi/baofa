@@ -41,19 +41,6 @@
 </head>
 <body>
 
-<script type='text/javascript' src='js/core.js'></script>
-<script type='text/javascript' src='js/toolkit.js'></script>
-<script type='text/javascript' src='js/epiceditor.min.js'></script>
-<script type='text/javascript' src='js/ace-min/ace.js'></script>
-<script type='text/javascript' src='js/prettify.min.js'></script>
-<script type='text/javascript' src='js/gzgz.js'></script>
-<script type="text/javascript">
-    // var editor = ace.edit("editor");
-    // editor.setTheme("ace/theme/tomorrow");
-    // editor.session.setMode("ace/mode/html");
-    // editor.setAutoScrollEditorIntoView(true);
-    // editor.setOption("maxLines", 100);
-</script>
     
 <div class='outer' style="width:100%;height:auto;">
     <div class='inner' style='width:1000px;margin:0 auto;height:auto;position:relative'>
@@ -71,7 +58,11 @@
     </div>
 </div>
 
-
+<script type='text/javascript' src='js/core.js'></script>
+<script type='text/javascript' src='js/toolkit.js'></script>
+<script type='text/javascript' src='js/epiceditor.js'></script>
+<script type='text/javascript' src='js/prettify.min.js'></script>
+<script type='text/javascript' src='js/gzgz.js'></script>
 <script type="text/javascript">
 var epic_opts = {
     container: 'epiceditor',
@@ -85,11 +76,12 @@ var epic_opts = {
     },    
     autogrow: false
 }
-$(window).load(function () {
-            $("code").addClass("prettyprint");
-            prettyPrint();
-});
-
+</script>
+<script type="text/javascript">
+    $(window).load(function () {
+        $("code").addClass("prettyprint");
+        prettyPrint();
+    });
 </script>
 </body>
 </html>

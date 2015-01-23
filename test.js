@@ -47,7 +47,8 @@ app
 .post('/add',add)
 .post('/remove',remove)
 .post('/move',move)
-.post('/edit',edit);
+.post('/edit',edit)
+.post('/get',get);
 
 var __getClass = function(object){
     return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
@@ -186,18 +187,47 @@ function *add(){
 	var body = yield parse.json(this);
 	var 
 	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-	id   = 'id'+body.id;
-	body = JSON.stringify(body);
+	id   = 'id'+body.id,	
 	path = path==''?'index':path;
 
 	var exist = yield function(fn){sc.hexists(path,'attr',fn);};
-	if(exist){		
+	// var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+	if(exist){
+		// var old = yield hget(path+'_data',id);
+		// old = JSON.parse(old);
+		// body.tcnt = old.tcnt;
+		body = JSON.stringify(body);
 		yield hset(path+'_data',id,body);
 	}else{
 		yield hset(path,'attr',JSON.stringify({'user':'xxx','passwd':'123456'}));
 		yield hset(path+'_data',id,body);
 	}
 	this.body = 'ok';
+}
+
+/**
+ * [*get get the identify id obj from ssdb]
+ * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
+ */
+function *get(){
+	var 
+	body = yield parse.json(this),
+	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
+	path = path==''?'index':path,
+	id   = 'id'+body.id;	
+
+	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+	if(exist){			
+		var obj = yield hget(path+'_data',id);
+		obj = JSON.parse(obj);		
+		if(obj.tcnt) {			
+			this.body = obj;
+		}
+		else
+			this.body = '';
+
+	}else
+		this.body = 'null';
 }
 
 /**
@@ -208,7 +238,7 @@ function *remove(){
 	var 
 	body = yield parse.json(this),
 	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-	path = path==''?'index':path;	
+	path = path==''?'index':path,
 	id   = 'id'+body.id;
 
 	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
@@ -226,8 +256,8 @@ function *move(){
 	var 
 	body = yield parse.json(this),
 	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-	path = path==''?'index':path;
-	id   = 'id'+body.id;
+	path = path==''?'index':path,
+	id   = 'id'+body.id,
 	body = JSON.stringify(body);
 
 	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
@@ -247,8 +277,8 @@ function *edit(){
 	var 
 	body = yield parse.json(this),
 	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-	path = path==''?'index':path;
-	id   = 'id'+body.id;
+	path = path==''?'index':path,
+	id   = 'id'+body.id,
 	body = JSON.stringify(body);
 
 	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};

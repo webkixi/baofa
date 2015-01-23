@@ -2010,6 +2010,7 @@ Lexer.prototype.token = function(src, top) {
 
     // code
     if (cap = this.rules.code.exec(src)) {
+      console.log(cap);
       src = src.substring(cap[0].length);
       cap = cap[0].replace(/^ {4}/gm, '');
       this.tokens.push({
