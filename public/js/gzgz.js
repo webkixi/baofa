@@ -104,6 +104,8 @@
 						tips('最小30x30',1000);						
 					pos = {};						
 				});	
+			
+
 
 			// $('#gzmenu ul li').on('mousedown',function(){			
 			$('#gzmenu ul li').mousedown(function(e){
@@ -124,6 +126,7 @@
 					tips('clone ok',1000);
 				}
 				if(this.className.indexOf('edit')>-1){
+<<<<<<< HEAD
 					
 					__dbget(opdiv.id)
 
@@ -159,6 +162,48 @@
 						$('body').trigger('closetanbox');
 						editor.unload();
 					})
+=======
+
+					function popeditor()
+					{
+						var obj = zone.getbackobj;
+						//epic editor
+						tanbox("<div id='epiceditor' style='width:600px;height:300px;'></div><div class='form'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
+						var editor = new EpicEditor(epic_opts).load();
+						editor.importFile(null,obj.tcnt,'text');
+						
+						//ace editor
+						/*tanbox("<div id='editor' style='width:600px;height:300px;'>hello world</div><div class='form' style='text-align:center;'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
+						var editor = ace.edit("editor");
+					    editor.setTheme("ace/theme/tomorrow");
+					    editor.session.setMode("ace/mode/html");
+					    editor.setAutoScrollEditorIntoView(true);
+					    editor.setOption("maxLines", 60);	*/			    
+						$('#submit').click(function(){
+							// var content = editor.getElement('previewer').body.innerHTML;
+							// console.log(content);
+							// var kbj = editor.open('epiceditor');
+							// var bbb = JSON.parse(kbj._storage.epiceditor);
+							// var content = bbb.epiceditor.content;						
+							
+							editor.save(true);
+							var content = editor.exportFile(null, 'html', true);
+							var Tcontent = editor.exportFile(null, 'text', true);						
+							if($(opdiv.div).find('.md-body').length){							
+								$(opdiv.div).find('.md-body').html(content);
+							}else{							
+								$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>')
+							}
+							
+							__put(opdiv.div,{'cnt':content,'tcnt':Tcontent},'md');
+						});
+						$('#close').click(function(){						
+							$('body').trigger('closetanbox');
+							editor.unload();
+						})
+					}
+					__get(opdiv.idindex,true,popeditor);
+>>>>>>> 07b237cd290dddda398e0087cb24bed2df048d47
 				}
 			});
 	        return this;
@@ -343,9 +388,9 @@
 				'class' : unit.className,
 				'css'   : (function(){  var ncss,css; ncss = (css = unit.style.cssText.toLowerCase()).lastIndexOf(';')<(css.length-1) ? css+';' : css; return ncss;})(),
 				'cnt'   : (function(){ 
-							if($(unit).find('.md-body')) return $(unit).find('.md-body').html();
+							if($(unit).find('.md-body').length) return $(unit).find('.md-body').html();
 							else return '';
-						  })(),
+						  })(),				
 				'unit'  : unit.outerHTML,
 				'location': window.location.href
 			};
@@ -357,6 +402,7 @@
 	}
 
 	function __put(unit,content,type){
+<<<<<<< HEAD
 		var obj={};
 		var tcnt;
 		if(content){
@@ -364,6 +410,19 @@
 				tcnt = content.tcnt;
 				content = content.cnt;
 			}else{
+=======
+		var 
+		obj={}
+		,tcnt;
+
+		if(content){
+			if(type=='md'){
+				if(__getClass(content)=='Object'){
+					tcnt = content.tcnt;
+					content = content.cnt;
+				}				
+			}else{				
+>>>>>>> 07b237cd290dddda398e0087cb24bed2df048d47
 				// $(unit).prepend(content);
 			}
 		}else{
@@ -390,8 +449,17 @@
 			obj.tcnt = tcnt;
 		}
 		_wangs.put(obj.id,obj);
+<<<<<<< HEAD
 		idindex++;
 
+=======
+		idindex++;	
+
+		if(tcnt){
+			console.log('ppppppppppp');
+			obj.tcnt = tcnt;
+		}
+>>>>>>> 07b237cd290dddda398e0087cb24bed2df048d47
 		init(zone,{
 			putstat:{'url':'/add','data':JSON.stringify(obj)}
 		},addfun);
@@ -413,9 +481,19 @@
 		__put(clone);
 	}	
 
-	function __get(id){
-		return _wangs.get(id);
-	}
+	function __get(id,fromback,cb){
+
+		if(!cb)cb = function(){};
+		if(fromback){
+			var obj = {'id':id,'location': window.location.href}
+			init(zone,{
+				getbackobj:{'url':'/get','data':JSON.stringify(obj)},
+				null:[cb]
+			});
+		}
+		else
+			return _wangs.get(id);
+	}	
 
 	function __dbget(id,cb){		
 		var obj = _wangs.get(id);
@@ -484,7 +562,7 @@
 		obj.css = opdiv.div.style.cssText.toLowerCase();
 		obj.unit = opdiv.div.outerHTML;
 		console.log('move ok');
-		__put(obj);	 		
+		__put(obj);
 	}
 
 	function __remove(item){
