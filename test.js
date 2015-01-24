@@ -47,6 +47,7 @@ app
 .post('/add',add)
 .post('/remove',remove)
 .post('/move',move)
+.post('/get',get)
 .post('/edit',edit);
 
 var __getClass = function(object){
@@ -198,6 +199,25 @@ function *add(){
 		yield hset(path+'_data',id,body);
 	}
 	this.body = 'ok';
+}
+
+/**
+ * [*get rebuild the unit and save the unit propty into ssdb]
+ * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
+ */
+function *get(){
+	var 
+	body = yield parse.json(this),
+	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
+	path = path==''?'index':path;
+	id   = 'id'+body.id;
+
+	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+	if(exist){	
+		var old = yield hget(path+'_data',id);
+		this.body = old;
+	}else
+		this.body = 'null';
 }
 
 /**

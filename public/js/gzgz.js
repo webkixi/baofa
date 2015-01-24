@@ -124,6 +124,9 @@
 					tips('clone ok',1000);
 				}
 				if(this.className.indexOf('edit')>-1){
+					
+					__dbget(opdiv.id)
+
 					/*epiceditor*/
 					tanbox("<div id='epiceditor' style='width:600px;height:300px;'></div><div class='form'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
 					var editor = new EpicEditor(epic_opts).load();
@@ -142,6 +145,7 @@
 						// var content = bbb.epiceditor.content;						
 						editor.save(true);
 						var content = editor.exportFile(null, 'html', true);
+						var Tcontent = editor.exportFile(null, 'html', true);
 						
 						if($(opdiv.div).find('.md-body').length){							
 							$(opdiv.div).find('.md-body').html(content);
@@ -149,9 +153,9 @@
 							$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>')
 						}
 						
-						__put(opdiv.div,content,'md');
+						__put(opdiv.div,{'cnt':content,'tcnt':Tcontent},'md');
 					});
-					$('#close').click(function(){						
+					$('#close').click(function(){
 						$('body').trigger('closetanbox');
 						editor.unload();
 					})
@@ -354,10 +358,11 @@
 
 	function __put(unit,content,type){
 		var obj={};
+		var tcnt;
 		if(content){
 			if(type=='md'){
-				// obj.md = content;
-				// $(unit).prepend(content);
+				tcnt = content.tcnt;
+				content = content.cnt;
 			}else{
 				// $(unit).prepend(content);
 			}
@@ -380,8 +385,13 @@
 		}else{
 			obj = unit;
 		}
+
+		if(tcnt){
+			obj.tcnt = tcnt;
+		}
 		_wangs.put(obj.id,obj);
-		idindex++;		
+		idindex++;
+
 		init(zone,{
 			putstat:{'url':'/add','data':JSON.stringify(obj)}
 		},addfun);
@@ -405,6 +415,25 @@
 
 	function __get(id){
 		return _wangs.get(id);
+	}
+
+	function __dbget(id,cb){		
+		var obj = _wangs.get(id);
+		if(!obj) return false;
+		if( obj.tcnt) return obj.tcnt;
+
+		var funs = [];
+		if(__getClass(cb)=='Function'){
+			funs.push(cb);
+		}else if(__getClass(cb)=='Array'){
+			funs = cb;
+		}
+
+		init(zone,{
+			dbgetobj:{'url':'/get','data':JSON.stringify(obj)},
+			'null':[cb]
+		});
+
 	}
 
 	function __edit(item){
