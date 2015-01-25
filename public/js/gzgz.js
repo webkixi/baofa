@@ -110,7 +110,7 @@
 			// $('#gzmenu ul li').on('mousedown',function(){			
 			$('#gzmenu ul li').mousedown(function(e){
 				e=e||arguments[0];
-				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
+				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
 				
 				if(this.className.indexOf('remove')>-1){						
 					__remove(opdiv);
@@ -125,22 +125,30 @@
 					__clone(opdiv,clone);
 					tips('clone ok',1000);
 				}
+				var editor;
 				if(this.className.indexOf('edit')>-1){
-<<<<<<< HEAD
 					
-					__dbget(opdiv.id)
 
 					/*epiceditor*/
 					tanbox("<div id='epiceditor' style='width:600px;height:300px;'></div><div class='form'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
-					var editor = new EpicEditor(epic_opts).load();
+					editor = new EpicEditor(epic_opts).load();		
+
+					function insert_data_to_editor(){
+						if(zone.dbgetobj.tcnt)
+							editor.importFile(null,zone.dbgetobj.tcnt,'text');
+					}
+					__dbget(opdiv.idindex,insert_data_to_editor);
+
 					/*ace editor*/
 					/*tanbox("<div id='editor' style='width:600px;height:300px;'>hello world\n\n\n\n\n\n\n</div><div class='form' style='text-align:center;'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
 					var editor = ace.edit("editor");
-				    	editor.setTheme("ace/theme/tomorrow");
-				    	editor.session.setMode("ace/mode/html");
-				    	editor.setAutoScrollEditorIntoView(true);
-				    	editor.setOption("maxLines", 60);	*/			    
-					$('#submit').click(function(){
+			    	editor.setTheme("ace/theme/tomorrow");
+			    	editor.session.setMode("ace/mode/html");
+			    	editor.setAutoScrollEditorIntoView(true);
+			    	editor.setOption("maxLines", 60);	*/		
+
+
+			    	$('#submit').click(function(){
 						// var content = editor.getElement('previewer').body.innerHTML;
 						// console.log(content);
 						// var kbj = editor.open('epiceditor');
@@ -148,7 +156,8 @@
 						// var content = bbb.epiceditor.content;						
 						editor.save(true);
 						var content = editor.exportFile(null, 'html', true);
-						var Tcontent = editor.exportFile(null, 'html', true);
+						var Tcontent = editor.exportFile(null, 'text', true);
+						console.log(Tcontent);
 						
 						if($(opdiv.div).find('.md-body').length){							
 							$(opdiv.div).find('.md-body').html(content);
@@ -158,54 +167,15 @@
 						
 						__put(opdiv.div,{'cnt':content,'tcnt':Tcontent},'md');
 					});
+
 					$('#close').click(function(){
 						$('body').trigger('closetanbox');
 						editor.unload();
-					})
-=======
-
-					function popeditor()
-					{
-						var obj = zone.getbackobj;
-						//epic editor
-						tanbox("<div id='epiceditor' style='width:600px;height:300px;'></div><div class='form'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
-						var editor = new EpicEditor(epic_opts).load();
-						editor.importFile(null,obj.tcnt,'text');
-						
-						//ace editor
-						/*tanbox("<div id='editor' style='width:600px;height:300px;'>hello world</div><div class='form' style='text-align:center;'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
-						var editor = ace.edit("editor");
-					    editor.setTheme("ace/theme/tomorrow");
-					    editor.session.setMode("ace/mode/html");
-					    editor.setAutoScrollEditorIntoView(true);
-					    editor.setOption("maxLines", 60);	*/			    
-						$('#submit').click(function(){
-							// var content = editor.getElement('previewer').body.innerHTML;
-							// console.log(content);
-							// var kbj = editor.open('epiceditor');
-							// var bbb = JSON.parse(kbj._storage.epiceditor);
-							// var content = bbb.epiceditor.content;						
-							
-							editor.save(true);
-							var content = editor.exportFile(null, 'html', true);
-							var Tcontent = editor.exportFile(null, 'text', true);						
-							if($(opdiv.div).find('.md-body').length){							
-								$(opdiv.div).find('.md-body').html(content);
-							}else{							
-								$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>')
-							}
-							
-							__put(opdiv.div,{'cnt':content,'tcnt':Tcontent},'md');
-						});
-						$('#close').click(function(){						
-							$('body').trigger('closetanbox');
-							editor.unload();
-						})
-					}
-					__get(opdiv.idindex,true,popeditor);
->>>>>>> 07b237cd290dddda398e0087cb24bed2df048d47
+					});	
 				}
-			});
+			});				    
+			
+
 	        return this;
 	    }
 	}
@@ -317,6 +287,7 @@
 				}
 
 			}).contextmenu(function(e){				
+				opdiv = null;
 				e = e||arguments[0];
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
 				e.preventDefault();
@@ -402,7 +373,6 @@
 	}
 
 	function __put(unit,content,type){
-<<<<<<< HEAD
 		var obj={};
 		var tcnt;
 		if(content){
@@ -410,19 +380,6 @@
 				tcnt = content.tcnt;
 				content = content.cnt;
 			}else{
-=======
-		var 
-		obj={}
-		,tcnt;
-
-		if(content){
-			if(type=='md'){
-				if(__getClass(content)=='Object'){
-					tcnt = content.tcnt;
-					content = content.cnt;
-				}				
-			}else{				
->>>>>>> 07b237cd290dddda398e0087cb24bed2df048d47
 				// $(unit).prepend(content);
 			}
 		}else{
@@ -449,17 +406,7 @@
 			obj.tcnt = tcnt;
 		}
 		_wangs.put(obj.id,obj);
-<<<<<<< HEAD
 		idindex++;
-
-=======
-		idindex++;	
-
-		if(tcnt){
-			console.log('ppppppppppp');
-			obj.tcnt = tcnt;
-		}
->>>>>>> 07b237cd290dddda398e0087cb24bed2df048d47
 		init(zone,{
 			putstat:{'url':'/add','data':JSON.stringify(obj)}
 		},addfun);
@@ -481,35 +428,45 @@
 		__put(clone);
 	}	
 
-	function __get(id,fromback,cb){
+	// function __get(id,fromback,cb){
+	function __get(id){
 
-		if(!cb)cb = function(){};
-		if(fromback){
-			var obj = {'id':id,'location': window.location.href}
-			init(zone,{
-				getbackobj:{'url':'/get','data':JSON.stringify(obj)},
-				null:[cb]
-			});
-		}
-		else
+		// if(!cb)cb = function(){};
+		// if(fromback){
+		// 	var obj = {'id':id,'location': window.location.href}
+		// 	init(zone,{
+		// 		getbackobj:{'url':'/get','data':JSON.stringify(obj)},
+		// 		null:[cb]
+		// 	});
+		// }
+		// else
 			return _wangs.get(id);
 	}	
 
-	function __dbget(id,cb){		
-		var obj = _wangs.get(id);
-		if(!obj) return false;
-		if( obj.tcnt) return obj.tcnt;
-
+	function __dbget(id,cb){
 		var funs = [];
-		if(__getClass(cb)=='Function'){
-			funs.push(cb);
-		}else if(__getClass(cb)=='Array'){
-			funs = cb;
+		var getdata;
+		var obj = _wangs.get(id);		
+		if(!obj) return false;
+		if( obj.tcnt){
+			getdata = obj;
+		}else{
+			getdata = {'url':'/get','data':JSON.stringify(obj)};
+		}
+
+		if(cb){
+			if(__getClass(cb)=='Function'){
+				funs.push(cb);
+			}else if(__getClass(cb)=='Array'){
+				funs = cb;
+			}else{
+				funs.push(function(){});
+			}
 		}
 
 		init(zone,{
-			dbgetobj:{'url':'/get','data':JSON.stringify(obj)},
-			'null':[cb]
+			dbgetobj:getdata,
+			'null':funs
 		});
 
 	}

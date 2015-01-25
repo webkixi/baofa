@@ -177,7 +177,6 @@ function *index(){
 function *dealindex(){
 	var page = yield function(kkk){client.hexists('kixi','index',kkk)};	
 	var body = yield parse.json(this);
-	console.log(body);
 }
 
 /**
@@ -192,13 +191,21 @@ function *add(){
 	path = path==''?'index':path;
 
 	var exist = yield function(fn){sc.hexists(path,'attr',fn);};
-	// var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
 	if(exist){
-		// var old = yield hget(path+'_data',id);
-		// old = JSON.parse(old);
-		// body.tcnt = old.tcnt;
+		exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+		if(exist){
+			var old = yield hget(path+'_data',id);
+			old = JSON.parse(old);			
+			if(!body.tcnt&&old.tcnt){
+				var tmp = old.tcnt;
+				body.tcnt = tmp;
+			}else{
+				// console.log(body);
+			}
+		}
 		body = JSON.stringify(body);
 		yield hset(path+'_data',id,body);
+		
 	}else{
 		yield hset(path,'attr',JSON.stringify({'user':'xxx','passwd':'123456'}));
 		yield hset(path+'_data',id,body);
@@ -215,7 +222,7 @@ function *get(){
 	body = yield parse.json(this),
 	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
 	path = path==''?'index':path;
-	id   = 'id'+body.id;
+	id   = 'id'+body.id;	
 
 	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
 	if(exist){	
