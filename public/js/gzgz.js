@@ -157,7 +157,7 @@
 						editor.save(true);
 						var content = editor.exportFile(null, 'html', true);
 						var Tcontent = editor.exportFile(null, 'text', true);
-						console.log(Tcontent);
+						console.log(content);
 						
 						if($(opdiv.div).find('.md-body').length){							
 							$(opdiv.div).find('.md-body').html(content);

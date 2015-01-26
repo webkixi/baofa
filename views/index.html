@@ -92,6 +92,7 @@ $(window).load(function () {
     var looptpl=[];
     $('.gzgz').each(function(j,v){
         if(data && data.length>0){
+            bc(data.length);
             for(var i=0; i<data.length; i++){
                 var unit = data[i];
                 if(unit.gzindex==j){

@@ -79,7 +79,7 @@ var hdel = function(name,key){
 }
 
 var tpl = function(tpl,data){	
-	return function(fn){
+	return function(fn){		
 		var tmp = tpl.split(/[=]{5,}/);			
 		var doc = tmp[0];
 		var head = [];		
@@ -170,8 +170,11 @@ function *index(){
 		var tmp = yield render('index');	
 		var kkk = yield tpl(tmp,data);
 		this.body = kkk;
-	}else
-	    this.body = yield render('index',{posts:posts});	
+	}else{
+	    var tmp = yield render('index',{posts:posts});	
+	    tmp = tmp.split(/[=]{5,}/)[0];
+	    this.body = tmp;
+	}
 }
 
 function *dealindex(){
@@ -208,7 +211,7 @@ function *add(){
 		
 	}else{
 		yield hset(path,'attr',JSON.stringify({'user':'xxx','passwd':'123456'}));
-		yield hset(path+'_data',id,body);
+		yield hset(path+'_data',id,JSON.stringify(body));
 	}
 	this.body = 'ok';
 }

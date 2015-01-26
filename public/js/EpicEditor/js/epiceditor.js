@@ -1629,7 +1629,7 @@
     var self = this
       , file
       , content;
-
+    
     name = name || self.settings.file.name;
     kind = kind || 'text';
    
@@ -1643,7 +1643,7 @@
     content = file.content;
    
     switch (kind) {
-    case 'html':
+    case 'html':      
       content = _sanitizeRawContent(content);
       return self.settings.parser(content);
     case 'text':
@@ -1872,7 +1872,8 @@ var block = {
   def: /^ *\[([^\]]+)\]: *([^\s]+)(?: +["(]([^\n]+)[")])? *(?:\n+|$)/,
   table: noop,
   paragraph: /^([^\n]+\n?(?!hr|heading|lheading|blockquote|tag|def))+\n*/,
-  text: /^[^\n]+/
+  text: /^[^\n]+/,
+  ltatgt: /^ *(<@) *(\w+)? *\n([\s\S]+?)\s*@> *(?:\n+|$)/   //gzgz
 };
 
 block.bullet = /(?:[*+-]|\d+\.)/;
@@ -2027,6 +2028,17 @@ Lexer.prototype.token = function(src, top) {
       this.tokens.push({
         type: 'code',
         lang: cap[2],
+        text: cap[3]
+      });
+      continue;
+    }
+
+    // ltatgt  gzgz
+    if (cap = this.rules.ltatgt.exec(src)) {      
+      src = src.substring(cap[0].length);
+      this.tokens.push({
+        type: 'ltatgt',
+        cmd: cap[2],
         text: cap[3]
       });
       continue;
@@ -2683,6 +2695,22 @@ Parser.prototype.tok = function() {
         + '>'
         + this.token.text
         + '</code></pre>\n';
+    }
+    //gzgz
+    case 'lgtagt': {
+      if (!this.token.escaped) {
+        this.token.text = escape(this.token.text, true);
+      }      
+
+      return '<div><div'
+        + (this.token.cmd
+        ? ' class="lang-'
+        + this.token.lang
+        + '"'
+        : '')
+        + '>'
+        + this.token.text
+        + '</div></div>\n';
     }
     case 'table': {
       var body = ''
