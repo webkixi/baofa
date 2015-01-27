@@ -2038,7 +2038,7 @@ Lexer.prototype.token = function(src, top) {
       src = src.substring(cap[0].length);
       this.tokens.push({
         type: 'ltatgt',
-        cmd: cap[2],
+        class: cap[2],
         text: cap[3]
       });
       continue;
@@ -2588,6 +2588,57 @@ InlineLexer.prototype.mangle = function(text) {
 };
 
 /**
+ * gzgz equip
+ */
+
+InlineLexer.prototype.equip = function(text) {  
+  var 
+  tmp,
+  src='',
+  tmpsrc='',
+  cap,
+  href,
+  attr='',
+  str='',
+  out=''; 
+
+  var br = / {2,}\n(?!\s*$)/g;
+  var at_pre = /^ *([^@]+)/;  
+  var at_aft = /^@@(.*)(?=(dayufuhao|xiaoyufuhao|jianhao)?)/;  
+
+  tmp = text.split(br);
+  var i = 0;
+  for(; i<tmp.length; i++){ 
+    attr='';
+    tmp[i] = tmp[i].replace(/[>]{3,}/,'dayufuhao')
+                   .replace(/[<]{3,}/,'xiaoyufuhao')
+                   .replace(/[\-]{3,}/,'jianhao');                   
+    if(cap = at_pre.exec(tmp[i]) ){
+      src = tmp[i].substring(cap[0].length);
+      out=cap[1];
+
+      if(cap = at_aft.exec(src)){
+        src = src.substring(cap[0].length);
+        if(cap[1]&&cap[1]!=''){
+          href = cap[1].indexOf(' ')>-1
+          ? cap[1].substring(0,cap[1].indexOf(' '))
+          : cap[1]          
+          if(cap[1].indexOf(' ')>-1) attr = cap[1].replace(href,'');
+          out = '<li '+attr+'><a href='+href+'>'+out+'</a></li>';
+          str += out+'\n';
+        }
+      }
+    }else{
+      return str;
+    }
+  }
+  console.log(str);
+  return str;
+
+  // return '<li>'+text.replace(br,'</li>\n<li>')+'</li>';
+};
+
+/**
  * Parsing & Compiling
  */
 
@@ -2698,19 +2749,23 @@ Parser.prototype.tok = function() {
     }
     //gzgz
     case 'ltatgt': {      
+      var body=''
       if (!this.token.escaped) {
         this.token.text = escape(this.token.text, true);
       }      
-
-      return '<div><div'
-        + (this.token.cmd
-        ? ' class="lang-'
-        + this.token.cmd
+      // body = this.parseText();
+      body = this.inline.equip(this.token.text);
+      // body = this.token.text;
+      
+      return '<div'
+        + (this.token.class
+        ? ' class="'
+        + this.token.class
         + '"'
         : '')
-        + '>'
-        + this.token.text
-        + '</div></div>\n';
+        + '><ul>'
+        + body
+        + '</ul></div>\n';
     }
     case 'table': {
       var body = ''

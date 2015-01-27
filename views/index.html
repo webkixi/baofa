@@ -34,6 +34,8 @@
         right: 0;
         height:300p;
     }
+ .md-body .nimei ul {list-style:none;overflow: hidden;padding: 0;}
+ .nimei ul li{float:left;margin:0;padding: 0;}
   </style>
   <link rel="stylesheet" type="text/css" href="css/github.css">
   <link rel="stylesheet" type="text/css" href="css/prettify.min.css">
@@ -92,13 +94,12 @@ $(window).load(function () {
     var looptpl=[];
     $('.gzgz').each(function(j,v){
         if(data && data.length>0){
-            bc(data.length);
             for(var i=0; i<data.length; i++){
                 var unit = data[i];
                 if(unit.gzindex==j){
                     if(unit.cnt!=''){
-                            var uuu =$(unit.unit);
-                            uuu.find('.md-body').remove();
+                            var uuu =$(unit.unit);                            
+                            uuu.find('.md-wrap').remove();
                             uuu.prepend('<div class="md-wrap"><div class="md-body">'+unit.cnt+'</div></div>');
                             // uuu.find('pre').addClass('prettyprint');
                             unit.unit = uuu[0].outerHTML;
