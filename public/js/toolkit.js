@@ -192,12 +192,19 @@ function tanbox(msg,stat,cb){
     var clientheight = docRect.dh;
     if(!stat) stat='normal';
 
+
     var tan = new tipsbox();
     tan.tipsBox = function(stat){
-        // var tip = document.createElement('div');        
-        var msg_left = Math.round((parseInt(clientwidth)-600)/2);
-        var msg_top = Math.round((parseInt(clientheight)-300)/2);
-        var tanboxhtml = '<div id="msgtan" style="display:none;background-color:#fff;z-Index:10000;width:600px;height:auto;position:fixed;top:'+msg_top+'px;left:'+msg_left+'px;"></div>';
+        // var tip = document.createElement('div');
+        var 
+        box_width = 600,
+        box_height = 300;
+        if(tanbox.attr.box.width) box_width = tanbox.attr.box.width;
+        if(tanbox.attr.box.height) box_height = tanbox.attr.box.height;
+        tanbox.attr.box={};
+        var msg_left = Math.round((parseInt(clientwidth)-box_width)/2);
+        var msg_top = Math.round((parseInt(clientheight)-box_height)/2);
+        var tanboxhtml = '<div id="msgtan" style="display:none;background-color:#fff;z-Index:10000;width:'+box_width+'px;'+box_height+':auto;position:fixed;top:'+msg_top+'px;left:'+msg_left+'px;"></div>';
         $('#msgtan').length ? 
         (function(){
             $('#msgtan').remove();
@@ -213,13 +220,13 @@ function tanbox(msg,stat,cb){
         return subtip;
     };
     tan.anim = function(item,container,stat){        
-        if(stat!=='md'){
-            $(container).fadeIn(1000).delay(2000).fadeOut('slow');        
-        }else{
+        if(stat=='md'||stat!=='sign'){
             $(container).fadeIn(300);
             $('body').bind('closetanbox',function(){
                 $(container).fadeOut('slow');
-            })
+            });
+        }else{
+            $(container).fadeIn(1000).delay(2000).fadeOut('slow');        
         }
     };
 
@@ -227,6 +234,7 @@ function tanbox(msg,stat,cb){
     else
         tan.pop(msg,stat);
 }
+tanbox.attr = {'box':{},'item':{}};
 window.tanbox = tanbox;
 
 /*

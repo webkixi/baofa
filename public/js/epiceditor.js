@@ -2632,7 +2632,6 @@ InlineLexer.prototype.equip = function(text) {
       return str;
     }
   }
-  console.log(str);
   return str;
 
   // return '<li>'+text.replace(br,'</li>\n<li>')+'</li>';

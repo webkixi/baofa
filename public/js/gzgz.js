@@ -17,9 +17,11 @@
 	    		$('body').append("<div id='drawselect' title='右键编辑' style='z-index:1001;position:absolute;left:0;top:0;display:none;'></div>");	
 
 	    	var gzmenu = '<div id="gzmenu"><ul>\
+			<li class="sign">注册/登录</li>\
+			<li class="edit">编辑</li>\
 			<li class="remove">remove</li>\
 			<li class="clone">clone</li>\
-			<li class="edit">编辑</li></ul></div>';
+			</ul></div>';
 			if(!$('#gzmenu').length) $('body').append(gzmenu);
 			creatstyle('gzgzgz',function(gzgzgz){
 				gzgzgz.text('#gzmenu{position:absolute;width:150px;background-color:#fff;display:none;border:1px solid #666;border-bottom-width:0;}\
@@ -106,12 +108,20 @@
 				});	
 			
 
-
-			// $('#gzmenu ul li').on('mousedown',function(){			
 			$('#gzmenu ul li').mousedown(function(e){
 				e=e||arguments[0];
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
 				
+				if(this.className.indexOf('sign')>-1){
+					tanbox.attr.box['width'] = 400;
+					tanbox.attr.box['height'] = 300;
+					$(this).click(function(){
+						tanbox("<div id='sign' style='width:400px;height:300px;'>1234</div><div class='form'><span class='submit'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
+						$('.close').click(function(){
+							$('body').trigger('closetanbox');
+						});
+					});
+				}
 				if(this.className.indexOf('remove')>-1){						
 					__remove(opdiv);
 				}
@@ -127,8 +137,6 @@
 				}
 				var editor;
 				if(this.className.indexOf('edit')>-1){
-					
-
 					/*epiceditor*/
 					tanbox("<div id='epiceditor' style='width:600px;height:300px;'></div><div class='form'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
 					editor = new EpicEditor(epic_opts).load();		
@@ -157,7 +165,6 @@
 						editor.save(true);
 						var content = editor.exportFile(null, 'html', true);
 						var Tcontent = editor.exportFile(null, 'text', true);
-						console.log(content);
 						
 						if($(opdiv.div).find('.md-body').length){							
 							$(opdiv.div).find('.md-body').html(content);
