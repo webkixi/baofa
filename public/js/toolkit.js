@@ -90,42 +90,6 @@ function creatstyle(name,cb){
     cb && cb.call(this,nstyle);
 }
 
-function tanbox(msg,cb){
-    var docRect = __measureDoc();
-    var scrollleft = docRect.sl;
-    var scrolltop = docRect.st;
-    var clientwidth = docRect.dw;
-    var clientheight = docRect.dh;
-
-    var tan = new tipsbox();
-    tan.tipsBox = function(){
-        // var tip = document.createElement('div');        
-        var msg_left = Math.round((parseInt(clientwidth)-500)/2);
-        var msg_top = Math.round((parseInt(clientheight)-500)/2);
-        var tanboxhtml = '<div id="msgtan" style="display:none;background-color:#fff;z-Index:10000;width:500px;height:500px;position:fixed;top:'+msg_top+'px;left:'+msg_left+'px;"></div>';
-        $('#msgtan').length ? 
-        (function(){
-            $('#msgtan').remove();
-            $('body').append(tanboxhtml);
-        })()
-        : $('body').append(tanboxhtml);
-        return $('#msgtan')[0];
-    };
-    tan.tipsItem = function(){
-        var subtip = document.createElement('div');
-        subtip.id = 'tancontent'
-        subtip.style.cssText = 'width:100%;height:100%;text-align:center;display:block;'        
-        return subtip;
-    };
-    tan.anim = function(item,container){
-        $(container).fadeIn(1000);
-    };
-
-    if(cb) tan.pop(msg,'',cb);
-    else
-        tan.pop(msg);
-}
-
 /*
 * msgtips 消息弹出窗，为tipsbox抽象的实例
 * @msg 传入的消息
@@ -184,7 +148,7 @@ var msgtips = function(msg,stat,cb){
 window.tips = msgtips;
 
 
-function tanbox(msg,stat,cb){
+function tanbox(msg,stat,cb){    
     var docRect = __measureDoc();
     var scrollleft = docRect.sl;
     var scrolltop = docRect.st;
@@ -200,11 +164,11 @@ function tanbox(msg,stat,cb){
         box_width = 600,
         box_height = 300;
         if(tanbox.attr.box.width) box_width = tanbox.attr.box.width;
-        if(tanbox.attr.box.height) box_height = tanbox.attr.box.height;
+        if(tanbox.attr.box.height) box_height = tanbox.attr.box.height;        
         tanbox.attr.box={};
         var msg_left = Math.round((parseInt(clientwidth)-box_width)/2);
         var msg_top = Math.round((parseInt(clientheight)-box_height)/2);
-        var tanboxhtml = '<div id="msgtan" style="display:none;background-color:#fff;z-Index:10000;width:'+box_width+'px;'+box_height+':auto;position:fixed;top:'+msg_top+'px;left:'+msg_left+'px;"></div>';
+        var tanboxhtml = '<div id="msgtan" style="display:none;background-color:#fff;z-Index:10000;width:'+box_width+'px;height:'+box_height+'px:auto;position:fixed;top:'+msg_top+'px;left:'+msg_left+'px;"></div>';
         $('#msgtan').length ? 
         (function(){
             $('#msgtan').remove();
@@ -219,13 +183,13 @@ function tanbox(msg,stat,cb){
         subtip.style.cssText = 'width:100%;height:100%;display:block;'        
         return subtip;
     };
-    tan.anim = function(item,container,stat){        
-        if(stat=='md'||stat!=='sign'){
+    tan.anim = function(item,container,stat){              
+        if(stat=='md'||stat!=='sign'){            
             $(container).fadeIn(300);
             $('body').bind('closetanbox',function(){
                 $(container).fadeOut('slow');
             });
-        }else{
+        }else{          
             $(container).fadeIn(1000).delay(2000).fadeOut('slow');        
         }
     };
@@ -275,6 +239,7 @@ window.tanbox = tanbox;
             tips     : tips
         };
         if(opts&&__getClass(opts)=='Object'){
+            console.log('ooooooooooooooo');
             old = $.extend({},block);
             block = $.extend(block,opts);
         }

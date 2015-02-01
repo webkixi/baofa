@@ -113,13 +113,9 @@
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
 				
 				if(this.className.indexOf('sign')>-1){
-					tanbox.attr.box['width'] = 400;
-					tanbox.attr.box['height'] = 300;
+					
 					$(this).click(function(){
-						tanbox("<div id='sign' style='width:400px;height:300px;'>1234</div><div class='form'><span class='submit'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
-						$('.close').click(function(){
-							$('body').trigger('closetanbox');
-						});
+						loginPanel();						
 					});
 				}
 				if(this.className.indexOf('remove')>-1){						
@@ -180,12 +176,64 @@
 						editor.unload();
 					});	
 				}
-			});				    
-			
-
+			});
 	        return this;
 	    }
 	}
+
+	function loginPanel(){		
+		tanbox.attr.box['width'] = 400;
+		tanbox.attr.box['height'] = 300;
+		tanbox("<div id='sign' style='width:400px;height:300px;'><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
+		$('#login').click(function(){
+			toLogin();
+		});
+
+		$('.close').click(function(){
+			$('body').trigger('closetanbox');
+		});
+	}
+
+	function toLogin(){
+		var user = $('#user').val();
+		var passwd = $('#passwd').val();
+		var formv = form_valide()(user,'username');
+		var data = {
+			'user':user,
+			'passwd':passwd
+		};
+
+		if(formv){
+			main(zone,{
+				to_login:{'url':'/login','data':JSON.stringify(data)},
+				null:[loginStat]
+			});
+		}
+
+		function loginStat(){
+			if(zone.to_login.stat = 1)
+				zone.login_stat = true;
+			else
+				zone.login_stat = false;
+		}
+	}
+
+
+	var getLoginInfo = function(){
+		main(zone,{
+			'login_info' : {'url':'/logininfo'}
+			,null:[stat]
+		});	
+
+		function stat(){
+			if(zone.login_info.stat == 0){
+				zone.login_stat = false;
+			}else{
+				zone.login_stat = true;
+			}
+		}
+	}	
+	getLoginInfo();
 
 	var preCreatSubDiv = function(item,container,type){
 		var 
@@ -414,7 +462,7 @@
 		}
 		_wangs.put(obj.id,obj);
 		idindex++;
-		init(zone,{
+		main(zone,{
 			putstat:{'url':'/add','data':JSON.stringify(obj)}
 		},addfun);
 	}
@@ -441,7 +489,7 @@
 		// if(!cb)cb = function(){};
 		// if(fromback){
 		// 	var obj = {'id':id,'location': window.location.href}
-		// 	init(zone,{
+		// 	main(zone,{
 		// 		getbackobj:{'url':'/get','data':JSON.stringify(obj)},
 		// 		null:[cb]
 		// 	});
@@ -471,7 +519,7 @@
 			}
 		}
 
-		init(zone,{
+		main(zone,{
 			dbgetobj:getdata,
 			'null':funs
 		});
@@ -494,7 +542,7 @@
 		}
 	    console.log('edit ok');
 	    __put(obj);
-	 //    init(zone,{
+	 //    main(zone,{
 		// 	editstat:{'url':'/edit','data':JSON.stringify(obj)}
 		// },editfun);		
 	}
@@ -560,7 +608,7 @@
 				$(opdiv.div).remove();
 			}
 		}
-		init(zone,{
+		main(zone,{
 			removestat:{'url':'/remove','data':JSON.stringify(obj)}
 		},removefun);	
 	}

@@ -4,35 +4,45 @@ var router = require('koa-router');
 var parse = require('co-body');
 var statics = require('koa-static-cache');
 var url = require('url');
+var session = require('koa-session');
 var exec = require('child_process').exec;
 var markdown = require( "markdown-js" ).markdown;
-
-var jsdom = require('jsdom');
-var env = jsdom.env;
-var jsd = jsdom.jsdom;
-var jq = require('jquery');
-var $,jQuery,$$;
-// var doc = jsd('');
-// var win = doc.parentWindow;
-// $$ = jq(win);
-
 var ssdb = require('ssdb');
 var sc = ssdb.createClient();
+
+
+var crypto = require('crypto');
+var tpl = require('./tpl').tpl;
+var formv = require('./toolkit').formv;
 
 
 // var fs = require('fs');
 // var ws = fs.createWriteStream('message.txt');
 
-
 var app = koa();
+
 app.use(router(app));
+
 app.use(statics('./public',{
 	// buffer: true,
 	// gzip: true
 }));
+
+app.use(session(app));
+app.keys = ['some secret hurr'];
+
 var render = views('views',{
     map:{html:'swig'}
 });
+
+
+//
+var 
+
+login_stat=false,
+admin_stat=false,
+
+mixstr = '!@fdsg438)*e';
 
 var posts = [
  {id:1,title:'hello',content:'this just test'}
@@ -48,17 +58,15 @@ app
 .post('/remove',remove)
 .post('/move',move)
 .post('/get',get)
-.post('/edit',edit);
+.post('/edit',edit)
+.post('/logininfo',getLoginStat)
+.post('/login',login);
 
 
 var __getClass = function(object){
     return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
 };
 
-function trim(s){
-    // s.replace(/(\/\/)[^\n]*/g,'');
-    return s.replace(/(\/\/)[^\n]*/g,'').replace(/(^\s*)|(\s*$)/g, '').replace(/\s+/g,' ');
-}
 
 var hset = function(name,key,val){
 	return function(fn){
@@ -77,87 +85,77 @@ var hdel = function(name,key){
 		sc.hdel(name,key,fn);
 	}
 }
+//加密
+function encrypt(str, secret) {
+    var cipher = crypto.createCipher('aes192', secret);
+    var enc = cipher.update(str, 'utf8', 'hex');
+    enc += cipher.final('hex');
+    return enc;
+}
+//解密
+function decrypt(str, secret) {
+    var decipher = crypto.createDecipher('aes192', secret);
+    var dec = decipher.update(str, 'hex', 'utf8');
+    dec += decipher.final('utf8');
+    return dec;
+}
 
-var tpl = function(tpl,data){	
-	return function(fn){		
-		var tmp = tpl.split(/[=]{5,}/);			
-		var doc = tmp[0];
-		var head = [];		
-		
-		var jqstr = trim(tmp[1].replace(/<[\/]?(script)>/g,''));		
-		
-		var browseconsoles = jqstr.match(/bc\((.*?)\)[\;]?/g);
-		var browseJs = jqstr.match(/bjs\((.*?)\)[\;]?/g);			
-		jqstr = jqstr.replace(/bc\((.*?)\)[\;]?[\s]?/g,'');
-		jqstr = jqstr.replace(/bjs\((.*?)\)[\;]?[\s]?/g,'');
+function loginStat(session){	
+	console.log(session);
+	if(!session.admin||session.admin==''){
+		admin_stat=false;		
+	}else if(!session.user||session.user==''){
+		login_stat=false;
+	}
+	if((admin_stat|login_stat)) return true;
+	return  false;
+}
 
+function *getLoginStat(){	
+	if(loginStat(this.session)) this.body = '{"stat":1}';
+	else this.body = '{"stat":0}';
+}
 
-		env(doc,function(err,window){
-			$ = jQuery = jq(window);
-			
-			function bc(){				
-				if(browseconsoles&&browseconsoles.length>0){
-					head.push('<script type="text/javascript">');
-					var b = browseconsoles;
-					for(var i=0; i<b.length; i++){
-						var para = b[i].match(/\((.*)\)/);
-						if(para[0].indexOf("('")>-1){
-							head.push('console.log('+para[1]+');');
-						}else{
-							var tmppara = eval(para[1]);
-							if(__getClass(tmppara)=='Array'){
-								$.each(tmppara,function(j,v){
-									tmppara[j]=JSON.stringify(v);
-								});
-								head.push("var tmpdata=["+tmppara.toString()+"];\nconsole.log(tmpdata);");
-							}
-							if(__getClass(tmppara)=='Object'){
-								tmppara = JSON.stringify(tmppara);
-								head.push("console.log("+tmppara+");");
-							}							
-						}
-					}					
-				}				
+function *login(){
+	var 
+	body = yield parse.json(this),
+	user = body.user,
+	passwd = body.passwd;
+	reset_passwd = body.reset_passwd;
+
+	var valid_stat = formv()(user,'username');
+	if(!valid_stat){
+		this.body =  '{"stat":0,"info":"username invalide"}';
+	}else{
+		passwd = encrypt(mixstr,passwd);
+		var db_user = yield hget('user',user);
+		db_user = JSON.parse(db_user);
+		if(db_user&&db_user['passwd']==passwd){			
+			if(reset_passwd){
+				yield hset('user',user,reset_passwd);
 			}
-			function bjs(){
-				var bjs = browseJs;
-				if(bjs&&bjs.length>0){
-					if(!browseconsoles) head.push('<script type="text/javascript">');
-					for(var i=0; i<bjs.length; i++){
-						var para = trim(bjs[i]).match(/\((.*)\)/);
-						if(para[0].indexOf("('")>-1){
-							if(para[1].indexOf('\'\+')>-1){
-								var pos = para[1].indexOf('\'+')
-								,leftend = para[1].substring(1,pos)
-								,rightend = eval(para[1].substring(pos+2));
-								para[1] = leftend+rightend+';';
-							}							
-							head.push(para[1]);
-						}else{	
-							throw new Error('bjs function parameter must be String');
-						}
-					}
-				}
+			if(user=='admin'){
+				this.session.admin = true;				
+				this.body = '{"stat":1,"info":"admin login sucess"}';
+			}else{
+				this.session.user = true;
+				this.body = '{"stat":1,"info":"login sucess"}';
 			}
-			eval(jqstr);
-			bc();
-			bjs();
-			doc = $('html').html();
-			head.push('</script>');			
-			if(browseconsoles||browseJs)doc = doc.replace('</head>',head.join('\n')+'\n</head>');
-			fn(null,doc);
-		});
+		}
+		console.log('ppppppppppppppp');
+		console.log(this.session);
 	}
 }
 
-function *index(){		
+function *index(){	
+	var exist;
 	var theme = 'index';
 	var attr = [];
 	var data = [];
 	var size=0;
 	var i,v;	
 	// this.acceptsEncodings('gzip', 'deflate', 'identity');
-	var exist = yield function(fn){sc.hexists(theme,'attr',fn);};
+	exist = yield function(fn){sc.hexists(theme,'attr',fn);};
 	if(exist){
 		attr.push(yield hget(theme,'attr'));		
 		var all = yield function(fn){sc.hgetall(theme+'_data',fn);};
@@ -167,11 +165,23 @@ function *index(){
 				data.push(JSON.parse(dataitem));
 			}
 		}
-		var tmp = yield render('index');	
+		var tmp = yield render('index');
 		var kkk = yield tpl(tmp,data);
 		this.body = kkk;
 	}else{
-	    var tmp = yield render('index',{posts:posts});	
+		//init data,the first visit will set this
+		if(theme=='index'){
+			var secu = encrypt(mixstr,'www123456');
+			var userinfo = {
+				'user'  : 'admin',
+				'des'   : 'admin',
+				'passwd': secu,
+				'uid'   : 10000,
+				'gid'   : 10000
+			};			
+			yield hset('user','admin',JSON.stringify(userinfo));
+		}
+	    var tmp = yield render('index',{posts:posts});
 	    tmp = tmp.split(/[=]{5,}/)[0];
 	    this.body = tmp;
 	}
@@ -186,34 +196,39 @@ function *dealindex(){
  * [*add description]
  * @Schema  hset('index','attr',val) hset('index_data','0',val)
  */
-function *add(){	
-	var body = yield parse.json(this);
-	var 
-	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-	id   = 'id'+body.id,	
-	path = path==''?'index':path;
+function *add(){
+	console.log(this.session);
+	if(loginStat(this.session)){
+		var body = yield parse.json(this);
+		var 
+		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
+		id   = 'id'+body.id,	
+		path = path==''?'index':path;
 
-	var exist = yield function(fn){sc.hexists(path,'attr',fn);};
-	if(exist){
-		exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+		var exist = yield function(fn){sc.hexists(path,'attr',fn);};
 		if(exist){
-			var old = yield hget(path+'_data',id);
-			old = JSON.parse(old);			
-			if(!body.tcnt&&old.tcnt){
-				var tmp = old.tcnt;
-				body.tcnt = tmp;
-			}else{
-				// console.log(body);
+			exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+			if(exist){
+				var old = yield hget(path+'_data',id);
+				old = JSON.parse(old);			
+				if(!body.tcnt&&old.tcnt){
+					var tmp = old.tcnt;
+					body.tcnt = tmp;
+				}else{
+					// console.log(body);
+				}
 			}
+			body = JSON.stringify(body);
+			yield hset(path+'_data',id,body);
+			
+		}else{
+			yield hset(path,'attr',JSON.stringify({'user':'xxx','passwd':'123456'}));
+			yield hset(path+'_data',id,JSON.stringify(body));
 		}
-		body = JSON.stringify(body);
-		yield hset(path+'_data',id,body);
-		
+		this.body = 'ok';
 	}else{
-		yield hset(path,'attr',JSON.stringify({'user':'xxx','passwd':'123456'}));
-		yield hset(path+'_data',id,JSON.stringify(body));
+		this.body = 'login'
 	}
-	this.body = 'ok';
 }
 
 /**
@@ -221,18 +236,23 @@ function *add(){
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
 function *get(){
-	var 
-	body = yield parse.json(this),
-	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-	path = path==''?'index':path;
-	id   = 'id'+body.id;	
+	if(loginStat(this.session)){
+		var 
+		body = yield parse.json(this),
+		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
+		path = path==''?'index':path;
+		id   = 'id'+body.id;	
 
-	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
-	if(exist){	
-		var old = yield hget(path+'_data',id);
-		this.body = old;
-	}else
-		this.body = 'null';
+		var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+		if(exist){	
+			var old = yield hget(path+'_data',id);
+			this.body = old;
+		}else{
+			this.body = 'null';
+		}
+	}else{
+		this.body='login';
+	}
 }
 
 /**
@@ -240,17 +260,21 @@ function *get(){
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
 function *remove(){
-	var 
-	body = yield parse.json(this),
-	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-	path = path==''?'index':path,
-	id   = 'id'+body.id;
+	if(loginStat(this.session)){
+		var 
+		body = yield parse.json(this),
+		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
+		path = path==''?'index':path,
+		id   = 'id'+body.id;
 
-	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
-	if(exist){		
-		yield hdel(path+'_data',id);
-	}	
-	this.body = 'ok';
+		var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+		if(exist){		
+			yield hdel(path+'_data',id);
+		}	
+		this.body = 'ok';
+	}else{
+		this.body='login';
+	}
 }
 
 /**
@@ -258,20 +282,24 @@ function *remove(){
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
 function *move(){
-	var 
-	body = yield parse.json(this),
-	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-	path = path==''?'index':path,
-	id   = 'id'+body.id,
-	body = JSON.stringify(body);
+	if(loginStat()){
+		var 
+		body = yield parse.json(this),
+		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
+		path = path==''?'index':path,
+		id   = 'id'+body.id,
+		body = JSON.stringify(body);
 
-	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
-	if(exist){	
-		var old = yield hget(path+'_data',id);
-		yield hdel(path+'_data',id);
-		yield hset(path+'_data',id,body);
+		var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+		if(exist){	
+			var old = yield hget(path+'_data',id);
+			yield hdel(path+'_data',id);
+			yield hset(path+'_data',id,body);
+		}
+		this.body = 'ok';
+	}else{
+		this.body='login';
 	}
-	this.body = 'ok';
 }
 
 /**
@@ -279,20 +307,24 @@ function *move(){
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
 function *edit(){
-	var 
-	body = yield parse.json(this),
-	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-	path = path==''?'index':path,
-	id   = 'id'+body.id,
-	body = JSON.stringify(body);
+	if(loginStat(this.session)){
+		var 
+		body = yield parse.json(this),
+		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
+		path = path==''?'index':path,
+		id   = 'id'+body.id,
+		body = JSON.stringify(body);
 
-	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
-	if(exist){	
-		var old = yield hget(path+'_data',id);
-		yield hdel(path+'_data',id);
-		yield hset(path+'_data',id,body);
+		var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+		if(exist){	
+			var old = yield hget(path+'_data',id);
+			yield hdel(path+'_data',id);
+			yield hset(path+'_data',id,body);
+		}
+		this.body = 'ok';
+	}else{
+		this.body='login';
 	}
-	this.body = 'ok';
 }
 
 

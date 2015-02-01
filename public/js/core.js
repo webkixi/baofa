@@ -40,10 +40,10 @@ function __measureDoc(){
         docST = document.documentElement.scrollTop||document.body.scrollTop,
         docSL = document.documentElement.scrollLeft||document.body.scrollLeft;
         return {dw:docw,dh:doch,st:docST,sl:docSL};
-    }else{
+    }else{        
         var 
-        doch = document.body.clientHeight||document.documentElement.clientHeight, 
-        docw = document.body.clientWidth||document.documentElement.clientWidth,
+        doch = document.documentElement.clientHeight||document.body.clientHeight, 
+        docw = document.documentElement.clientWidth||document.body.clientWidth,
         docST = document.body.scrollTop||document.documentElement.scrollTop,
         docSL = document.body.scrollLeft||document.documentElement.scrollLeft;
         return {dw:docw,dh:doch,st:docST,sl:docSL};
@@ -156,7 +156,7 @@ function tpl(tpl,jsondata){
 }
 
 var _ctx;
-function init(context,opts,callback){
+function main(context,opts,callback){
     var ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
     var cbk = callback;
     var req;
@@ -445,7 +445,7 @@ var tipsbox = function(){
     this.anim = function(item,container,stat){ if(!item) return;};
 
     //组合执行方法
-    function pushmsg(mm,stat){
+    function pushmsg(mm,stat){        
         var item = this.tipsItem(stat);
         var box = this.tipsBox(stat);
         item.innerHTML = mm;
