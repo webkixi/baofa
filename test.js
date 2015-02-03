@@ -101,9 +101,13 @@ function decrypt(str, secret) {
 }
 
 function loginStat(){
-	var ck = this.cookies.get('gzgz',{'signed':true});
-	console.log(ck);
-	console.log(decrypt(mixstr,ck));
+	var ck = this.cookies.get('gzgz');
+	if(ck){
+		ck = decrypt(ck,mixstr);
+		console.log(typeof ck);
+		ck = JSON.parse(ck);		
+		console.log(ck.user);		
+	}
 	// if(!session.admin||session.admin==''){
 	// 	admin_stat=false;		
 	// }else if(!session.user||session.user==''){
@@ -124,32 +128,31 @@ function *login(){
 	user = body.user,
 	cookie_data = '';
 	cookie_tmp='';
-	passwd = body.passwd;
+	passwd = body.passwd;		
 	reset_passwd = body.reset_passwd;
 
 	var valid_stat = formv()(user,'username');
 	if(!valid_stat){
 		this.body =  '{"stat":0,"info":"username invalide"}';
 	}else{
-		passwd = encrypt(mixstr,passwd);
+		passwd = encrypt(passwd,mixstr);
 		var db_user = yield hget('user',user);
 		db_user = JSON.parse(db_user);
 		if(db_user&&db_user['passwd']==passwd){			
 			cookie_tmp = passwd;
 			if(reset_passwd){
-				reset_passwd = encrypt(mixstr,reset_passwd);
+				reset_passwd = encrypt(reset_passwd,mixstr);
 				yield hset('user',user,reset_passwd);
 				cookie_tmp = reset_passwd;
 			}
 			if(user=='admin'){
-				cookie_data = "{user:'admin',pwd:'"+cookie_tmp+"'}";
+				cookie_data = '{"user":"admin","pwd":"'+cookie_tmp+'"}';
 				this.body = '{"stat":1,"info":"admin login sucess"}';
 			}else{
-				cookie_data = "{user:'"+user+"',pwd:'"+cookie_tmp+"'}";
+				cookie_data = '{"user":"'+user+'","pwd":"'+cookie_tmp+'"}';
 				this.body = '{"stat":1,"info":"login sucess"}';
 			}
-
-			cookie_data = encrypt(mixstr,cookie_data);
+			cookie_data = encrypt(cookie_data,mixstr);
 			this.cookies.set('gzgz',cookie_data,{'signed':true,'maxAge':7*24*3600,'httpOnly':true});
 		} else
 			this.body = '{"stat":0,"info":"login failed"}';
@@ -162,7 +165,7 @@ function *index(){
 	var attr = [];
 	var data = [];
 	var size=0;
-	var i,v;	
+	var i,v;		
 	// this.acceptsEncodings('gzip', 'deflate', 'identity');
 	exist = yield function(fn){sc.hexists(theme,'attr',fn);};
 	if(exist){
@@ -180,7 +183,7 @@ function *index(){
 	}else{
 		//init data,the first visit will set this
 		if(theme=='index'){
-			var secu = encrypt(mixstr,'www123456');
+			var secu = encrypt('www123456',mixstr);
 			var userinfo = {
 				'user'  : 'admin',
 				'des'   : 'admin',
