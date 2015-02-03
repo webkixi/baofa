@@ -29,7 +29,7 @@ app.use(statics('./public',{
 }));
 
 app.use(session(app));
-app.keys = ['some secret hurr'];
+app.keys = ['gzgzmixcookie'];
 
 var render = views('views',{
     map:{html:'swig'}
@@ -100,19 +100,21 @@ function decrypt(str, secret) {
     return dec;
 }
 
-function loginStat(session){	
-	console.log(session);
-	if(!session.admin||session.admin==''){
-		admin_stat=false;		
-	}else if(!session.user||session.user==''){
-		login_stat=false;
-	}
-	if((admin_stat|login_stat)) return true;
-	return  false;
+function loginStat(){
+	var ck = this.cookies.get('gzgz',{'signed':true});
+	console.log(ck);
+	console.log(decrypt(mixstr,ck));
+	// if(!session.admin||session.admin==''){
+	// 	admin_stat=false;		
+	// }else if(!session.user||session.user==''){
+	// 	login_stat=false;
+	// }
+	// if((admin_stat|login_stat)) return true;
+	// return  false;
 }
 
 function *getLoginStat(){	
-	if(loginStat(this.session)) this.body = '{"stat":1}';
+	if(loginStat.call(this)) this.body = '{"stat":1}';
 	else this.body = '{"stat":0}';
 }
 
@@ -120,6 +122,8 @@ function *login(){
 	var 
 	body = yield parse.json(this),
 	user = body.user,
+	cookie_data = '';
+	cookie_tmp='';
 	passwd = body.passwd;
 	reset_passwd = body.reset_passwd;
 
@@ -131,19 +135,24 @@ function *login(){
 		var db_user = yield hget('user',user);
 		db_user = JSON.parse(db_user);
 		if(db_user&&db_user['passwd']==passwd){			
+			cookie_tmp = passwd;
 			if(reset_passwd){
+				reset_passwd = encrypt(mixstr,reset_passwd);
 				yield hset('user',user,reset_passwd);
+				cookie_tmp = reset_passwd;
 			}
 			if(user=='admin'){
-				this.session.admin = true;				
+				cookie_data = "{user:'admin',pwd:'"+cookie_tmp+"'}";
 				this.body = '{"stat":1,"info":"admin login sucess"}';
 			}else{
-				this.session.user = true;
+				cookie_data = "{user:'"+user+"',pwd:'"+cookie_tmp+"'}";
 				this.body = '{"stat":1,"info":"login sucess"}';
 			}
-		}
-		console.log('ppppppppppppppp');
-		console.log(this.session);
+
+			cookie_data = encrypt(mixstr,cookie_data);
+			this.cookies.set('gzgz',cookie_data,{'signed':true,'maxAge':7*24*3600,'httpOnly':true});
+		} else
+			this.body = '{"stat":0,"info":"login failed"}';
 	}
 }
 
@@ -196,9 +205,8 @@ function *dealindex(){
  * [*add description]
  * @Schema  hset('index','attr',val) hset('index_data','0',val)
  */
-function *add(){
-	console.log(this.session);
-	if(loginStat(this.session)){
+function *add(){	
+	if(loginStat.call(this)){
 		var body = yield parse.json(this);
 		var 
 		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
