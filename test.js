@@ -100,21 +100,26 @@ function decrypt(str, secret) {
     return dec;
 }
 
+var gen;
+function *hgetUser(){	
+	// var ret = yield function(fn){ sc.hget('user','admin',fn);};	
+	var ret = yield hget('user','admin');
+}
+
 function loginStat(){
-	var ck = this.cookies.get('gzgz');
+	//ck.user   ck.pwd
+	var 
+	user,
+	pwd,
+	db_user,
+	ret,	
+	ck = this.cookies.get('gzgz');
 	if(ck){
 		ck = decrypt(ck,mixstr);
-		console.log(typeof ck);
 		ck = JSON.parse(ck);		
-		console.log(ck.user);		
+		return ck;
 	}
-	// if(!session.admin||session.admin==''){
-	// 	admin_stat=false;		
-	// }else if(!session.user||session.user==''){
-	// 	login_stat=false;
-	// }
-	// if((admin_stat|login_stat)) return true;
-	// return  false;
+	return false;
 }
 
 function *getLoginStat(){	
@@ -136,15 +141,17 @@ function *login(){
 		this.body =  '{"stat":0,"info":"username invalide"}';
 	}else{
 		passwd = encrypt(passwd,mixstr);
-		var db_user = yield hget('user',user);
-		db_user = JSON.parse(db_user);
+		var db_user = JSON.parse(yield hget('user',user));
 		if(db_user&&db_user['passwd']==passwd){			
 			cookie_tmp = passwd;
 			if(reset_passwd){
 				reset_passwd = encrypt(reset_passwd,mixstr);
-				yield hset('user',user,reset_passwd);
+				db_user['passwd'] = reset_passwd;
+				yield hset('user',user,db_user);
 				cookie_tmp = reset_passwd;
 			}
+			db_user['passwd'] = passwd;
+			yield hset('user',user,db_user);
 			if(user=='admin'){
 				cookie_data = '{"user":"admin","pwd":"'+cookie_tmp+'"}';
 				this.body = '{"stat":1,"info":"admin login sucess"}';
@@ -153,7 +160,7 @@ function *login(){
 				this.body = '{"stat":1,"info":"login sucess"}';
 			}
 			cookie_data = encrypt(cookie_data,mixstr);
-			this.cookies.set('gzgz',cookie_data,{'signed':true,'maxAge':7*24*3600,'httpOnly':true});
+			this.cookies.set('gzgz',cookie_data,{'signed':true,'Max-Age':7*24*3600,'httpOnly':true});
 		} else
 			this.body = '{"stat":0,"info":"login failed"}';
 	}
@@ -208,8 +215,18 @@ function *dealindex(){
  * [*add description]
  * @Schema  hset('index','attr',val) hset('index_data','0',val)
  */
-function *add(){	
-	if(loginStat.call(this)){
+function *add(){
+	var
+	db_user,
+	login_stat=false,
+	ck = loginStat.call(this);
+	if(ck){
+		db_user = JSON.parse(yield hget('user',ck['user']));
+		if(db_user['passwd']==ck.pwd){
+			login_stat = true;
+		}
+	}
+	if(login_stat){
 		var body = yield parse.json(this);
 		var 
 		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
