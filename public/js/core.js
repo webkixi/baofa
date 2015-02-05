@@ -42,8 +42,8 @@ function __measureDoc(){
         return {dw:docw,dh:doch,st:docST,sl:docSL};
     }else{        
         var 
-        doch = document.documentElement.clientHeight||document.body.clientHeight, 
-        docw = document.documentElement.clientWidth||document.body.clientWidth,
+        doch = document.body.clientHeight||document.documentElement.clientHeight
+        docw = document.body.clientWidth||document.documentElement.clientWidth
         docST = document.body.scrollTop||document.documentElement.scrollTop,
         docSL = document.body.scrollLeft||document.documentElement.scrollLeft;
         return {dw:docw,dh:doch,st:docST,sl:docSL};

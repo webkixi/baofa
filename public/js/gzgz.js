@@ -5,11 +5,12 @@
 	typeof idindex =='undefined' ? idindex=0 : idindex=idindex;
 	console.log(idindex);
 
-	var _wangs = new HashMap();
-
-	var zone = {};
+	var 
+	_wangs = new HashMap(),
+	zone = {};
 	
     var gzgz = Class.create(); 
+
     gzgz.prototype = {
 	    initialize: function(item) {	    	
 	    	this._body = $('body');
@@ -33,9 +34,10 @@
 
 	    	this._gzs = [];
 	    	this._pen = $('#drawselect');
+
 	    	var 
 	    	_pen = this._pen,
-	    	_body = this._body;
+	    	_body = this._body,
 	    	_that = this;
 	    	this.length = item.length;
 
@@ -55,12 +57,12 @@
 	    			new _unitDiv(this,this.parentNode);
 	    		}); 
 	    	});
-
 	    		
-    		var thegz,thegzrect;
-    		var pos = {};
-    		var scope;
-
+    		var 
+    		thegz,
+    		thegzrect,
+    		pos = {},
+    		scope;
     		$(_pen)
     			.on('mousedown',function(e){
     				e = e||arguments[0];
@@ -113,10 +115,7 @@
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
 				
 				if(this.className.indexOf('sign')>-1){
-					
-					$(this).click(function(){
-						loginPanel();						
-					});
+					loginPanel();						
 				}
 				if(this.className.indexOf('remove')>-1){						
 					__remove(opdiv);
@@ -181,14 +180,13 @@
 	    }
 	}
 
-	function loginPanel(){		
+	function loginPanel(){				
 		tanbox.attr.box['width'] = 400;
 		tanbox.attr.box['height'] = 300;
 		tanbox("<div id='sign' style='width:400px;height:300px;'><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
 		$('#login').click(function(){
 			toLogin();
 		});
-
 		$('.close').click(function(){
 			$('body').trigger('closetanbox');
 		});
@@ -218,7 +216,6 @@
 		}
 	}
 
-
 	var getLoginInfo = function(){
 		main(zone,{
 			'login_info' : {'url':'/logininfo'}
@@ -239,7 +236,6 @@
 		var 
 		rect = __getRect(item),
 		crect = __getRect(container);	
-		// console.log($(container).attr('gzindex'));		
 		var position;			
 		(type=='float') ? position = 'float:left;' : position = 'position:absolute;';
 		var rzunit = '<div class="rzunit" >1</div>';
@@ -249,7 +245,6 @@
 		_unit.gzindex = $(container).attr('gzindex');
 		__put(_unit);
 		new _unitDiv(_unit,container);
-		// console.log(_wangs.size());
 	}	
 
 	$(document).mousemove(function(e){
@@ -259,6 +254,7 @@
 		}
 	});
 
+	//reszie wangwangs 
 	$(document).bind('resizeunit',function(){
 		__edit(_rzobj);
 	});
@@ -271,9 +267,8 @@
 	unitdrag = false,   //
 	cloneunit = false,
 	tt,
-	opdiv;  //use for clone, remove	
+	opdiv,  //use for clone, remove 
 
-	var 
 	_unitDiv = Class.create();
 	_unitDiv.prototype = {
 		initialize: function(item,container) {			
@@ -495,19 +490,22 @@
 		// 	});
 		// }
 		// else
-			return _wangs.get(id);
+		return _wangs.get(id);
 	}	
 
 	function __dbget(id,cb){
-		var funs = [];
-		var getdata;
-		var obj = _wangs.get(id);		
-		if(!obj) return false;
-		if( obj.tcnt){
+		var 
+		funs = [],
+		getdata,
+		obj = _wangs.get(id);
+
+		if(!obj) 
+			return false;
+		if(obj.tcnt)
 			getdata = obj;
-		}else{
+		else
 			getdata = {'url':'/get','data':JSON.stringify(obj)};
-		}
+		
 
 		if(cb){
 			if(__getClass(cb)=='Function'){
@@ -528,9 +526,12 @@
 
 	function __edit(item){
 		if(!item)return false;
-		var opdiv = item;
-		var nowrect = __getRect(opdiv.div);
-		var obj = __get(opdiv.idindex);
+
+		var 
+		opdiv = item,
+		nowrect = __getRect(opdiv.div),
+		obj = __get(opdiv.idindex);
+
 		opdiv.div.style.width = nowrect.width;
 		opdiv.div.style.height = nowrect.height;
 		obj.css = opdiv.div.style.cssText.toLowerCase();
@@ -555,9 +556,12 @@
 
 	function __move(item){    	
 		if(!item)return false;
-		var obj;
-		var opdiv = item;
-		var nowrect = opdiv.move;
+
+		var 
+		obj,
+		opdiv = item,
+		nowrect = opdiv.move;
+
 		opdiv.div.style.left = nowrect.left;
 		opdiv.div.style.top = nowrect.top;
 
@@ -579,9 +583,12 @@
 
 	function __remove(item){
 		if(!item)return false;
-		var opdiv = item;
-		var obj;
-		var key;
+
+		var 
+		opdiv = item,
+		obj,
+		key;
+
 		if(opdiv.idindex){
 			obj = __get(opdiv.idindex);
 			key = opdiv.idindex;			
@@ -622,5 +629,4 @@
 
 $(function(){
 	$('.gzgz').gzgz();
-	// $(window).bind('beforeunload',function(){ return 'ggggggggggg';}); 
 });

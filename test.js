@@ -100,30 +100,65 @@ function decrypt(str, secret) {
     return dec;
 }
 
-var gen;
-function *hgetUser(){	
-	// var ret = yield function(fn){ sc.hget('user','admin',fn);};	
-	var ret = yield hget('user','admin');
+function *hgetUser(usr){	
+	var user = yield hget('user',usr);
+	user = JSON.parse(user);
+	return user;
+	
 }
 
-function loginStat(){
-	//ck.user   ck.pwd
+var co = function(ge){
+	var 		
+	ret,
+	gen = ge();
+
+	function cb(err,data){
+		if(data){				
+			exec(data);
+		}else{
+			exec();
+		}			
+	}
+
+	function exec(data){
+		if(data){
+			ret = gen.next(data);				
+		}else
+			ret = gen.next();
+
+		if(ret.done == false){
+			if(typeof ret.value == 'function'){					
+				ret.value(cb)
+			}else
+				exec(ret.value);
+		}else{				
+			return ret.value;
+		}
+	}
+	exec();
+}
+
+function *loginStat(){
 	var 
-	user,
-	pwd,
+	login_stat=false,
 	db_user,
-	ret,	
-	ck = this.cookies.get('gzgz');
+	ck = this.cookies.get('gzgz');	
 	if(ck){
 		ck = decrypt(ck,mixstr);
-		ck = JSON.parse(ck);		
-		return ck;
+		ck = JSON.parse(ck);
+
+		// db_user = yield hget('user',ck['user']);
+		// db_user = JSON.parse(db_user);
+		db_user = yield hgetUser.call(this,ck['user']);
+		if(db_user['passwd']==ck.pwd){
+			login_stat = true;
+		}
 	}
-	return false;
+	return login_stat;
 }
 
 function *getLoginStat(){	
-	if(loginStat.call(this)) this.body = '{"stat":1}';
+	if(yield loginStat) this.body = '{"stat":1}';
 	else this.body = '{"stat":0}';
 }
 
@@ -147,11 +182,11 @@ function *login(){
 			if(reset_passwd){
 				reset_passwd = encrypt(reset_passwd,mixstr);
 				db_user['passwd'] = reset_passwd;
-				yield hset('user',user,db_user);
+				yield hset('user',user,JSON.stringify(db_user));
 				cookie_tmp = reset_passwd;
 			}
 			db_user['passwd'] = passwd;
-			yield hset('user',user,db_user);
+			yield hset('user',user,JSON.stringify(db_user));
 			if(user=='admin'){
 				cookie_data = '{"user":"admin","pwd":"'+cookie_tmp+'"}';
 				this.body = '{"stat":1,"info":"admin login sucess"}';
@@ -216,17 +251,7 @@ function *dealindex(){
  * @Schema  hset('index','attr',val) hset('index_data','0',val)
  */
 function *add(){
-	var
-	db_user,
-	login_stat=false,
-	ck = loginStat.call(this);
-	if(ck){
-		db_user = JSON.parse(yield hget('user',ck['user']));
-		if(db_user['passwd']==ck.pwd){
-			login_stat = true;
-		}
-	}
-	if(login_stat){
+	if(yield loginStat){
 		var body = yield parse.json(this);
 		var 
 		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
@@ -264,7 +289,7 @@ function *add(){
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
 function *get(){
-	if(loginStat(this.session)){
+	if(yield loginStat){
 		var 
 		body = yield parse.json(this),
 		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
@@ -288,7 +313,7 @@ function *get(){
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
 function *remove(){
-	if(loginStat(this.session)){
+	if(yield loginStat){
 		var 
 		body = yield parse.json(this),
 		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
@@ -310,7 +335,7 @@ function *remove(){
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
 function *move(){
-	if(loginStat()){
+	if(yield loginStat){
 		var 
 		body = yield parse.json(this),
 		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
@@ -335,7 +360,7 @@ function *move(){
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
 function *edit(){
-	if(loginStat(this.session)){
+	if(yield loginStat){
 		var 
 		body = yield parse.json(this),
 		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
