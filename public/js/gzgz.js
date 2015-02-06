@@ -181,9 +181,9 @@
 	}
 
 	function loginPanel(){				
-		tanbox.attr.box['width'] = 400;
-		tanbox.attr.box['height'] = 300;
-		tanbox("<div id='sign' style='width:400px;height:300px;'><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
+		// tanbox.attr.box['width'] = 400;
+		// tanbox.attr.box['height'] = 300;
+		maskbox("<div id='sign' style='width:400px;height:300px;'><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
 		$('#login').click(function(){
 			toLogin();
 		});

@@ -201,6 +201,133 @@ function tanbox(msg,stat,cb){
 tanbox.attr = {'box':{},'item':{}};
 window.tanbox = tanbox;
 
+// function maskBox(msg,stat,cb){    
+//     var 
+//     docRect = __measureDoc()
+//     scroll_left   = docRect.sl,
+//     scroll_top    = docRect.st,
+//     client_width  = docRect.dw,
+//     client_height = docRect.dh,
+//     mask_tpl ='',
+//     cent_tpl ='';
+//     tan = new tipsbox();
+
+//     if(!stat) stat='normal';
+
+//     tan.tipsBox = function(stat){
+//         mask_tpl = document.getElementById('bg_mask');
+//         if(!mask_tpl){
+//             mask_tpl = document.createElement('div');
+//             mask_tpl.id = 'bg_mask';
+//             mask_tpl.style.cssText = 'width:100%;height:100%;\
+//                                     display:block;position:fixed;\
+//                                     opacity:0.6; background:rgba(120,120,120,0.7);\
+//                                     left:0;top:0;z-Index:10000';
+//         }
+//         $('body').append(mask_tpl);
+//         return mask_tpl;
+//     };
+
+//     tan.tipsItem = function(stat){
+//         var 
+//         info_left  = Math.round((parseInt(client_width)-400)/2),
+//         info_top   = Math.round((parseInt(client_height)-400)/2);
+//         cent_tpl   = document.createElement('div');
+//         cent_tpl.id  = 'maskcontent'
+//         cent_tpl.style.cssText = 'width:400px;height:400px;display:block;\
+//                                 position:absolute;background-color:red;\
+//                                 left:'+info_left+'px;\
+//                                 top :'+info_top+'px;';
+//         return cent_tpl;
+//     };
+
+//     tan.anim = function(item,container,stat){              
+//         if(stat=='md'||stat!=='sign'){            
+//             $(container).fadeIn(300);
+//             $('body').bind('closetanbox',function(){
+//                 $(container).fadeOut('slow');
+//             });
+//         }else{          
+//             $(container).fadeIn(1000).delay(2000).fadeOut('slow');        
+//         }
+//     };
+
+//     if(cb) tan.pop(msg,stat,cb);
+//     else
+//         tan.pop(msg,stat);
+// }
+// window.maskbox = maskBox;
+
+function maskBox(msg,stat,cb){    
+    var 
+    docRect = __measureDoc()
+    scroll_left   = docRect.sl,
+    scroll_top    = docRect.st,
+    client_width  = docRect.dw,
+    client_height = docRect.dh,
+    mask_tpl='',
+    container_tpl ='',
+    cent_tpl ='';
+    tan = new tipsbox();
+
+    if(!stat) stat='normal';
+
+    tan.tipsBox = function(stat){
+        box_left  = Math.round((parseInt(client_width)-400)/2),
+        box_top   = Math.round((parseInt(client_height)-400)/2);
+        container_tpl = document.getElementById('bg_container');
+        if(!container_tpl){
+            container_tpl = document.createElement('div');
+            container_tpl.id = 'bg_container';
+            container_tpl.style.cssText = 'width:400px;height:400px;\
+                                    display:block;position:fixed;z-Index:10001;\
+                                    left:'+box_left+'px;\
+                                    top :'+box_top+'px;';
+        }
+        $('body').append(container_tpl);
+        return container_tpl;
+    };
+
+    tan.tipsItem = function(stat){
+        var 
+        cent_tpl   = document.createElement('div');
+        cent_tpl.id  = 'maskcontent'
+        cent_tpl.style.cssText = 'width:100%;height:100%;display:block;\
+                                background-color:#fff;';
+        return cent_tpl;
+    };
+
+    tan.anim = function(item,container,stat){              
+        if(stat=='md'||stat!=='sign'){
+            mask_tpl = document.getElementById('mask_tpl');
+            if(!mask_tpl){
+                mask_tpl   = document.createElement('div');
+                mask_tpl.id  = 'bg_mask';
+                mask_tpl.style.cssText = 'width:100%;height:100%;display:block;\
+                                          position:fixed;left:0;top:0;\
+                                          background-color:#000;opacity:0.6;z-Index:10000;';
+
+                $('body').append(mask_tpl);
+            }
+            $('#bg_mask').show();
+            $(container).fadeIn(300);
+            $('body').bind('closetanbox',function(){
+                $(container).fadeOut().remove();
+                $('#bg_mask').remove();
+            });
+        }else{          
+            $(container).fadeIn(1000).delay(2000).fadeOut('slow');        
+        }
+    };
+
+    if(cb) tan.pop(msg,stat,cb);
+    else
+        tan.pop(msg,stat);
+}
+window.maskbox = maskBox;
+
+
+
 /*
     * form表单校验
     * @opts  json对象，对象元素允许函数，用于替换默认block校验正则

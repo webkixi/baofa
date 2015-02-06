@@ -52,6 +52,7 @@ var posts = [
 
 app
 .get('/',index)
+.get('/:title',index)
 .get('/index.js',index)
 .post('/',dealindex)
 .post('/add',add)
@@ -195,47 +196,56 @@ function *login(){
 				this.body = '{"stat":1,"info":"login sucess"}';
 			}
 			cookie_data = encrypt(cookie_data,mixstr);
-			this.cookies.set('gzgz',cookie_data,{'signed':true,'Max-Age':7*24*3600,'httpOnly':true});
+			this.cookies.set('gzgz',cookie_data,{'signed':true,'max-age':7*24*3600,'httpOnly':true});
 		} else
 			this.body = '{"stat":0,"info":"login failed"}';
 	}
 }
 
-function *index(){	
-	var exist;
-	var theme = 'index';
-	var attr = [];
-	var data = [];
-	var size=0;
-	var i,v;		
+function *index(){
+	console.log(this.request.url);
+	var 
+	exist,
+	theme = 'index',
+	attr = [],
+	data = [],
+	size=0,
+	all,
+	dataitem,
+	tmp,
+	ret,
+	secu,
+	user_info,
+	i=1,
+	v;
 	// this.acceptsEncodings('gzip', 'deflate', 'identity');
 	exist = yield function(fn){sc.hexists(theme,'attr',fn);};
 	if(exist){
 		attr.push(yield hget(theme,'attr'));		
-		var all = yield function(fn){sc.hgetall(theme+'_data',fn);};
-		for(var i=1; i<all.length; i=i+2){
-			var dataitem = all[i];
+		all = yield function(fn){sc.hgetall(theme+'_data',fn);};		
+		for(; i<all.length; i=i+2){
+			dataitem = all[i];
 			if(dataitem){
 				data.push(JSON.parse(dataitem));
 			}
 		}
-		var tmp = yield render('index');
-		var kkk = yield tpl(tmp,data);
-		this.body = kkk;
+		tmp = yield render('index');
+		ret = yield tpl(tmp,data);
+		this.body = ret;
 	}else{
 		//init data,the first visit will set this
 		if(theme=='index'){
-			var secu = encrypt('www123456',mixstr);
-			var userinfo = {
+			secu = encrypt('www123456',mixstr);
+			user_info = {
 				'user'  : 'admin',
 				'des'   : 'admin',
 				'passwd': secu,
 				'uid'   : 10000,
 				'gid'   : 10000
 			};			
-			yield hset('user','admin',JSON.stringify(userinfo));
+			yield hset('user','admin',JSON.stringify(user_info));
 		}
-	    var tmp = yield render('index',{posts:posts});
+	    tmp = yield render('index',{posts:posts});
 	    tmp = tmp.split(/[=]{5,}/)[0];
 	    this.body = tmp;
 	}
