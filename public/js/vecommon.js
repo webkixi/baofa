@@ -702,6 +702,168 @@ function tanbox(msg,stat,cb){
         tan.pop(msg,stat);
 }
 
-
 window.tanbox = tanbox;
 window.tips = msgtips;
+
+
+
+
+
+
+// pop login and register
+// define('common/pop_login', ['common/vepop',''],function(pop){
+
+//         var exports = {};
+
+//         var tpl = '<div class="m-pop-reg">\
+//                 <div class="m-pop-c">\
+//                     <div class="m-pop-tit">\
+//                         <strong>唯一优品会员</strong>\
+//                         <a href="javascript:;" class="closePop">关闭</a>\
+//                     </div>\
+//                     <div class="m-reg-tab">\
+//                             <div class="m-reg-hd clear">\
+//                                 <a href="javascript:;" class="on">登录</a>\
+//                                 <a href="javascript:;">注册</a>\
+//                             </div><div class="m-reg-bd">\
+//                                 <div id="ifr_login" class="m-regbd-c m-regbd-login" style="display:block">\
+//                                 </div>\
+//                                 <div id="ifr_register" class="m-regbd-c">\
+//                                 </div>\
+//                             </div>\
+//                         </div>\
+//                     </div>\
+//             </div>';
+
+//         var  // for register
+//         pop_register_div   = document.createElement('div');
+//         pop_register_div.style.cssText = 'display:block;overflow:hidden;';
+
+//         var  // for login
+//         pop_login_div   = document.createElement('div');
+//         pop_login_div.style.cssText = 'display:block;overflow:hidden;';
+
+//         var  // for register
+//         pop_register_ifram = document.createElement('iframe');
+//         pop_register_ifram.frameBorder=0;
+//         pop_register_ifram.scrolling='no';
+//         pop_register_ifram.src = 'https://local.ve.cn/index.php?ctl=user&act=register';
+//         pop_register_ifram.style.cssText = 'width:400px;height:430px;display:block;';
+
+//         var  // for login
+//         pop_login_ifram = document.createElement('iframe');
+//         pop_login_ifram.frameBorder=0;
+//         pop_login_ifram.scrolling='no';
+//         pop_login_ifram.src = 'https://local.ve.cn/index.php?ctl=user&act=login';
+//         pop_login_ifram.style.cssText = 'width:400px;height:430px;display:block;';
+
+
+//         pop_register_div.appendChild(pop_register_ifram);
+//         pop_login_div.appendChild(pop_login_ifram);
+
+//         var 
+//         register = pop_register_div.outerHTML,
+//         login      = pop_login_div.outerHTML;
+
+//         var
+//         ifr_wrap = tpl;
+
+//         function maskPopLoginAndRegister(){
+//             maskbox(ifr_wrap,'mask');
+//             $('#ifr_register').html(register);
+//             $('#ifr_login').html(login);
+//             $(".m-reg-hd").tabSwitch();
+//         }
+//         pop.core.add_action('mask_pop_login_register',maskPopLoginAndRegister);
+//         rsp('mask_pop_login_register','#maskbox');
+//         // maskPopLoginAndRegister();
+
+//         exports.plogin = maskPopLoginAndRegister;    //核心函数
+
+//         /**
+//          * [tabSwitch tab切换]
+//          */
+//         ;(function($){
+//             $.fn.tabSwitch = function(options){
+//                 var opts = $.extend( {
+//                     objev         : "click",                    //调用事件
+//                     objBtn        : "a",                        //触发元素
+//                     objBox        : ".m-reg-bd .m-regbd-c"      //目标元素
+//                 }, options);
+//                 var $this = $(this);        
+//                 this.each(function(){
+//                     $(this).find(opts.objBtn).on(opts.objev,function(){
+//                         var index = $(this).index();
+//                         $(this).addClass("on").siblings().removeClass("on");
+//                         $(opts.objBox).eq(index).show().siblings().hide();
+//                     });
+//                 });
+//             };
+//         }(jQuery));
+//     });
+
+
+//css
+
+// html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,table,th,td,textarea{margin:0;padding:0}
+// body,button,input,select,textarea{font:12px/1.5 "Microsoft YaHei","SimSun",Tahoma,Geneva,sans-serif;color:#333}
+// table{border-collapse:collapse;border-spacing:0}
+// fieldset,img{border:0}
+// address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal}
+// ol,ul{list-style:none}
+// caption,th{text-align:left}
+// h1,h2,h3,h4,h5,h6{font-size:100%}
+// q:before,q:after{content:''}
+// a,a:active,a:focus{color:#333;text-decoration:none}
+// a:hover{color:#ff4785;text-decoration:none}
+// a,a:active,a:focus,input{outline:none}
+// .f12{font-size:12px!important}
+// .f14{font-size:14px!important}
+// .f-bold{font-weight:bold}
+// .f-normal{font-weight:normal}
+// .f-size0{font-size:0;line-height:0}
+// .f-YH{font-family:"Microsoft YaHei","SimSun"!important}
+// .f-num{font-family:"Verdana"}
+// .red,.red a{color:#f35f91!important}
+// .gray,.gray a{color:#666!important}
+// .green,.green a{color:#76c56a!important}
+// .orange,.orange a{color:#fd864a!important}
+// .block{display:block}
+// .hidden{display:none}
+// .bg-none{background:none!important}
+// .fl{float:left}
+// .fr{float:right}
+// .tl{text-align:left}
+// .tr{text-align:right}
+// .tc{text-align:center}
+// .clear{clear:both!important}
+// .clear,.clearfix{zoom:1}
+// .clear:after,.clearfix:after{content:'.';display:block;visibility:hidden;clear:both;height:0}
+// area{border:0;outline:none}
+// a.c-regitem1{color:#e72e8c}
+// a.c-regitem1:hover{text-decoration:underline}
+// .hide{display:none}
+// .show{display:block}
+// .u-error{color:#e72e8c}
+// .u-ok{color:#6fb03b}
+
+
+//     	.m-pop-reg{background-color:#fff;font-size:12px}
+// .m-pop-c{padding:0 37px}
+// .m-pop-tit{height:60px;line-height:60px}
+// .m-pop-tit strong{float:left;display:inline;font-size:16px;color:#999}
+// .m-pop-tit .closePop{float:right;display:block;margin-top:20px;text-indent:-9999px;background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-117px -42px;width:12px;height:12px}
+// .m-free-reg{padding:15px 0 25px 0}
+// .m-free-reg .submit-btn{width:180px}
+// .m-reg-tab .m-reg-hd{width:100%;border-bottom:1px solid #ddd}
+// .m-reg-tab .m-reg-hd a{width:50%;display:block;float:left;height:46px;line-height:46px;font-size:18px;color:#333;text-align:center}
+// .m-reg-tab .m-reg-hd a:hover{color:#e72e8c}
+// .m-reg-tab .m-reg-hd a.on{margin-bottom:-1px;border-bottom:2px solid #e72e8c;color:#e72e8c}
+// .m-reg-tab .m-reg-bd{height:458px}
+// .m-reg-tab .m-reg-bd .m-regbd-c{padding-top:0px;display:none}
+// .m-reg-tab .m-reg-bd .m-regbd-login{padding-top:4px}
+// .m-reg-tab .m-reg-bd .reg-btn{width:100%}
+// .m-reg-tab .m-reg-bd .age-server{margin-top:20px;font-size:12px;color:#999}
+// .m-reg-tab .login-btn{width:166px;float:left;margin-right:10px}
+// .m-reg-tab a.freereg-btn{float:left;width:148px;height:38px;line-height:38px;background:#fff6fb;border:1px solid #f8a4cf;font-size:16px;color:#f26db1;text-align:center}
+// .m-reg-tab a.freereg-btn:hover{border:1px solid #fa98ca}
