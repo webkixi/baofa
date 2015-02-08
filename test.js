@@ -11,6 +11,8 @@ var ssdb = require('ssdb');
 var sc = ssdb.createClient();
 
 
+
+var _ = require('underscore');
 var crypto = require('crypto');
 var tpl = require('./tpl').tpl;
 var formv = require('./toolkit').formv;
@@ -19,30 +21,32 @@ var formv = require('./toolkit').formv;
 // var fs = require('fs');
 // var ws = fs.createWriteStream('message.txt');
 
-var app = koa();
-
+var
+app = koa();
 app.use(router(app));
-
 app.use(statics('./public',{
 	// buffer: true,
 	// gzip: true
 }));
-
 app.use(session(app));
 app.keys = ['gzgzmixcookie'];
-
 var render = views('views',{
     map:{html:'swig'}
 });
 
-
 //
-var 
-
-login_stat=false,
-admin_stat=false,
-
+var
+_login_stat=false,
+_login_user,
+_login_user_pwr,
+_admin_stat=false,
+_group={},
 mixstr = '!@fdsg438)*e';
+
+_group[10000]={
+	"user" : ['admin'],
+	"power": ['all','add','remove','move','edit']
+};
 
 var posts = [
  {id:1,title:'hello',content:'this just test'}
@@ -63,12 +67,7 @@ app
 .post('/logininfo',getLoginStat)
 .post('/login',login);
 
-
-var __getClass = function(object){
-    return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
-};
-
-
+//如果函数/生成器定义方式为 var abc=... 表示从数据库函数
 var hset = function(name,key,val){
 	return function(fn){
 		sc.hset(name,key,val,fn);
@@ -86,6 +85,34 @@ var hdel = function(name,key){
 		sc.hdel(name,key,fn);
 	}
 }
+
+var hgetUser = function *(usr){
+	var user = yield hget('user',usr);
+	user = JSON.parse(user);
+	return user;
+}
+
+var hgetPage = function *(path){
+	var 
+	page = yield hget('page',path);
+	page = JSON.parse(page);
+	return page;
+}
+
+function *hgetRight(path){
+	var
+	page = yield hgetPage(path);
+	if(_login_user){
+		if(_login_user['user']==page['user'])
+			return true;
+	}
+	return false;
+}
+
+function __getClass(object){
+    return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
+};
+
 //加密
 function encrypt(str, secret) {
     var cipher = crypto.createCipher('aes192', secret);
@@ -99,13 +126,6 @@ function decrypt(str, secret) {
     var dec = decipher.update(str, 'hex', 'utf8');
     dec += decipher.final('utf8');
     return dec;
-}
-
-function *hgetUser(usr){	
-	var user = yield hget('user',usr);
-	user = JSON.parse(user);
-	return user;
-	
 }
 
 var co = function(ge){
@@ -141,21 +161,24 @@ var co = function(ge){
 
 function *loginStat(){
 	var 
-	login_stat=false,
+	_login_stat=false,
 	db_user,
 	ck = this.cookies.get('gzgz');	
 	if(ck){
 		ck = decrypt(ck,mixstr);
 		ck = JSON.parse(ck);
+		db_user = yield hgetUser(ck['user']);
+		if(db_user['passwd']==ck.pwd)
+			_login_stat = true;
+		
+		if(ck['user']=='admin')
+			_admin_stat = true;
 
-		// db_user = yield hget('user',ck['user']);
-		// db_user = JSON.parse(db_user);
-		db_user = yield hgetUser.call(this,ck['user']);
-		if(db_user['passwd']==ck.pwd){
-			login_stat = true;
-		}
+		_login_user = db_user;
+		if(_group[db_user['gid']])
+			_login_user_pwr = _group[db_user['gid']]['power'];
 	}
-	return login_stat;
+	return _login_stat;
 }
 
 function *getLoginStat(){	
@@ -203,7 +226,6 @@ function *login(){
 }
 
 function *index(){
-	console.log(this.request.url);
 	var 
 	exist,
 	theme = 'index',
@@ -216,24 +238,32 @@ function *index(){
 	ret,
 	secu,
 	user_info,
-	i=1,
-	v;
+	v,
+	router,
+	pathname;
+
+	router = this.req._parsedUrl;
+	pathname = router.pathname.replace('/','');
+	theme = pathname;
+	if(!theme||theme=='')theme = 'index';
+
 	// this.acceptsEncodings('gzip', 'deflate', 'identity');
 	exist = yield function(fn){sc.hexists(theme,'attr',fn);};
 	if(exist){
 		attr.push(yield hget(theme,'attr'));		
-		all = yield function(fn){sc.hgetall(theme+'_data',fn);};		
-		for(; i<all.length; i=i+2){
+		all = yield function(fn){sc.hgetall(theme+'_data',fn);};
+		for(var i=1; i<all.length; i=i+2){
 			dataitem = all[i];
 			if(dataitem){
 				data.push(JSON.parse(dataitem));
 			}
-		}
+		}		
+		yield renderPage;
 		tmp = yield render('index');
-		ret = yield tpl(tmp,data);
-		this.body = ret;
+	    tmp = yield tpl(tmp,data);
+	    this.body = tmp;
 	}else{
-		//init data,the first visit will set this
+		//第一次访问，初始化admin数据
 		if(theme=='index'){
 			secu = encrypt('www123456',mixstr);
 			user_info = {
@@ -244,12 +274,21 @@ function *index(){
 				'gid'   : 10000
 			};			
 			yield hset('user','admin',JSON.stringify(user_info));
+			yield renderPage;
+		}else{
+			if(_admin_stat){
+				yield renderPage;
+			}
 		}
-	    tmp = yield render('index',{posts:posts});
-	    tmp = tmp.split(/[=]{5,}/)[0];
+	}
+
+	function *renderPage(){
+		tmp = yield render('index');
+	    tmp = tmp.split(/[=]{5,}/)[0];	    
 	    this.body = tmp;
 	}
 }
+
 
 function *dealindex(){
 	var page = yield function(kkk){client.hexists('kixi','index',kkk)};	
@@ -260,35 +299,60 @@ function *dealindex(){
  * [*add description]
  * @Schema  hset('index','attr',val) hset('index_data','0',val)
  */
-function *add(){
+function *add(){	
 	if(yield loginStat){
-		var body = yield parse.json(this);
 		var 
-		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
+		body = yield parse.json(this),		
+		path = url.parse(body.location).pathname.replace('/','')
+												.replace(/(\.[\w]+)/,'')
+												.toLowerCase(),
 		id   = 'id'+body.id,	
-		path = path==''?'index':path;
+		path = path==''?'index':path,
+		user_info,
+		page_prop;
 
 		var exist = yield function(fn){sc.hexists(path,'attr',fn);};
 		if(exist){
-			exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
-			if(exist){
-				var old = yield hget(path+'_data',id);
-				old = JSON.parse(old);			
-				if(!body.tcnt&&old.tcnt){
-					var tmp = old.tcnt;
-					body.tcnt = tmp;
-				}else{
-					// console.log(body);
+			// 回写数据
+			if(_admin_stat||(yield hgetRight(path))){
+				page_prop = JSON.parse(yield hget(path,'attr'));
+				if(page_prop['user'] == _login_user['user']){
+					exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+					if(exist){
+						var old = yield hget(path+'_data',id);
+						old = JSON.parse(old);			
+						if(!body.tcnt&&old.tcnt){
+							var tmp = old.tcnt;
+							body.tcnt = tmp;
+						}
+					}
+					var t = new Date();
+					body.timer = t.getTime();
+					body.author = _login_user['user'];
+					body.tag = '';
+					body = JSON.stringify(body);
+					yield hset(path+'_data',id,body);
 				}
 			}
-			body = JSON.stringify(body);
-			yield hset(path+'_data',id,body);
-			
 		}else{
-			yield hset(path,'attr',JSON.stringify({'user':'xxx','passwd':'123456'}));
-			yield hset(path+'_data',id,JSON.stringify(body));
+			//创建数据
+			if(_admin_stat||(yield hgetRight(path))){
+				var 
+				page_info = {
+					'user'  :_login_user['user'],
+					'passwd':_login_user['passwd'],
+					'page'  : path,					
+					'mask'  : 700
+				}
+				yield hset('page',path,JSON.stringify(page_info)); //page info
+				yield hset(path,'attr',JSON.stringify(page_info));
+				yield hset(path+'_data',id,JSON.stringify(body));
+				this.body = 'ok';
+			}else{
+				this.body = '您没有权限修改此页面';
+			}
 		}
-		this.body = 'ok';
+		
 	}else{
 		this.body = 'login'
 	}
@@ -299,23 +363,21 @@ function *add(){
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
 function *get(){
-	if(yield loginStat){
-		var 
-		body = yield parse.json(this),
-		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
-		path = path==''?'index':path;
-		id   = 'id'+body.id;	
+	// if(yield loginStat){
+	var 
+	body = yield parse.json(this),
+	path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
+	path = path==''?'index':path;
+	id   = 'id'+body.id;	
 
-		var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
-		if(exist){	
-			var old = yield hget(path+'_data',id);
-			this.body = old;
-		}else{
-			this.body = 'null';
-		}
+	var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+	if(exist){	
+		var old = yield hget(path+'_data',id);
+		this.body = old;
 	}else{
-		this.body='login';
+		this.body = 'null';
 	}
+	
 }
 
 /**
@@ -330,11 +392,14 @@ function *remove(){
 		path = path==''?'index':path,
 		id   = 'id'+body.id;
 
-		var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
-		if(exist){		
-			yield hdel(path+'_data',id);
-		}	
-		this.body = 'ok';
+		if(_admin_stat||(yield hgetRight(path))){
+			var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+			if(exist){		
+				yield hdel(path+'_data',id);
+			}	
+			this.body = 'ok';
+		}else
+			this.body='您没有权限修改此页面';
 	}else{
 		this.body='login';
 	}
@@ -354,12 +419,16 @@ function *move(){
 		body = JSON.stringify(body);
 
 		var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
-		if(exist){	
-			var old = yield hget(path+'_data',id);
-			yield hdel(path+'_data',id);
-			yield hset(path+'_data',id,body);
+		if(exist){
+			if(_admin_stat||(yield hgetRight(path))){
+				var old = yield hget(path+'_data',id);
+				yield hdel(path+'_data',id);
+				yield hset(path+'_data',id,body);
+				this.body = 'ok';
+			}else{
+				this.body = '您没有权限修改此页面';
+			}
 		}
-		this.body = 'ok';
 	}else{
 		this.body='login';
 	}
@@ -380,11 +449,16 @@ function *edit(){
 
 		var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
 		if(exist){	
-			var old = yield hget(path+'_data',id);
-			yield hdel(path+'_data',id);
-			yield hset(path+'_data',id,body);
+			if(_admin_stat||(yield hgetRight(path))){
+				var 
+				old = yield hget(path+'_data',id);
+				yield hdel(path+'_data',id);
+				yield hset(path+'_data',id,body);
+				this.body = 'ok';
+			}else{
+				this.body = '您没有权限修改此页面';
+			}
 		}
-		this.body = 'ok';
 	}else{
 		this.body='login';
 	}

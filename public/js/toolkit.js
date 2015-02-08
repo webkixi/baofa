@@ -201,62 +201,6 @@ function tanbox(msg,stat,cb){
 tanbox.attr = {'box':{},'item':{}};
 window.tanbox = tanbox;
 
-// function maskBox(msg,stat,cb){    
-//     var 
-//     docRect = __measureDoc()
-//     scroll_left   = docRect.sl,
-//     scroll_top    = docRect.st,
-//     client_width  = docRect.dw,
-//     client_height = docRect.dh,
-//     mask_tpl ='',
-//     cent_tpl ='';
-//     tan = new tipsbox();
-
-//     if(!stat) stat='normal';
-
-//     tan.tipsBox = function(stat){
-//         mask_tpl = document.getElementById('bg_mask');
-//         if(!mask_tpl){
-//             mask_tpl = document.createElement('div');
-//             mask_tpl.id = 'bg_mask';
-//             mask_tpl.style.cssText = 'width:100%;height:100%;\
-//                                     display:block;position:fixed;\
-//                                     opacity:0.6; background:rgba(120,120,120,0.7);\
-//                                     left:0;top:0;z-Index:10000';
-//         }
-//         $('body').append(mask_tpl);
-//         return mask_tpl;
-//     };
-
-//     tan.tipsItem = function(stat){
-//         var 
-//         info_left  = Math.round((parseInt(client_width)-400)/2),
-//         info_top   = Math.round((parseInt(client_height)-400)/2);
-//         cent_tpl   = document.createElement('div');
-//         cent_tpl.id  = 'maskcontent'
-//         cent_tpl.style.cssText = 'width:400px;height:400px;display:block;\
-//                                 position:absolute;background-color:red;\
-//                                 left:'+info_left+'px;\
-//                                 top :'+info_top+'px;';
-//         return cent_tpl;
-//     };
-
-//     tan.anim = function(item,container,stat){              
-//         if(stat=='md'||stat!=='sign'){            
-//             $(container).fadeIn(300);
-//             $('body').bind('closetanbox',function(){
-//                 $(container).fadeOut('slow');
-//             });
-//         }else{          
-//             $(container).fadeIn(1000).delay(2000).fadeOut('slow');        
-//         }
-//     };
-
-//     if(cb) tan.pop(msg,stat,cb);
-//     else
-//         tan.pop(msg,stat);
-// }
-// window.maskbox = maskBox;
 
 function maskBox(msg,stat,cb){    
     var 
@@ -292,8 +236,7 @@ function maskBox(msg,stat,cb){
         var 
         cent_tpl   = document.createElement('div');
         cent_tpl.id  = 'maskcontent'
-        cent_tpl.style.cssText = 'width:100%;height:100%;display:block;\
-                                background-color:#fff;';
+        cent_tpl.style.cssText = 'width:100%;height:100%;display:block;z-Index:10002;background-color:#fff;';
         return cent_tpl;
     };
 
@@ -329,24 +272,24 @@ window.maskbox = maskBox;
 
 
 /*
-    * form表单校验
-    * @opts  json对象，对象元素允许函数，用于替换默认block校验正则
-    * return self（function） 循环检测
-    *   self(val,reg,msg,name)
-    *   @val  需要被校验的值，如 var aaa = $('input').val();中的aaa
-    *   @reg  block的对象key值
-    *   @msg  弹出提示信息，如为空，提示默认信息
-    *   @name 弹出信息的名称
-    
-    * SAMPLE
-    * var fcker = fck(chkopts)
-                  (user,'username',null,'昵称')
-                  (telephone,'mobile','请输入正确的手机号码')
-                  (comment,'notempty',null,'评论')
-                  (code,'verify','验证码不正确')
-                  ();
-    */
-     function form_valide(opts) {        
+* form表单校验
+* @opts  json对象，对象元素允许函数，用于替换默认block校验正则
+* return self（function） 循环检测
+*   self(val,reg,msg,name)
+*   @val  需要被校验的值，如 var aaa = $('input').val();中的aaa
+*   @reg  block的对象key值
+*   @msg  弹出提示信息，如为空，提示默认信息
+*   @name 弹出信息的名称
+
+* SAMPLE
+* var fcker = fck(chkopts)
+              (user,'username',null,'昵称')
+              (telephone,'mobile','请输入正确的手机号码')
+              (comment,'notempty',null,'评论')
+              (code,'verify','验证码不正确')
+              ();
+*/
+function form_valide(opts) {        
     var ckstat=true;
     var tmp;
     var old;
@@ -418,10 +361,3 @@ window.maskbox = maskBox;
         return self;
     };
 }
-
-// function __measureDoc(){      
-//     var doch = document.documentElement.clientHeight, docw = document.documentElement.clientWidth,
-//     docST = document.documentElement.scrollTop||document.body.scrollTop,
-//     docSL = document.documentElement.scrollLeft||document.body.scrollLeft;
-//     return {dw:docw,dh:doch,st:docST,sl:docSL};
-// };

@@ -1,28 +1,34 @@
 (function(){	
 
-	var Class = {create: function(item) {  return function() {this.initialize.apply(this, arguments);} } }
-	var pendraw = false;
+	var 
+	Class = {create: function(item) {  return function() {this.initialize.apply(this, arguments);} } }
+	
 	typeof idindex =='undefined' ? idindex=0 : idindex=idindex;
-	console.log(idindex);
+	// console.log(idindex);
 
 	var 
+	zone = {},
+	pendraw = false,
 	_wangs = new HashMap(),
-	zone = {};
-	
-    var gzgz = Class.create(); 
+    gzgz = Class.create(); 
 
     gzgz.prototype = {
 	    initialize: function(item) {	    	
+	    	var 
+	    	login_button='';
+
 	    	this._body = $('body');
 	    	if(!$('#drawselect').length)
 	    		$('body').append("<div id='drawselect' title='右键编辑' style='z-index:1001;position:absolute;left:0;top:0;display:none;'></div>");	
 
-	    	var gzmenu = '<div id="gzmenu"><ul>\
-			<li class="sign">注册/登录</li>\
-			<li class="edit">编辑</li>\
-			<li class="remove">remove</li>\
-			<li class="clone">clone</li>\
-			</ul></div>';
+	    	if(!zone.login_stat){
+	    		login_button = '<li class="sign">注册/登录</li>';
+	    	}
+	    	var gzmenu = '<div id="gzmenu"><ul>'+login_button+'\
+							<li class="edit">编辑</li>\
+							<li class="remove">remove</li>\
+							<li class="clone">clone</li>\
+							</ul></div>';
 			if(!$('#gzmenu').length) $('body').append(gzmenu);
 			creatstyle('gzgzgz',function(gzgzgz){
 				gzgzgz.text('#gzmenu{position:absolute;width:150px;background-color:#fff;display:none;border:1px solid #666;border-bottom-width:0;}\
@@ -63,54 +69,55 @@
     		thegzrect,
     		pos = {},
     		scope;
+
     		$(_pen)
-    			.on('mousedown',function(e){
-    				e = e||arguments[0];
-    				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
-    			});
+			.on('mousedown',function(e){
+				e = e||arguments[0];
+				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
+			});
     		
     		$(document)
-	    		.mousedown(function(e){
-	    			e = e||arguments[0];		    			
-	    			// if(e.target == thegz) {		    			
-	    			if(e.target.className=='gzgz'){		    				
-	    				thegz = e.target;
-			    		thegzrect = __getRect(thegz);
-		    			pendraw = true;		    			
-		    			if(e.which == 1){		    				
-							_pen.show();
-							_pen.css({'left':e.pageX,'top':e.pageY,'width':0,'height':0});
-							pos.startX = e.pageX;
-							pos.startY = e.pageY;
-						}
+    		.mousedown(function(e){
+    			e = e||arguments[0];		    			
+    			// if(e.target == thegz) {		    			
+    			if(e.target.className=='gzgz'){		    				
+    				thegz = e.target;
+		    		thegzrect = __getRect(thegz);
+	    			pendraw = true;		    			
+	    			if(e.which == 1){		    				
+						_pen.show();
+						_pen.css({'left':e.pageX,'top':e.pageY,'width':0,'height':0});
+						pos.startX = e.pageX;
+						pos.startY = e.pageY;
 					}
-					$('#gzmenu').hide();
-					_pen.html('');
-	    		})
-	    		.mousemove(function(e){
-					e=e||arguments[0];
-					if(e.which==1&&pendraw){
-						if(e.pageX<thegzrect.left){
-	    					tips('超出绘制区域，请在绘制区域操作!',1000);
-	    					return false;
-	    				}else{
-							_pen.css({'background-color':'red','width':e.pageX-parseInt(pos.startX),'height':e.pageY-parseInt(pos.startY)});
-							// _pen.html('<div style="position:absolute;top:48%;left:41%;">agzgz.com</div>');
-	    				}
-					}						
-				})
-				.mouseup(function(e){
-					e = e||arguments[0];
-					pendraw = false;  // 
-					if(_pen.width()>30&&_pen.height()>30){
-						kkk = e.ctrlKey ? new preCreatSubDiv(_pen,thegz,'float') : new preCreatSubDiv(_pen,thegz);
-					}else if(_pen.width()>3&&_pen.height()>3)
-						tips('最小30x30',1000);						
-					pos = {};						
-				});	
+				}
+				$('#gzmenu').hide();
+				_pen.html('');
+    		})
+    		.mousemove(function(e){
+				e=e||arguments[0];
+				if(e.which==1&&pendraw){
+					if(e.pageX<thegzrect.left){
+    					tips('超出绘制区域，请在绘制区域操作!',1000);
+    					return false;
+    				}else{
+						_pen.css({'background-color':'red','width':e.pageX-parseInt(pos.startX),'height':e.pageY-parseInt(pos.startY)});
+    				}
+				}						
+			})
+			.mouseup(function(e){
+				e = e||arguments[0];
+				pendraw = false;  // 
+				if(_pen.width()>30&&_pen.height()>30){
+					kkk = e.ctrlKey ? new preCreatSubDiv(_pen,thegz,'float') : new preCreatSubDiv(_pen,thegz);
+				}else if(_pen.width()>3&&_pen.height()>3)
+					tips('最小30x30',1000);						
+				pos = {};						
+			});	
 			
 
-			$('#gzmenu ul li').mousedown(function(e){
+			$('#gzmenu ul li')
+			.mousedown(function(e){
 				e=e||arguments[0];
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
 				
@@ -180,10 +187,26 @@
 	    }
 	}
 
+	var getLoginInfo = function(){
+		main(zone,{
+			'login_info' : {'url':'/logininfo'}
+			,null:[stat]
+		});
+		function stat(){
+			if(zone.login_info.stat == 0){
+				zone.login_stat = false;
+			}else{
+				zone.login_stat = true;
+			}
+		}
+	}
+
+	getLoginInfo();
+	
 	function loginPanel(){				
 		// tanbox.attr.box['width'] = 400;
 		// tanbox.attr.box['height'] = 300;
-		maskbox("<div id='sign' style='width:400px;height:300px;'><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
+		maskbox("<div id='sign' style=''><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
 		$('#login').click(function(){
 			toLogin();
 		});
@@ -209,28 +232,14 @@
 		}
 
 		function loginStat(){
-			if(zone.to_login.stat = 1)
+			if(zone.to_login.stat = 1){
 				zone.login_stat = true;
+				$('.sign').remove();
+			}
 			else
 				zone.login_stat = false;
 		}
-	}
-
-	var getLoginInfo = function(){
-		main(zone,{
-			'login_info' : {'url':'/logininfo'}
-			,null:[stat]
-		});	
-
-		function stat(){
-			if(zone.login_info.stat == 0){
-				zone.login_stat = false;
-			}else{
-				zone.login_stat = true;
-			}
-		}
 	}	
-	getLoginInfo();
 
 	var preCreatSubDiv = function(item,container,type){
 		var 
@@ -630,3 +639,92 @@
 $(function(){
 	$('.gzgz').gzgz();
 });
+
+
+//other
+
+// var tpl = '<div class="m-pop-reg">\
+//         <div class="m-pop-c">\
+//             <div class="m-pop-tit">\
+//                 <strong>唯一优品会员</strong>\
+//                 <a href="javascript:;" class="closePop">关闭</a>\
+//             </div>\
+//             <div class="m-reg-tab">\
+//                     <div class="m-reg-hd clear">\
+//                         <a href="javascript:;" class="on">登录</a>\
+//                         <a href="javascript:;">注册</a>\
+//                     </div><div class="m-reg-bd">\
+//                         <div id="ifr_login" class="m-regbd-c m-regbd-login" style="display:block">\
+//                         </div>\
+//                         <div id="ifr_register" class="m-regbd-c">\
+//                         </div>\
+//                     </div>\
+//                 </div>\
+//             </div>\
+//     </div>';
+
+// var  // for register
+// pop_register_div   = document.createElement('div');
+// pop_register_div.style.cssText = 'display:block;overflow:hidden;';
+
+// var  // for login
+// pop_login_div   = document.createElement('div');
+// pop_login_div.style.cssText = 'display:block;overflow:hidden;';
+
+// var  // for register
+// pop_register_ifram = document.createElement('iframe');
+// pop_register_ifram.frameBorder=0;
+// pop_register_ifram.scrolling='no';
+// pop_register_ifram.src = 'https://local.ve.cn/index.php?ctl=user&act=register';
+// pop_register_ifram.style.cssText = 'width:400px;height:430px;display:block;';
+
+// var  // for login
+// pop_login_ifram = document.createElement('iframe');
+// pop_login_ifram.frameBorder=0;
+// pop_login_ifram.scrolling='no';
+// pop_login_ifram.src = 'https://local.ve.cn/index.php?ctl=user&act=login';
+// pop_login_ifram.style.cssText = 'width:400px;height:430px;display:block;';
+
+
+// pop_register_div.appendChild(pop_register_ifram);
+// pop_login_div.appendChild(pop_login_ifram);
+
+// var 
+// register = pop_register_div.outerHTML,
+// login      = pop_login_div.outerHTML;
+
+// var
+// ifr_wrap = tpl;
+
+// function maskPopLoginAndRegister(){
+//     maskbox(ifr_wrap,'mask');
+//     $('#ifr_register').html(register);
+//     $('#ifr_login').html(login);
+//     $(".m-reg-hd").tabSwitch();
+// }
+// pop.core.add_action('mask_pop_login_register',maskPopLoginAndRegister);
+// rsp('mask_pop_login_register','#maskbox');
+// // maskPopLoginAndRegister();
+
+// exports.plogin = maskPopLoginAndRegister;    //核心函数
+
+// /**
+//  * [tabSwitch tab切换]
+//  */
+// ;(function($){
+//     $.fn.tabSwitch = function(options){
+//         var opts = $.extend( {
+//             objev         : "click",                    //调用事件
+//             objBtn        : "a",                        //触发元素
+//             objBox        : ".m-reg-bd .m-regbd-c"      //目标元素
+//         }, options);
+//         var $this = $(this);        
+//         this.each(function(){
+//             $(this).find(opts.objBtn).on(opts.objev,function(){
+//                 var index = $(this).index();
+//                 $(this).addClass("on").siblings().removeClass("on");
+//                 $(opts.objBox).eq(index).show().siblings().hide();
+//             });
+//         });
+//     };
+// }(jQuery));
