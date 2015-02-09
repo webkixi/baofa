@@ -21,14 +21,18 @@
 	    	if(!$('#drawselect').length)
 	    		$('body').append("<div id='drawselect' title='右键编辑' style='z-index:1001;position:absolute;left:0;top:0;display:none;'></div>");	
 
-	    	if(!zone.login_stat){
-	    		login_button = '<li class="sign">注册/登录</li>';
-	    	}
-	    	var gzmenu = '<div id="gzmenu"><ul>'+login_button+'\
-							<li class="edit">编辑</li>\
-							<li class="remove">remove</li>\
-							<li class="clone">clone</li>\
-							</ul></div>';
+	    	
+	    	var 
+			gzmenu ='<div id="gzmenu"><ul>~lists~</ul></div>',
+	    	lists = '<li class="edit">编辑</li>\
+					 <li class="remove">remove</li>\
+					 <li class="clone">clone</li>';
+
+			if(!zone.login_stat)
+	    		lists = '<li class="sign">注册/登录</li>';
+	    	
+	    	gzmenu = gzmenu.replace('~lists~',lists);
+
 			if(!$('#gzmenu').length) $('body').append(gzmenu);
 			creatstyle('gzgzgz',function(gzgzgz){
 				gzgzgz.text('#gzmenu{position:absolute;width:150px;background-color:#fff;display:none;border:1px solid #666;border-bottom-width:0;}\
@@ -194,9 +198,9 @@
 		});
 		function stat(){
 			if(zone.login_info.stat == 0){
-				zone.login_stat = false;
+				zone.login_stat = false;				
 			}else{
-				zone.login_stat = true;
+				zone.login_stat = true;				
 			}
 		}
 	}
@@ -233,11 +237,14 @@
 
 		function loginStat(){
 			if(zone.to_login.stat = 1){
+				tips('登录成功！');
 				zone.login_stat = true;
 				$('.sign').remove();
 			}
-			else
+			else{
 				zone.login_stat = false;
+				tips('用户名或密码错误');
+			}
 		}
 	}	
 

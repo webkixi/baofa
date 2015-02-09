@@ -86,6 +86,48 @@ var hdel = function(name,key){
 	}
 }
 
+var zset = function(name,key,score){
+	return function(fn){
+		sc.zset(name,key,score,fn);
+	}
+}
+
+var zget = function(name,key){
+	return function(fn){
+		sc.zget(name,key,fn);
+	}
+}
+
+var zdel = function(name,key){
+	return function(fn){
+		sc.zdel(name,key,fn);
+	}
+}
+
+var zlist = function(name_start, name_end, limit){
+	return function(fn){
+		sc.zlist(name_start,name_end,limit,fn);
+	}
+}
+
+var zrlist = function(name_start, name_end, limit){
+	return function(fn){
+		sc.zlist(name_start,name_end,limit,fn);
+	}
+}
+
+var zscan = function(name,key_start,score_start,score_end,limit){
+	return function(fn){
+		sc.zscan(name,key_start,score_start,score_end,limit,fn);
+	}
+}
+
+var zrscan = function(name,key_start,score_start,score_end,limit){
+	return function(fn){
+		sc.zrscan(name,key_start,score_start,score_end,limit,fn);
+	}
+}
+
 var hgetUser = function *(usr){
 	var user = yield hget('user',usr);
 	user = JSON.parse(user);
@@ -306,6 +348,7 @@ function *add(){
 		path = url.parse(body.location).pathname.replace('/','')
 												.replace(/(\.[\w]+)/,'')
 												.toLowerCase(),
+		t = new Date(),
 		id   = 'id'+body.id,	
 		path = path==''?'index':path,
 		user_info,
@@ -317,6 +360,8 @@ function *add(){
 			if(_admin_stat||(yield hgetRight(path))){
 				page_prop = JSON.parse(yield hget(path,'attr'));
 				if(page_prop['user'] == _login_user['user']){
+					
+					//data
 					exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
 					if(exist){
 						var old = yield hget(path+'_data',id);
@@ -325,13 +370,13 @@ function *add(){
 							var tmp = old.tcnt;
 							body.tcnt = tmp;
 						}
+						body.timer = t.getTime();
+						body.author = _login_user['user'];
+						body.tag = '';
+						body = JSON.stringify(body);
+						yield hset(path+'_data',id,body);
+						yield storeIndex(path, body);
 					}
-					var t = new Date();
-					body.timer = t.getTime();
-					body.author = _login_user['user'];
-					body.tag = '';
-					body = JSON.stringify(body);
-					yield hset(path+'_data',id,body);
 				}
 			}
 		}else{
@@ -344,10 +389,17 @@ function *add(){
 					'page'  : path,					
 					'mask'  : 700
 				}
+				//page
 				yield hset('page',path,JSON.stringify(page_info)); //page info
 				yield hset(path,'attr',JSON.stringify(page_info));
+				
+				//data
+				body.timer = t.getTime();   
+				body.author = _login_user['user'];
+				body.tag = '';
 				yield hset(path+'_data',id,JSON.stringify(body));
 				this.body = 'ok';
+				yield storeIndex(path, body);
 			}else{
 				this.body = '您没有权限修改此页面';
 			}
@@ -355,6 +407,19 @@ function *add(){
 		
 	}else{
 		this.body = 'login'
+	}
+}
+
+function *storeIndex(path,body){	
+	var
+	id  = path+'__id'+body.id;
+	
+	yield zset(path ,id, body.timer);
+	yield zset('all',id, body.timer);
+	if(body.tag&&body.tag!=''){
+		var 
+		tag = id+'__'+body.tag;
+		yield zset('tag',tag, body.timer);
 	}
 }
 
