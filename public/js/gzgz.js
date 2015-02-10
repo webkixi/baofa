@@ -144,14 +144,31 @@
 				var editor;
 				if(this.className.indexOf('edit')>-1){
 					/*epiceditor*/
-					tanbox("<div id='epiceditor' style='width:600px;height:300px;'></div><div class='form'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
+					tanbox("<div id='epiceditor' style='width:600px;height:300px;'>\
+						</div><div class='form'>\
+						<span id='submit'>提交</span>\
+						<span>&nbsp;&nbsp;</span>\
+						<span id='close'>取消</span>\
+						<span>&nbsp;&nbsp;</span>\
+						<span id='close'>文章</span>\
+						<div style='display:inline-block;height:18px;'><form id='cnt-property'>\
+						<input style='vertical-align:middle;' name='article' id='edit-form-article' type='checkbox' value=0> \
+						</form></div>\
+						</div>",'md');
+
 					editor = new EpicEditor(epic_opts).load();		
 
-					function insert_data_to_editor(){
-						if(zone.dbgetobj.tcnt)
+					function insertDataToEditor(){
+						if(zone.dbgetobj.tcnt){
 							editor.importFile(null,zone.dbgetobj.tcnt,'text');
+						}
+
+						//article
+						if(zone.dbgetobj.type&&zone.dbgetobj.type==1)
+							$('#edit-form-article').attr('checked',true);
+						
+						aftInsertDataToEditor();
 					}
-					__dbget(opdiv.idindex,insert_data_to_editor);
 
 					/*ace editor*/
 					/*tanbox("<div id='editor' style='width:600px;height:300px;'>hello world\n\n\n\n\n\n\n</div><div class='form' style='text-align:center;'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
@@ -159,32 +176,39 @@
 			    	editor.setTheme("ace/theme/tomorrow");
 			    	editor.session.setMode("ace/mode/html");
 			    	editor.setAutoScrollEditorIntoView(true);
-			    	editor.setOption("maxLines", 60);	*/		
+			    	editor.setOption("maxLines", 60);	
+			    	*/
+			    
+			    	function aftInsertDataToEditor(){
+				    	$('#submit').click(function(){
+							var 
+							content = editor.exportFile(null, 'html', true),
+							Tcontent = editor.exportFile(null, 'text', true),
+							data = {'cnt':content,'tcnt':Tcontent},
+							cnt_form = $('#cnt-property')[0];
+							data['is-article'] = cnt_form['article'].checked ? 1 : 0;
 
+							// save data to local store
+							editor.save(true);
 
-			    	$('#submit').click(function(){
-						// var content = editor.getElement('previewer').body.innerHTML;
-						// console.log(content);
-						// var kbj = editor.open('epiceditor');
-						// var bbb = JSON.parse(kbj._storage.epiceditor);
-						// var content = bbb.epiceditor.content;						
-						editor.save(true);
-						var content = editor.exportFile(null, 'html', true);
-						var Tcontent = editor.exportFile(null, 'text', true);
-						
-						if($(opdiv.div).find('.md-body').length){							
-							$(opdiv.div).find('.md-body').html(content);
-						}else{							
-							$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>')
-						}
-						
-						__put(opdiv.div,{'cnt':content,'tcnt':Tcontent},'md');
-					});
+							if($(opdiv.div).find('.md-body').length){							
+								$(opdiv.div).find('.md-body').html(content);
+							}else{							
+								$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>');
+							}
+							
+							__put(opdiv.div,data,'md');
+						});
 
-					$('#close').click(function(){
-						$('body').trigger('closetanbox');
-						editor.unload();
-					});	
+						$('#close').click(function(){
+							$('body').trigger('closetanbox');
+							editor.unload();
+						});	
+					}
+
+					__dbget(opdiv.idindex,insertDataToEditor);
+
+					
 				}
 			});
 	        return this;
@@ -417,7 +441,8 @@
 
 	//stack opration
 	function __clientput(unit){
-		var obj;
+		var 
+		obj;
 		if(!unit.hasOwnProperty('location')){
 			obj = {
 				'gzindex':$(unit).attr('gzindex'),
@@ -439,48 +464,43 @@
 	}
 
 	function __put(unit,content,type){
-		var obj={};
-		var tcnt;
-		if(content){
-			if(type=='md'){
-				tcnt = content.tcnt;
-				content = content.cnt;
-			}else{
-				// $(unit).prepend(content);
-			}
-		}else{
-			content = '';
-		}
+		var 
+		obj={},
+		tcnt;		
+		
 		if(!unit.hasOwnProperty('location')){
-			if($(unit).find('md-body').length){
-				content = $(unit).find('md-body').html();
-			}
 			obj = {
 				'gzindex':$(unit).attr('gzindex'),
 				'id'    : $(unit).attr('idindex'),
 				'class' : unit.className,
 				'css'   : (function(){  var ncss,css; ncss = (css = unit.style.cssText.toLowerCase()).lastIndexOf(';')<(css.length-1) ? css+';' : css; return ncss;})(),
 				'unit'  : unit.outerHTML,
-				'cnt'   : content,
 				'location': window.location.href
-			};			
+			};
+			if(type=='md'){
+				obj['cnt']  = content['cnt'];
+				obj['tcnt'] = content['tcnt'];
+				obj['type'] = content['is-article'];
+			}
 		}else{
 			obj = unit;
 		}
-
-		if(tcnt){
-			obj.tcnt = tcnt;
-		}
+		
 		_wangs.put(obj.id,obj);
 		idindex++;
 		main(zone,{
 			putstat:{'url':'/add','data':JSON.stringify(obj)}
-		},addfun);
+			,afun:[addfun,[type]]
+		});
 	}
-	var addfun = function(){
+
+	function addfun(type){		
 		if(zone.putstat.responseText=='ok'){
 			zone.putstat= null;
 			console.log('put ok');
+		}
+		if(type&&type=='md'){
+			tips('提交成功!');
 		}
 	}
 

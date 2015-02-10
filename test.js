@@ -260,8 +260,9 @@ function *login(){
 				cookie_data = '{"user":"'+user+'","pwd":"'+cookie_tmp+'"}';
 				this.body = '{"stat":1,"info":"login sucess"}';
 			}
+			//store cookie
 			cookie_data = encrypt(cookie_data,mixstr);
-			this.cookies.set('gzgz',cookie_data,{'signed':true,'max-age':7*24*3600,'httpOnly':true});
+			this.cookies.set('gzgz',cookie_data,{'signed':true,'maxAge':7*24*3600*1000,'httpOnly':true});
 		} else
 			this.body = '{"stat":0,"info":"login failed"}';
 	}
@@ -414,12 +415,19 @@ function *storeIndex(path,body){
 	var
 	id  = path+'__id'+body.id;
 	
+	// exist = yield function(fn){sc.zexists(theme,'attr',fn);};
 	yield zset(path ,id, body.timer);
 	yield zset('all',id, body.timer);
+
+	//tag index
 	if(body.tag&&body.tag!=''){
 		var 
 		tag = id+'__'+body.tag;
 		yield zset('tag',tag, body.timer);
+	}
+	//article index
+	if(body.type&&body.type==1){
+		yield zset('article',id, body.timer);
 	}
 }
 
