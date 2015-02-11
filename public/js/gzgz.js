@@ -242,6 +242,7 @@
 			$('body').trigger('closetanbox');
 		});
 	}
+	add_action('login',loginPanel);
 
 	function toLogin(){
 		var user = $('#user').val();
@@ -494,13 +495,17 @@
 		});
 	}
 
-	function addfun(type){		
+	function addfun(type){
 		if(zone.putstat.responseText=='ok'){
 			zone.putstat= null;
 			console.log('put ok');
-		}
-		if(type&&type=='md'){
-			tips('提交成功!');
+
+			if(type&&type=='md'){
+				tips('提交成功!');
+			}
+		}else{
+			console.log(zone.putstat);
+			// do_action('login');
 		}
 	}
 
@@ -649,6 +654,8 @@
 				zone.removestat= null;
 				console.log('remove ok');			
 				$(opdiv.div).remove();
+			}else{
+				do_action('login');
 			}
 		}
 		main(zone,{
@@ -666,92 +673,3 @@
 $(function(){
 	$('.gzgz').gzgz();
 });
-
-
-//other
-
-// var tpl = '<div class="m-pop-reg">\
-//         <div class="m-pop-c">\
-//             <div class="m-pop-tit">\
-//                 <strong>唯一优品会员</strong>\
-//                 <a href="javascript:;" class="closePop">关闭</a>\
-//             </div>\
-//             <div class="m-reg-tab">\
-//                     <div class="m-reg-hd clear">\
-//                         <a href="javascript:;" class="on">登录</a>\
-//                         <a href="javascript:;">注册</a>\
-//                     </div><div class="m-reg-bd">\
-//                         <div id="ifr_login" class="m-regbd-c m-regbd-login" style="display:block">\
-//                         </div>\
-//                         <div id="ifr_register" class="m-regbd-c">\
-//                         </div>\
-//                     </div>\
-//                 </div>\
-//             </div>\
-//     </div>';
-
-// var  // for register
-// pop_register_div   = document.createElement('div');
-// pop_register_div.style.cssText = 'display:block;overflow:hidden;';
-
-// var  // for login
-// pop_login_div   = document.createElement('div');
-// pop_login_div.style.cssText = 'display:block;overflow:hidden;';
-
-// var  // for register
-// pop_register_ifram = document.createElement('iframe');
-// pop_register_ifram.frameBorder=0;
-// pop_register_ifram.scrolling='no';
-// pop_register_ifram.src = 'https://local.ve.cn/index.php?ctl=user&act=register';
-// pop_register_ifram.style.cssText = 'width:400px;height:430px;display:block;';
-
-// var  // for login
-// pop_login_ifram = document.createElement('iframe');
-// pop_login_ifram.frameBorder=0;
-// pop_login_ifram.scrolling='no';
-// pop_login_ifram.src = 'https://local.ve.cn/index.php?ctl=user&act=login';
-// pop_login_ifram.style.cssText = 'width:400px;height:430px;display:block;';
-
-
-// pop_register_div.appendChild(pop_register_ifram);
-// pop_login_div.appendChild(pop_login_ifram);
-
-// var 
-// register = pop_register_div.outerHTML,
-// login      = pop_login_div.outerHTML;
-
-// var
-// ifr_wrap = tpl;
-
-// function maskPopLoginAndRegister(){
-//     maskbox(ifr_wrap,'mask');
-//     $('#ifr_register').html(register);
-//     $('#ifr_login').html(login);
-//     $(".m-reg-hd").tabSwitch();
-// }
-// pop.core.add_action('mask_pop_login_register',maskPopLoginAndRegister);
-// rsp('mask_pop_login_register','#maskbox');
-// // maskPopLoginAndRegister();
-
-// exports.plogin = maskPopLoginAndRegister;    //核心函数
-
-// /**
-//  * [tabSwitch tab切换]
-//  */
-// ;(function($){
-//     $.fn.tabSwitch = function(options){
-//         var opts = $.extend( {
-//             objev         : "click",                    //调用事件
-//             objBtn        : "a",                        //触发元素
-//             objBox        : ".m-reg-bd .m-regbd-c"      //目标元素
-//         }, options);
-//         var $this = $(this);        
-//         this.each(function(){
-//             $(this).find(opts.objBtn).on(opts.objev,function(){
-//                 var index = $(this).index();
-//                 $(this).addClass("on").siblings().removeClass("on");
-//                 $(opts.objBox).eq(index).show().siblings().hide();
-//             });
-//         });
-//     };
-// }(jQuery));

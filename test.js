@@ -57,8 +57,7 @@ var posts = [
 app
 .get('/',index)
 .get('/:title',index)
-.get('/index.js',index)
-.post('/',dealindex)
+.get('/:id',index)
 .post('/add',add)
 .post('/remove',remove)
 .post('/move',move)
@@ -66,6 +65,7 @@ app
 .post('/edit',edit)
 .post('/logininfo',getLoginStat)
 .post('/login',login);
+// .post('/:title',dealindex);
 
 //如果函数/生成器定义方式为 var abc=... 表示从数据库函数
 var hset = function(name,key,val){
@@ -287,6 +287,10 @@ function *index(){
 
 	router = this.req._parsedUrl;
 	pathname = router.pathname.replace('/','');
+	if(pathname=='list'){
+		yield getArticleList;
+		return false;
+	}
 	theme = pathname;
 	if(!theme||theme=='')theme = 'index';
 
@@ -334,8 +338,13 @@ function *index(){
 
 
 function *dealindex(){
-	var page = yield function(kkk){client.hexists('kixi','index',kkk)};	
-	var body = yield parse.json(this);
+	router = this.req._parsedUrl;
+	pathname = router.pathname.replace('/','');
+	if(pathname=='list'){
+		yield getArticleList;
+	}
+	// var page = yield function(kkk){client.hexists('kixi','index',kkk)};	
+	// var body = yield parse.json(this);
 }
 
 /**
@@ -356,14 +365,14 @@ function *add(){
 		page_prop;
 
 		var exist = yield function(fn){sc.hexists(path,'attr',fn);};
-		if(exist){
+		if(exist){			
 			// 回写数据
 			if(_admin_stat||(yield hgetRight(path))){
 				page_prop = JSON.parse(yield hget(path,'attr'));
 				if(page_prop['user'] == _login_user['user']){
 					
 					//data
-					exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
+					exist = yield function(fn){sc.hexists(path+'_data',id,fn);};					
 					if(exist){
 						var old = yield hget(path+'_data',id);
 						old = JSON.parse(old);			
@@ -371,13 +380,15 @@ function *add(){
 							var tmp = old.tcnt;
 							body.tcnt = tmp;
 						}
-						body.timer = t.getTime();
-						body.author = _login_user['user'];
-						body.tag = '';
-						body = JSON.stringify(body);
-						yield hset(path+'_data',id,body);
-						yield storeIndex(path, body);
 					}
+					body.timer = t.getTime();
+					body.author = _login_user['user'];
+					body.tag = '';
+					yield hset(path+'_data',id,JSON.stringify(body));
+					yield storeIndex(path, body);
+					this.body = 'ok';
+				}else{					
+					this.body = '您没有权限修改此页面';
 				}
 			}
 		}else{
@@ -405,13 +416,14 @@ function *add(){
 				this.body = '您没有权限修改此页面';
 			}
 		}
-		
 	}else{
 		this.body = 'login'
 	}
 }
 
-function *storeIndex(path,body){	
+function *storeIndex(path,body){
+	if(!body.id) return ;
+
 	var
 	id  = path+'__id'+body.id;
 	
@@ -450,7 +462,16 @@ function *get(){
 	}else{
 		this.body = 'null';
 	}
-	
+}
+
+/**
+ * [*get rebuild the unit and save the unit propty into ssdb]
+ * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
+ */
+function *getArticleList(len){
+	if(!len) len = 10;
+	var list = yield zrscan('article','','','',10);
+	console.log(list);
 }
 
 /**

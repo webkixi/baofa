@@ -114,13 +114,12 @@ var msgtips = function(msg,stat,cb){
         if(stat=='alert'){
             bgcolor='background-color:rgb(211, 13, 21);';
         }
-        tip.style.cssText = 'display:none;width:100%;margin-top:10px;color:#fff;line-height:40px;font-size:16px;'+bgcolor;
+        tip.style.cssText = 'display:none;width:100%;text-align:center; margin-top:10px;color:#fff;line-height:40px;font-size:16px;'+bgcolor;
         return tip;
     }
 
     //消息实例容器，可定制
-    msgtip.tipsBox=function(stat){
-        console.log(stat);
+    msgtip.tipsBox=function(stat){            
         msg_left = Math.round((parseInt(clientwidth)-300)/2);
         msg_top = 'top:0;';
         if(stat=='alert'){
@@ -145,6 +144,7 @@ var msgtips = function(msg,stat,cb){
     else
         msgtip.pop(msg,stat);
 }
+
 window.tips = msgtips;
 
 
@@ -289,6 +289,7 @@ window.maskbox = maskBox;
               (code,'verify','验证码不正确')
               ();
 */
+
 function form_valide(opts) {        
     var ckstat=true;
     var tmp;
@@ -305,8 +306,10 @@ function form_valide(opts) {
         notempty : /^\S+$/, //非空
         qq       : /^[1-9]*[1-9][0-9]*$/, //QQ号码
         idcard   : /^[1-9]([0-9]{14}|[0-9]{17})$/, //身份证
+        birthday : /^(\d{4})[\.-](\d{1,2})[\.-](\d{1,2})$/,
         all      : /[\s\S]/,
-        tips     : tips
+        tips     : tips,
+        popmsg : true
     };
     if(opts&&__getClass(opts)=='Object'){
         old = $.extend({},block);
@@ -314,20 +317,22 @@ function form_valide(opts) {
     }
     return function self(val,reg,msg,name) {
         var tips = block.tips;
-        popmsg=true;
+        popmsg=block.popmsg;        
         if (!val){
-            if(arguments.length==0){
+            if(arguments.length==0){                
                 return ckstat;
             }
             else{       
-                if(msg) tips(msg,'alert');
-                else if(name) tips(name+'不能为空','alert');
-                else    tips(reg+'不能为空','alert');
-                ckstat = false;                    
+                if(popmsg){
+                    if(msg) tips(msg,'alert');
+                    else if(name) tips(name+'不能为空','alert');
+                    else tips(reg+'不能为空','alert');
+                }
+                ckstat = false;
                 return function(){ 
-                    if(arguments.length==0) self();
-                    else{ 
-                        return arguments.callee 
+                    if(arguments.length==0) return ckstat;
+                    else{
+                        return arguments.callee;
                     }
                 };
             }
@@ -352,9 +357,9 @@ function form_valide(opts) {
                     tips(msg,'alert');
             }
             return function(){ 
-                if(arguments.length==0) self();
+                if(arguments.length==0) return ckstat; 
                 else{
-                    return arguments.callee 
+                    return arguments.callee;
             }
             };
         }

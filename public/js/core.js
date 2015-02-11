@@ -165,7 +165,8 @@ function main(context,opts,callback){
         url:'',
         method:'post',
         data:'',
-        type:'json'
+        type:'json',
+        async:true
     }
 
     //ajax stack priority high
@@ -210,12 +211,14 @@ function main(context,opts,callback){
             var ary = opts[iii];                
             if(__getClass(ary[0])!=='Function') return;                
             funStack.push(ary);
-            funVerStack.push(iii);
+            funVerStack.push(iii);                
             if(iii!=='null') add_action(iii,ary,ary[0].length,ctx);
         }else{
             ctx[iii] = opts[iii];
         }
     }
+
+    //for svn update
 
     var tmp;
     function cb(err,data){
@@ -280,12 +283,13 @@ function main(context,opts,callback){
         }
     }
 
-    function runajax(ttt){            
+    function runajax(ttt){
         $.ajax({
             url: ttt.url,
             dataType: ttt.type,
             data: ttt.data,
             type: ttt.method,
+            async: ttt.async,
             success: function(data){
                 if(!data||data=='')
                     data={};
@@ -372,11 +376,11 @@ function do_action(name){
 * @ctx context上下文
 *
 * SAMPLE 1
-* core.add_action('aaa',fun,3,window);
+* add_action('aaa',fun,3,window);
 * 
 * SAMPLE 2
 * var ctx = {'a':1,'b':2}
-* core.add_action('bbb',fun,2,ctx);
+* add_action('bbb',fun,2,ctx);
 */
 function add_action(name,fun,propnum,ctx){
     // clearTimeout(timeAddAction);
@@ -417,7 +421,7 @@ function add_action(name,fun,propnum,ctx){
     // }
 
     // var timeAddAction = setTimeout(addAct, 200);
-}      
+}    
 
 /*
 * 消息弹出抽象函数
@@ -442,15 +446,16 @@ var tipsbox = function(){
     this.tipsBox = function(stat){};
 
     //消息动画 实例化后必须定制
-    this.anim = function(item,container,stat){ if(!item) return;};
+    this.anim = function(item,container){ if(!item) return;};
 
     //组合执行方法
-    function pushmsg(mm,stat){        
+    function pushmsg(mm,stat){
         var item = this.tipsItem(stat);
         var box = this.tipsBox(stat);
         item.innerHTML = mm;
         box.appendChild(item);
-        this.anim(item,box,stat);
+        this.anim(item,box);
         return;
     }
+
 }
