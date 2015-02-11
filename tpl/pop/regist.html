@@ -1,0 +1,180 @@
+﻿<!DOCTYPE HTML>
+<html>
+
+<head>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>注册</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="shortcut icon" type="image/x-icon" href="/app/Tpl/ve_2_1/vetpl/Style/Css/img/favicon.ico">
+<link href="/app/Tpl/ve_2_1/vetpl/Style/Css/ve_register.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<!--header-->
+<div id="header" class="response">
+    <div class="container clear">
+        <div class="logo">
+            <a href="http://www.ve.cn"><img src="/app/Tpl/ve_2_1/vetpl/Style/Css/img/ve_logo2015.png" alt="唯一优品"></a>
+        </div>
+        <div class="server-tip">
+            <ul class="clear">
+                <li class="serv-t1">
+                    <a target="_blank" href="/index.php?ctl=support#zpbz"><i class="icon-serv1"></i><span>100%正品保证</span></a>
+                </li>
+                <li class="serv-t2">
+                    <a target="_blank" href="/index.php?ctl=support#14th"><i class="icon-serv2"></i><span>14天无理由退货</span></a>
+                </li>
+                <li class="serv-t3">
+                    <a target="_blank" href="http://www.ve.cn/help-13.html"><i class="icon-serv3"></i><span>中华财险承保</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!--header end-->
+<!--main-->
+<div id="main">
+    <div class="container bg-reg clear">
+        <div class="reg-content">
+            <div class="regForm">
+                <div class="reg-title register-tit response_title" >
+                    <span>已有唯一账号<a href="index.php?ctl=user&act=login" class="c-regitem1">登录</a></span>
+                    <h2>注&nbsp;册</h2>
+                </div>
+                <!-- form -->
+                <form action="#" method="post"  id="formreg">
+                    <div class="formitm">
+                        <div class="form-item">
+                            <p class="inputs">
+                                <input type="text" class="u-ipt" id="username" name="username" >
+                                <label for="" class="u-placeholder">邮箱或手机号</label>
+                            </p>
+                            <p id="username-tip" class="u-tip">请输入正确的邮箱或手机号</p>
+                            <div id="username-poptip" class="auth-tips">
+                                <div class="auto-tip-c">
+                                    <i class="icon-ltip"></i>
+                                    <span>请输入邮箱或者手机号码</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="m_verify" class="form-item hide">
+                            <div class="phone-box clear">
+                                 <p class="inputs">
+                                    <input type="text" class="u-ipt u-phone-code fl" id="mverify" name="mverify">
+                                    <label for="" class="u-placeholder">请输入手机验证码</label>
+                                </p>
+                                <a href="javascript:;" class="btn-send-msg">发送</a>
+                                <!-- <a href="" class="btn-send-msg u-wait hide">60s</a> -->
+                            </div>
+                            <p id="u-tip" class="u-tip">请输入正确手机验证码</p>
+                        </div>
+                        <div class="form-item">
+                             <p class="inputs">
+                                <input type="password" class="u-ipt" id="password" name="password">
+                                <label for="" class="u-placeholder">密码</label>
+                            </p>
+                            <div class="pwd-box clear">
+                                <label class="pwdstrength" id="pwdstrength">
+                                    <span class="fl">安全程度：</span>
+                                </label>
+                                <div class="pwdstr-item">   <!-- 用strengthA  strengthB strengthC 进行样式控制-->
+                                    <span class="pwd-item1">弱</span>
+                                    <span class="pwd-item2">中</span>
+                                    <span class="last pwd-item3">强</span>
+                                </div>
+                            </div>
+                            <p id="password-tip" class="u-tip">请正确输入8～20位密码</p>
+                            <div id="password-poptip" class="auth-tips">
+                                <div class="auto-tip-c">
+                                    <i class="icon-ltip"></i>
+                                    <span>请输入8～20位密码</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                             <p class="inputs">
+                                <input type="password" class="u-ipt" id="repassword" name="repassword">
+                                <label for="" class="u-placeholder">确认密码</label>
+                            </p>
+                            <p id="repassword-tip" class="u-tip">两次输入密码不一致</p>
+                        </div>
+                        
+
+                        {if $is_add_baby eq 1} 
+                        <div class="form-item form-item-check response">
+                             <div class="check-sel">
+                                  <label class="check-lab">宝宝性别：</label>
+                                  <div class="check-box">
+                                      <label><input class="child" type="radio" name="child" value="1" checked="checked"><span>公主</span></label>
+                                      <label><input class="child" type="radio" name="child" value="2"><span>王子</span></label>
+                                      <label><input class="child" type="radio" name="child" value="3"><span>孕期</span></label>
+                                  </div>
+                             </div>
+                        </div>
+                        <div class="form-item response">
+                             <p class="inputs">
+                                <input type="text" class="u-ipt" id="birthday" name="birthday">
+                                <label for="" class="u-placeholder">宝宝出生日期</label>
+                            </p>
+                            <p id="birthday-tip" class="u-tip">请输入正确的宝宝生日, 如：2015-01-01或者2015.1.1</p>
+                            <div id="birthday-poptip" class="auth-tips">
+                                <div class="auto-tip-c">
+                                    <i class="icon-ltip"></i>
+                                    <span>请输入宝宝出生日期</span>
+                                </div>
+                            </div>
+                        </div>
+                        {/if}
+                        
+
+
+                        <div class="form-item clear">
+                             <p class="inputs">
+                                <input type="text" class="u-ipt u-verCode" id="verify" name="verify">
+                                <label for="" class="u-placeholder">输入验证码</label>
+                            </p>
+                            <a class="verifyCode"><img id="verify_image1" width="90" height="36" src="verify.php?rand=1421910593274"></a>
+                            <a class="changeCode" href="javascript:;">换一张</a>
+                             <p id="verify-tip" class="u-tip">请输入正确验证码</p>
+                        </div>
+                        <div class="form-item pblast">
+                            <input class="submit-btn " type="button" value="注&nbsp;册">
+                            <span class="p-server">我已阅读并接受 <a href="" class="c-regitem1">唯一优品服务条款</a></span>
+                        </div>
+                    </div>
+                </form>
+                <!-- form end -->
+            </div>
+        </div>
+    </div>
+</div>
+<!--main end -->
+<!--footer-->
+<div id="footer" class="response">
+    <div class="container">
+        <p class="copyright">Copyright © 2014 ve.cn  广州唯伊特卖电子商务有限公司  版权所有  粤ICP备14068931号-1  使用本网站即表示接受唯一用户协议</p>
+        <p class="foot-kf">全国客服服务热线（7*13小时）: 400-616-1111</p>
+    </div>
+</div>
+<!--footer end-->
+<script type="text/javascript">        
+    var is_add_baby = "{$is_add_baby}";
+    if (top.location != self.location){
+            is_add_baby = 0;
+    }
+    var mobile_url = '{url r="user#sendmsg"}';
+    var mobile_post_url= '{url r="user#mobileregister"}';
+    var pc_post_url= '{url r="user#doregister"}';
+    var register_pid = '{$pid}';
+    var jump_url = '/';
+</script>
+<script src="/app/Tpl/ve_2_1/vetpl/Script/Jquery.1.8.3.min.js"></script>
+<script type="text/javascript" src="/app/Tpl/ve_2_1/vetpl/public/script/register.min.js"></script>
+<!-- <script src="/app/Tpl/ve_2_1/vetpl/public/script/vecommon.js" type="text/javascript"></script>
+<script src="/app/Tpl/ve_2_1/vetpl/public/script/jquery.base64.js" type="text/javascript"></script>
+<script type="text/javascript" src="/app/Tpl/ve_2_1/vetpl/public/script/register.js"></script> -->
+<!-- <script type="text/javascript" src="/app/Tpl/ve_2_1/vetpl/public/script/dist/_reg.js"></script> -->
+</body>
+</html>
