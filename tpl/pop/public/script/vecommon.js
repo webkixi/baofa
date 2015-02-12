@@ -665,3 +665,142 @@ var msgtips = function(msg,stat,cb){
 }
 
 window.tips = msgtips;
+
+function maskBox(msg,stat,cb){    
+    var 
+    docRect = __measureDoc()
+    scroll_left   = docRect.sl,
+    scroll_top    = docRect.st,
+    client_width  = docRect.dw,
+    client_height = docRect.dh,
+    mask_tpl='',
+    container_tpl ='',
+    cent_tpl ='';
+    tan = new core.tipsbox();
+
+    if(!stat) stat='normal';
+
+    tan.tipsBox = function(stat){
+        $('#bg_container').remove();
+        box_left  = Math.round((parseInt(client_width)-400)/2),
+        box_top   = Math.round((parseInt(client_height)-566)/2);
+        container_tpl = document.getElementById('bg_container');
+        if(!container_tpl){
+            container_tpl = document.createElement('div');
+            container_tpl.id = 'bg_container';
+            container_tpl.style.cssText = 'width:400px;height:566px;\
+                                    display:block;position:fixed;z-Index:10001;\
+                                    left:'+box_left+'px;\
+                                    top :'+box_top+'px;';
+        }
+        $('body').append(container_tpl);
+        return container_tpl;
+    };
+
+    tan.tipsItem = function(stat){
+        $('#maskcontent').remove();
+        cent_tpl   = document.createElement('div');
+        cent_tpl.id  = 'maskcontent'
+        cent_tpl.style.cssText = 'width:100%;height:100%;display:block;position:relative;\
+                                background-color:#fff;';
+
+        return cent_tpl;
+    };
+
+    tan.anim = function(item,box,stat){
+        $('#maskbox').remove();
+        if(stat=='md'||stat!=='sign'){
+            mask_tpl = document.getElementById('mask_tpl');
+            if(!mask_tpl){
+                mask_tpl   = document.createElement('div');
+                mask_tpl.id  = 'maskbox';
+                mask_tpl.style.cssText = 'width:100%;height:100%;display:block;\
+                                          position:fixed;left:0;top:0;\
+                                          background-color:#000;opacity:0.6;z-Index:10000;';
+
+                $('body').append(mask_tpl);                    
+            }
+
+            var closebtn = new Image();
+            closebtn.id = 'closePop';
+            closebtn.src = '/app/Tpl/ve_2_1/vetpl/Style/Css/img/icon-close.png';
+            
+            $('#maskcontent').append(closebtn);
+            $(closebtn).css({'position':'absolute','right':'30px','top':'20px','cursor':'pointer'});
+
+            $('#maskbox').show();
+            $(box).fadeIn(300);
+            $('#closePop').click(function(){
+                    $(box).remove();
+                    $('#maskbox').remove();
+            })
+        }else{          
+            $(box).fadeIn(1000).delay(2000).fadeOut('slow');        
+        }
+    };
+
+    if(cb) tan.pop(msg,stat,cb);
+    else
+        tan.pop(msg,stat);
+
+    return tan;
+}
+
+window.maskbox = maskBox;
+
+function rsp(name,condition){
+    $(window).resize(function(){
+        if(condition==true || $(condition).length){
+            do_action(name);
+        }
+    });
+}
+window.rsp = rsp;
+
+
+
+
+// var  // for login
+// pop_login_div   = document.createElement('div');
+// pop_login_div.style.cssText = 'display:block;overflow:hidden;';
+
+// var  // for login
+// pop_login_ifram = document.createElement('iframe');
+// pop_login_ifram.frameBorder=0;
+// pop_login_ifram.scrolling='no';
+// pop_login_ifram.src = '/index.php?ctl=user&act=login';
+// pop_login_ifram.style.cssText = 'width:400px;height:566px;display:block;';
+
+
+// pop_login_div.appendChild(pop_login_ifram);
+
+// var 
+// login = pop_login_div.outerHTML;
+
+// var
+// ifr_wrap = login;
+
+// function maskPopLoginAndRegister(){
+//     maskbox(ifr_wrap,'mask');
+// }
+
+// //响应不刷新
+// function rspMaskBox(){
+//     if($('#maskbox').length){                        
+//         if($('#bg_container').css('display') == 'block'){                                                       
+//             var 
+//             docRect = vepop.__measureDoc(),
+//             client_width  = docRect.dw,
+//             client_height = docRect.dh,
+//             box_left  = Math.round((parseInt(client_width)-400)/2),
+//             box_top   = Math.round((parseInt(client_height)-566)/2),
+//             container_tpl = document.getElementById('bg_container');
+//             container_tpl.style.left = box_left+'px';
+//             container_tpl.style.top = box_top+'px';
+//         }
+//     }
+// }
+// vepop.core.add_action('rsp_maskbox',rspMaskBox);
+// vepop.core.add_action('plogin',maskPopLoginAndRegister);
+// rsp('rsp_maskbox','#maskbox');
+// maskPopLoginAndRegister();
