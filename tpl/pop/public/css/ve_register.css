@@ -49,11 +49,11 @@ a.c-regitem1:hover{text-decoration:underline}
 .form-item .u-place-r{left:160px}
 .form-item .u-tip{padding-top:2px;font-size:12px;color:#e72e8c;display: none;}
 .form-item .u-ok{color:#6fb03b}
-.form-item .u-verified{background:url(img/verified.png) no-repeat center right #fff}
-.form-item .u-verified-err{background:url(img/verified_err.png) no-repeat center right #fff}
+.form-item .u-verified{background:url(../img/verified.png) no-repeat center right #fff}
+.form-item .u-verified-err{background:url(../img/verified_err.png) no-repeat center right #fff}
 .form-item .auth-tips{position:absolute;top:0;right:-124px;width:124px;display: none;}
 .form-item .auth-tips .auto-tip-c{position:relative;margin-left:13px;padding:5px;background:#fff4fa;border:1px solid #f4bdd9}
-.form-item .auth-tips .auto-tip-c .icon-ltip{position:absolute;top:15px;left:-6px;background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-117px -59px;width:6px;height:6px}
+.form-item .auth-tips .auto-tip-c .icon-ltip{position:absolute;top:15px;left:-6px;background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-117px -59px;width:6px;height:6px}
 .form-item .auth-tips .auto-tip-c span{color:#f16baf}
 .form-item .auth-tips-top{position:absolute;top:-35px;left:0;width:324px;height:34px;line-height:34px;background:#fff4fa;border:1px solid #f4bdd9;z-index:10}
 .form-item .auth-tips-top span{padding-left:10px;color:#f16baf}
@@ -96,28 +96,28 @@ a.c-regitem1:hover{text-decoration:underline}
 .form-login .form-login-item .u-ok{color:#6fb03b}
 .form-login .form-login-item .u-placeholder{position:absolute;top:20px;left:45px;font-size:14px;cursor:text;color:#aaa}
 .form-login .form-login-item .icon-item{position:absolute;top:20px;left:20px;display:block}
-.form-login .form-login-item .icon-user{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-117px 0;width:14px;height:18px}
-.form-login .form-login-item .icon-lock{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-87px -88px;width:14px;height:18px}
+.form-login .form-login-item .icon-user{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-117px 0;width:14px;height:18px}
+.form-login .form-login-item .icon-lock{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-87px -88px;width:14px;height:18px}
 .form-item-agree{margin-top:10px;height:36px}
 .form-item-agree .agree-check{margin:0 5px 0 0;padding:0;font:13px Helvetica,Arial,sans-serif;vertical-align:-2px;_vertical-align:3px}
 .m-linkBox .linkBoxTitle span{float:left;display:inline-block;height:24px;line-height:24px}
 .m-linkBox .login-item{float:left;width:200px}
 .m-linkBox a.iconLinks{display:block;height:24px;width:24px;float:left;line-height:24px;margin-right:8px}
-.m-linkBox a.sina{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-88px 0;width:24px;height:24px}
-.m-linkBox a.qq{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-59px 0;width:24px;height:24px}
-.m-linkBox a.weixin{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-88px -58px;width:24px;height:24px}
-.m-linkBox a.alipay{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:0 -88px;width:24px;height:24px}
-.m-linkBox a:hover.sina{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-59px -29px;width:24px;height:24px}
-.m-linkBox a:hover.qq{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:0 -59px;width:24px;height:24px}
-.m-linkBox a:hover.weixin{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-29px -59px;width:24px;height:24px}
-.m-linkBox a:hover.alipay{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-58px -59px;width:24px;height:24px}
+.m-linkBox a.sina{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-88px 0;width:24px;height:24px}
+.m-linkBox a.qq{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-59px 0;width:24px;height:24px}
+.m-linkBox a.weixin{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-88px -58px;width:24px;height:24px}
+.m-linkBox a.alipay{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:0 -88px;width:24px;height:24px}
+.m-linkBox a:hover.sina{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-59px -29px;width:24px;height:24px}
+.m-linkBox a:hover.qq{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:0 -59px;width:24px;height:24px}
+.m-linkBox a:hover.weixin{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-29px -59px;width:24px;height:24px}
+.m-linkBox a:hover.alipay{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-58px -59px;width:24px;height:24px}
 .m-linkBox .moreLinksBox{padding:15px 0 0 85px;color:#666}
 .m-linkBox .moreLinksBox span{padding:0 15px;color:#b3b3b3}
 .m-linkBox a.plusLink{overflow:hidden;zoom:1;position:relative;padding-left:5px;padding-right:10px;font-size:12px;cursor:pointer;line-height:24px}
 .m-linkBox a.plusLink i{position:absolute;top:50%;right:0;margin-top:-1px;background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-117px -70px;width:7px;height:4px}
-.m-linkBox a.plusLink:hover i{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-117px -97px;width:7px;height:4px}
-.m-linkBox a.plusLinkOn i{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-117px -79px;width:7px;height:4px}
-.m-linkBox a.plusLinkOn:hover i{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-117px -88px;width:7px;height:4px}
+.m-linkBox a.plusLink:hover i{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-117px -97px;width:7px;height:4px}
+.m-linkBox a.plusLinkOn i{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-117px -79px;width:7px;height:4px}
+.m-linkBox a.plusLinkOn:hover i{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-117px -88px;width:7px;height:4px}
 body{background:#fff}
 .container{width:1100px;margin:0 auto}
 #header{width:100%;height:126px;border-bottom:1px solid #f396c5}
@@ -127,9 +127,9 @@ body{background:#fff}
 #header .server-tip li{height:34px;float:left;margin-left:40px}
 #header .server-tip a{display:block;float:left}
 #header .server-tip a i{display:block}
-#header .server-tip a i.icon-serv1{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-88px -29px;width:24px;height:24px}
-#header .server-tip a i.icon-serv2{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-58px -88px;width:24px;height:24px}
-#header .server-tip a i.icon-serv3{background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-29px -88px;width:24px;height:24px}
+#header .server-tip a i.icon-serv1{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-88px -29px;width:24px;height:24px}
+#header .server-tip a i.icon-serv2{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-58px -88px;width:24px;height:24px}
+#header .server-tip a i.icon-serv3{background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-29px -88px;width:24px;height:24px}
 #header .server-tip a span{display:block;margin:-25px 0 0 28px;font-size:16px;color:#666}
 #footer{width:100%;border-top:1px solid #ddd}
 #footer .container{padding:30px 0 40px 0;text-align:center}
@@ -137,7 +137,7 @@ body{background:#fff}
 #footer .copyright{color:#666}
 #footer .foot-kf{color:#999}
 #main{background:#f9f9f9}
-.bg-reg{min-height:560px;background:url(img/img-register.jpg) no-repeat;_height:expression(document.body.clientHeight > 560? '560px':'auto' )}
+.bg-reg{min-height:560px;background:url(../img/img-register.jpg) no-repeat;_height:expression(document.body.clientHeight > 560? '560px':'auto' )}
 .reg-content{float:right;width:450px}
 .regForm{height:auto;width:326px}
 .pblast{padding-bottom:25px}
@@ -152,7 +152,7 @@ body{background:#fff}
 .topass-box .submit-btn{width:180px}
 .mail-success{width:600px;margin:0 auto}
 .mail-success .succ-tit{padding:150px 0 30px 210px}
-.mail-success .succ-tit i.icon-success{display:block;float:left;margin-right:15px;background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:0 0;width:54px;height:54px}
+.mail-success .succ-tit i.icon-success{display:block;float:left;margin-right:15px;background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:0 0;width:54px;height:54px}
 .mail-success .succ-tit span{line-height:54px;font-size:14px;color:#333}
 .mail-success .succ-info{text-align:center}
 .mail-success .succ-info p{line-height:34px;font-size:14px;color:#333}
@@ -166,7 +166,7 @@ body{background:#fff}
 .m-pop-c{padding:0 37px}
 .m-pop-tit{height:60px;line-height:60px}
 .m-pop-tit strong{float:left;display:inline;font-size:16px;color:#999}
-.m-pop-tit .closePop{float:right;display:block;margin-top:20px;text-indent:-9999px;background-image:url(img/sp_ve_register.png?_=82f248e8);background-position:-117px -42px;width:12px;height:12px}
+.m-pop-tit .closePop{float:right;display:block;margin-top:20px;text-indent:-9999px;background-image:url(../img/sp_ve_register.png?_=82f248e8);background-position:-117px -42px;width:12px;height:12px}
 .m-free-reg{padding:15px 0 25px 0}
 .m-free-reg .submit-btn{width:180px}
 .m-reg-tab .m-reg-hd{width:100%;border-bottom:1px solid #ddd}

@@ -20,7 +20,7 @@ function getFormData(){
         , 'repassword' : { 'ipt' : __f['repassword'],'tip':$('#repassword-tip'), 'ptip':'' } 
         , 'child' : { 'ipt' : __f['child'],'tip':$('#username-tip'), 'ptip':'' } 
         , 'birthday' : { 'ipt' : __f['birthday'],'tip':$('#birthday-tip'), 'ptip':$('#birthday-poptip') } 
-        , 'verify' : { 'ipt' : __f['verify'],'tip':$('#verify-tip'), 'ptip':'' } 
+        , 'verify' : { 'ipt' : __f['verify'],'tip':$('#verify-tip'), 'ptip':'' }
     }
 
     var
@@ -57,9 +57,9 @@ var chkopts = {
         if(tmp) chk['username']['type'] = 'email';
         // not email
         if(!tmp) {
-                tmp = reg.mobile.test(val);   //mobile check
-                if(tmp)
-                        chk['username']['type'] = 'mobile';
+            tmp = reg.mobile.test(val);   //mobile check
+            if(tmp)
+                chk['username']['type'] = 'mobile';
         }
         return tmp;
     },
@@ -241,7 +241,7 @@ var __aft = {
                         do_action('delaySubmit');
                 }
                 if(chk['event-src']=='sendmsg'){                                                
-                        chk['event-src']='';                                                
+                        chk['event-src']='';
                         do_action('send_mobile_msg');
                 }
             }
@@ -326,41 +326,45 @@ function tipBehavior(name,booler){
             $('#m_verify').addClass('hide');
         }
     }
+
     if(name=='verify_m'){
-            commonTip();
+        commonTip();
     }
         //in-time get password level
     if(name=='intime_password'){
-            if(chk['password']['level']){
-                var 
-                flag = chk['password']['level'];
-                flag>=4 
-                    ? intimePasswordBehavior(4)
-                    : flag>2 
-                        ? intimePasswordBehavior(3)
-                        :  flag>=1 
-                            ? intimePasswordBehavior(1)
-                            :  $('.pwdstr-item').removeClass('strengthA').removeClass('strengthB').removeClass('strengthC');
-            }else{
-                $('.pwdstr-item').removeClass('strengthA').removeClass('strengthB').removeClass('strengthC');
-            }
-    }                
+        if(chk['password']['level']){
+            var 
+            flag = chk['password']['level'];
+            flag>=4 
+                ? intimePasswordBehavior(4)
+                : flag>2 
+                    ? intimePasswordBehavior(3)
+                    :  flag>=1 
+                        ? intimePasswordBehavior(1)
+                        :  $('.pwdstr-item').removeClass('strengthA').removeClass('strengthB').removeClass('strengthC');
+        }else{
+            $('.pwdstr-item').removeClass('strengthA').removeClass('strengthB').removeClass('strengthC');
+        }
+    }
+
     if(name=='password'){                        
         commonTip();                        
         if(inputs['repassword']['ipt'].value){
             $(inputs['repassword']['ipt']).trigger('blur');
         }
     }
+
     if(name=='repassword'){
         commonTip();
     }
+
     if(name=='birthday'){
         commonTip();
     }
+
     if(name=='verify'){
         commonTip();
         if(booler){
-            
             //  if  chk['ultimate']['submit']=true , the submit opration right will change to async callback, 
             //  the function in __aft['xxx']
             chk['ultimate']['verify'] = false;
@@ -394,6 +398,7 @@ function bindInputDefaultEvent(){
     $('.u-ipt').bind('focus',function(){
         $(this).siblings('.u-placeholder').addClass('hide');
     });
+
     $('.u-ipt').bind('blur',function(){                        
         if(!this.value)
             $(this).siblings('.u-placeholder').removeClass('hide');
@@ -414,7 +419,8 @@ function bindInputDefaultEvent(){
     
     for(var ipt in inputs){                        
         if(ipt=='child') continue;
-        // var inpt = inputs[ipt]['ipt'];                        
+        var inpt = inputs[ipt]['ipt'];
+        if(!inpt) continue;
 
         //
         (function(ele){
@@ -432,8 +438,8 @@ function bindInputDefaultEvent(){
                 $('.auth-tips').removeClass('show');
                 $('.auth-tips-top').removeClass('show');
                 if(ptip!==''){
-                        ptip.addClass('show');
-                        $('.auth-tips-top').removeClass('hide');
+                    ptip.addClass('show');
+                    $('.auth-tips-top').removeClass('hide');
                 }
             });                                
 
@@ -442,13 +448,13 @@ function bindInputDefaultEvent(){
             if(ele=='username'){
                 //blur  behavior  will  valide form then check back-end data and deal with
                 $(ipt).bind('blur',function(){
-                        //form valide
-                       // tmp = formValide(chkopts)
-                       // (inputs[ele],'username')
-                       // ();
-                       //  //valide behavior
-                       //  tipBehavior('username',tmp);
-                        valideThenBehavior(chkopts, inputs[ele], 'username');
+                    //form valide
+                   // tmp = formValide(chkopts)
+                   // (inputs[ele],'username')
+                   // ();
+                   //  //valide behavior
+                   //  tipBehavior('username',tmp);
+                    valideThenBehavior(chkopts, inputs[ele], 'username');
                 });
             }
             if(ele=='mverify'){
@@ -495,9 +501,9 @@ function bindInputDefaultEvent(){
                 });
             }
             if(is_add_baby==1){
-                if(ele=='birthday'){
+                if(ele=='birthday'){                    
                     var chd_item = inputs['child'];
-                    $(ipt).bind('blur',function(){
+                    $(ipt).bind('blur',function(){                        
                         //form valide
                        // tmp = formValide(chkopts)
                        // ([ chd_item, inputs[ele] ],'birthday')
@@ -512,7 +518,6 @@ function bindInputDefaultEvent(){
                 $(ipt).bind('blur',function(){
                        //send mobile message
                    if(arguments.length>1){
-
                         //
                         var sendmsg = arguments[1];
                         var phone = arguments[2];
