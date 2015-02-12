@@ -22,18 +22,24 @@
 	    		$('body').append("<div id='drawselect' title='右键编辑' style='z-index:1001;position:absolute;left:0;top:0;display:none;'></div>");	
 
 	    	
-	    	var 
-			gzmenu ='<div id="gzmenu"><ul>~lists~</ul></div>',
-	    	lists = '<li class="edit">编辑</li>\
-					 <li class="remove">remove</li>\
-					 <li class="clone">clone</li>';
+	    	function initMenu(){
+		    	var 
+				gzmenu ='<div id="gzmenu"><ul>~lists~</ul></div>',
+		    	lists = '<li class="edit">编辑</li>\
+						 <li class="remove">remove</li>\
+						 <li class="clone">clone</li>';
 
-			if(!zone.login_stat)
-	    		lists = '<li class="sign">注册/登录</li>';
-	    	
-	    	gzmenu = gzmenu.replace('~lists~',lists);
+				if(!zone.login_stat)
+		    		lists = '<li class="sign">注册/登录</li>';
+		    	
+		    	gzmenu = gzmenu.replace('~lists~',lists);
 
-			if(!$('#gzmenu').length) $('body').append(gzmenu);
+				$('#gzmenu').remove();
+				$('body').append(gzmenu); 
+			}
+			add_action('fun_menu',initMenu);
+			do_action('fun_menu');
+
 			creatstyle('gzgzgz',function(gzgzgz){
 				gzgzgz.text('#gzmenu{position:absolute;width:150px;background-color:#fff;display:none;border:1px solid #666;border-bottom-width:0;}\
 							#gzmenu ul{}\
@@ -180,7 +186,9 @@
 			    	*/
 			    
 			    	function aftInsertDataToEditor(){
-				    	$('#submit').click(function(){
+				    	one('#submit',null,function(){
+				    	// $('#submit').click(function(){
+				    		editor.save(true);
 							var 
 							content = editor.exportFile(null, 'html', true),
 							Tcontent = editor.exportFile(null, 'text', true),
@@ -191,7 +199,7 @@
 							// save data to local store
 							editor.save(true);
 
-							if($(opdiv.div).find('.md-body').length){							
+							if($(opdiv.div).find('.md-body').length){								
 								$(opdiv.div).find('.md-body').html(content);
 							}else{							
 								$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>');
@@ -216,7 +224,7 @@
 	}
 
 	var getLoginInfo = function(){
-		main(zone,{
+		neeed(zone,{
 			'login_info' : {'url':'/logininfo'}
 			,null:[stat]
 		});
@@ -224,7 +232,8 @@
 			if(zone.login_info.stat == 0){
 				zone.login_stat = false;				
 			}else{
-				zone.login_stat = true;				
+				zone.login_stat = true;		
+				do_action('fun_menu');
 			}
 		}
 	}
@@ -254,7 +263,7 @@
 		};
 
 		if(formv){
-			main(zone,{
+			neeed(zone,{
 				to_login:{'url':'/login','data':JSON.stringify(data)},
 				null:[loginStat]
 			});
@@ -489,7 +498,7 @@
 		
 		_wangs.put(obj.id,obj);
 		idindex++;
-		main(zone,{
+		neeed(zone,{
 			putstat:{'url':'/add','data':JSON.stringify(obj)}
 			,afun:[addfun,[type]]
 		});
@@ -525,7 +534,7 @@
 		// if(!cb)cb = function(){};
 		// if(fromback){
 		// 	var obj = {'id':id,'location': window.location.href}
-		// 	main(zone,{
+		// 	neeed(zone,{
 		// 		getbackobj:{'url':'/get','data':JSON.stringify(obj)},
 		// 		null:[cb]
 		// 	});
@@ -558,7 +567,7 @@
 			}
 		}
 
-		main(zone,{
+		neeed(zone,{
 			dbgetobj:getdata,
 			'null':funs
 		});
@@ -584,7 +593,7 @@
 		}
 	    console.log('edit ok');
 	    __put(obj);
-	 //    main(zone,{
+	 //    neeed(zone,{
 		// 	editstat:{'url':'/edit','data':JSON.stringify(obj)}
 		// },editfun);		
 	}
@@ -658,7 +667,7 @@
 				do_action('login');
 			}
 		}
-		main(zone,{
+		neeed(zone,{
 			removestat:{'url':'/remove','data':JSON.stringify(obj)}
 		},removefun);	
 	}
