@@ -747,3 +747,60 @@ function maskBox(msg,stat,cb){
 }
 
 window.maskbox = maskBox;
+
+function rsp(name,condition){
+    $(window).resize(function(){
+        if(condition==true || $(condition).length){
+            do_action(name);
+        }
+    });
+}
+window.rsp = rsp;
+
+
+
+
+// var  // for login
+// pop_login_div   = document.createElement('div');
+// pop_login_div.style.cssText = 'display:block;overflow:hidden;';
+
+// var  // for login
+// pop_login_ifram = document.createElement('iframe');
+// pop_login_ifram.frameBorder=0;
+// pop_login_ifram.scrolling='no';
+// pop_login_ifram.src = '/index.php?ctl=user&act=login';
+// pop_login_ifram.style.cssText = 'width:400px;height:566px;display:block;';
+
+
+// pop_login_div.appendChild(pop_login_ifram);
+
+// var 
+// login = pop_login_div.outerHTML;
+
+// var
+// ifr_wrap = login;
+
+// function maskPopLoginAndRegister(){
+//     maskbox(ifr_wrap,'mask');
+// }
+
+// //响应不刷新
+// function rspMaskBox(){
+//     if($('#maskbox').length){                        
+//         if($('#bg_container').css('display') == 'block'){                                                       
+//             var 
+//             docRect = vepop.__measureDoc(),
+//             client_width  = docRect.dw,
+//             client_height = docRect.dh,
+//             box_left  = Math.round((parseInt(client_width)-400)/2),
+//             box_top   = Math.round((parseInt(client_height)-566)/2),
+//             container_tpl = document.getElementById('bg_container');
+//             container_tpl.style.left = box_left+'px';
+//             container_tpl.style.top = box_top+'px';
+//         }
+//     }
+// }
+// vepop.core.add_action('rsp_maskbox',rspMaskBox);
+// vepop.core.add_action('plogin',maskPopLoginAndRegister);
+// rsp('rsp_maskbox','#maskbox');
+// maskPopLoginAndRegister();
