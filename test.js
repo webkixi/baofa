@@ -64,7 +64,8 @@ app
 .post('/get',get)
 .post('/edit',edit)
 .post('/logininfo',getLoginStat)
-.post('/login',login);
+.post('/login',login)
+.post('/list',getArticleList);
 // .post('/:title',dealindex);
 
 //如果函数/生成器定义方式为 var abc=... 表示从数据库函数
@@ -440,6 +441,31 @@ function *storeIndex(path,body){
 	//article index
 	if(body.type&&body.type==1){
 		yield zset('article',id, body.timer);
+	}else{
+		yield removeIndex(path,body,'article');
+	}
+}
+
+function *removeIndex(path,body,type){
+	if(!body.id) return ;
+
+	var
+	id  = path+'__id'+body.id;
+	
+	if(!type){
+		yield zdel(path ,id);
+		yield zdel('all',id);
+
+		//tag index
+		var 
+		tag = id+'__'+body.tag;
+		yield zdel('tag',tag);
+		
+		//article index	
+		yield zdel('article',id);
+	}
+	if(type=='article'){
+		yield zdel('article',id);	
 	}
 }
 
@@ -470,8 +496,33 @@ function *get(){
  */
 function *getArticleList(len){
 	if(!len) len = 10;
-	var list = yield zrscan('article','','','',10);
-	console.log(list);
+	var 
+	body = yield parse.json(this);
+	if(body['len']&&body['len']>0) len = body['len'];
+	var list = yield zrscan('article','','','',len);
+	
+	var 
+	article_list=[],
+	article_titles=[];
+
+	var
+	tmp,
+	tmp_page,
+	tmp_id,
+	tmp_obj;
+
+	for(var i=0; i<len; i=i+2){
+		if(typeof list[i] == 'string'){
+			tmp = list[i].split('__');
+			tmp_page = tmp[0];
+			tmp_id = tmp[1];
+			tmp_obj = yield hget(tmp_page+'_data',tmp_id);
+			article_list.push(tmp_obj);
+		}
+	}
+	console.log(article_list);
+
+	// console.log(list);
 }
 
 /**
@@ -490,6 +541,7 @@ function *remove(){
 			var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
 			if(exist){		
 				yield hdel(path+'_data',id);
+				yield removeIndex(path,body);
 			}	
 			this.body = 'ok';
 		}else
@@ -538,8 +590,7 @@ function *edit(){
 		body = yield parse.json(this),
 		path = url.parse(body.location).pathname.replace('/','').replace(/(\.[\w]+)/,'').toLowerCase(),
 		path = path==''?'index':path,
-		id   = 'id'+body.id,
-		body = JSON.stringify(body);
+		id   = 'id'+body.id;		
 
 		var exist = yield function(fn){sc.hexists(path+'_data',id,fn);};
 		if(exist){	
@@ -547,7 +598,7 @@ function *edit(){
 				var 
 				old = yield hget(path+'_data',id);
 				yield hdel(path+'_data',id);
-				yield hset(path+'_data',id,body);
+				yield hset(path+'_data',id,JSON.stringify(body));				
 				this.body = 'ok';
 			}else{
 				this.body = '您没有权限修改此页面';

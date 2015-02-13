@@ -26,8 +26,9 @@
 		    	var 
 				gzmenu ='<div id="gzmenu"><ul>~lists~</ul></div>',
 		    	lists = '<li class="edit">编辑</li>\
-						 <li class="remove">remove</li>\
-						 <li class="clone">clone</li>';
+		    			 <li class="list">文章列表</li>\
+						 <li class="clone">克隆</li> \
+						 <li class="remove">删除</li>';
 
 				if(!zone.login_stat)
 		    		lists = '<li class="sign">注册/登录</li>';
@@ -132,99 +133,126 @@
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
 				
 				if(this.className.indexOf('sign')>-1){
-					loginPanel();						
+					menuLogin();		
 				}
-				if(this.className.indexOf('remove')>-1){						
-					__remove(opdiv);
+				if(this.className.indexOf('list')>-1){
+					// loginPanel();	
+					menuList();
+					// tips('文章列表');
+				}
+				if(this.className.indexOf('remove')>-1){
+					if( confirm('确认要删除吗？') ){
+						__remove(opdiv);
+					}else{
+						tips('请小心操作','alert');
+					}
 				}
 				if(this.className.indexOf('clone')>-1){
-					var clone = opdiv.div.cloneNode(true);
-					$(clone).attr('idindex',idindex);
-					$(clone).css('left',parseInt($(clone).css('left'))+30+'px');
-					$(clone).css('top',parseInt($(clone).css('top'))+20+'px');
-					$(opdiv.container).append(clone);
-					new _unitDiv(clone,opdiv.container);
-					__clone(opdiv,clone);
-					tips('clone ok',1000);
+					menuClone(opdiv);
 				}
 				var editor;
 				if(this.className.indexOf('edit')>-1){
-					/*epiceditor*/
-					tanbox("<div id='epiceditor' style='width:600px;height:300px;'>\
-						</div><div class='form'>\
-						<span id='submit'>提交</span>\
-						<span>&nbsp;&nbsp;</span>\
-						<span id='close'>取消</span>\
-						<span>&nbsp;&nbsp;</span>\
-						<span id='close'>文章</span>\
-						<div style='display:inline-block;height:18px;'><form id='cnt-property'>\
-						<input style='vertical-align:middle;' name='article' id='edit-form-article' type='checkbox' value=0> \
-						</form></div>\
-						</div>",'md');
-
-					editor = new EpicEditor(epic_opts).load();		
-
-					function insertDataToEditor(){
-						if(zone.dbgetobj.tcnt){
-							editor.importFile(null,zone.dbgetobj.tcnt,'text');
-						}
-
-						//article
-						if(zone.dbgetobj.type&&zone.dbgetobj.type==1)
-							$('#edit-form-article').attr('checked',true);
-						
-						aftInsertDataToEditor();
-					}
-
-					/*ace editor*/
-					/*tanbox("<div id='editor' style='width:600px;height:300px;'>hello world\n\n\n\n\n\n\n</div><div class='form' style='text-align:center;'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
-					var editor = ace.edit("editor");
-			    	editor.setTheme("ace/theme/tomorrow");
-			    	editor.session.setMode("ace/mode/html");
-			    	editor.setAutoScrollEditorIntoView(true);
-			    	editor.setOption("maxLines", 60);	
-			    	*/
-			    
-			    	function aftInsertDataToEditor(){
-				    	one('#submit',null,function(){
-				    	// $('#submit').click(function(){
-				    		editor.save(true);
-							var 
-							content = editor.exportFile(null, 'html', true),
-							Tcontent = editor.exportFile(null, 'text', true),
-							data = {'cnt':content,'tcnt':Tcontent},
-							cnt_form = $('#cnt-property')[0];
-							data['is-article'] = cnt_form['article'].checked ? 1 : 0;
-
-							// save data to local store
-							editor.save(true);
-
-							if($(opdiv.div).find('.md-body').length){								
-								$(opdiv.div).find('.md-body').html(content);
-							}else{							
-								$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>');
-							}
-							
-							__put(opdiv.div,data,'md');
-						});
-
-						$('#close').click(function(){
-							$('body').trigger('closetanbox');
-							editor.unload();
-						});	
-					}
-
-					__dbget(opdiv.idindex,insertDataToEditor);
-
-					
+					// start edit content(markdown)
+					menuEdit();
 				}
 			});
 	        return this;
 	    }
 	}
 
+	function menuList(src){
+		var api = {'url':'/list','data':JSON.stringify( {'len':20 } )};
+		needs(zone,{
+			lists : api
+		},function(){
+			if(zone.lists){
+
+			}
+		});
+	}
+
+	function menuClone(src){
+		var clone = src.div.cloneNode(true);
+		$(clone).attr('idindex',idindex);
+		$(clone).css('left',parseInt($(clone).css('left'))+30+'px');
+		$(clone).css('top',parseInt($(clone).css('top'))+20+'px');
+		$(src.container).append(clone);
+		new _unitDiv(clone,src.container);
+		__clone(src,clone);
+		tips('clone ok',1000);
+	}
+
+	function menuEdit(){
+		/*epiceditor*/
+		tanbox("<div id='epiceditor' style='width:600px;height:300px;'>\
+			</div><div class='form'>\
+			<span id='submit'>提交</span>\
+			<span>&nbsp;&nbsp;</span>\
+			<span id='close'>取消</span>\
+			<span>&nbsp;&nbsp;</span>\
+			<span id='close'>文章</span>\
+			<div style='display:inline-block;height:18px;'><form id='cnt-property'>\
+			<input style='vertical-align:middle;' name='article' id='edit-form-article' type='checkbox' value=0> \
+			</form></div>\
+			</div>",'md');
+
+		editor = new EpicEditor(epic_opts).load();		
+
+		function insertDataToEditor(){
+			if(zone.dbgetobj.tcnt){
+				editor.importFile(null,zone.dbgetobj.tcnt,'text');
+			}
+
+			//article
+			if(zone.dbgetobj.type&&zone.dbgetobj.type==1)
+				$('#edit-form-article').attr('checked',true);
+			
+			aftInsertDataToEditor();
+		}
+
+		/*ace editor*/
+		/*tanbox("<div id='editor' style='width:600px;height:300px;'>hello world\n\n\n\n\n\n\n</div><div class='form' style='text-align:center;'><span id='submit'>提交</span><span>&nbsp;&nbsp;</span><span id='close'>取消</span></div>",'md');
+		var editor = ace.edit("editor");
+    	editor.setTheme("ace/theme/tomorrow");
+    	editor.session.setMode("ace/mode/html");
+    	editor.setAutoScrollEditorIntoView(true);
+    	editor.setOption("maxLines", 60);	
+    	*/
+    
+    	function aftInsertDataToEditor(){
+	    	one('#submit',null,function(){
+	    	// $('#submit').click(function(){
+	    		editor.save(true);
+				var 
+				content = editor.exportFile(null, 'html', true),
+				Tcontent = editor.exportFile(null, 'text', true),
+				data = {'cnt':content,'tcnt':Tcontent},
+				cnt_form = $('#cnt-property')[0];
+				data['is-article'] = cnt_form['article'].checked ? 1 : 0;
+
+				// save data to local store
+				editor.save(true);
+
+				if($(opdiv.div).find('.md-body').length){								
+					$(opdiv.div).find('.md-body').html(content);
+				}else{							
+					$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>');
+				}
+				
+				__put(opdiv.div,data,'md');
+			});
+
+			$('#close').click(function(){
+				$('body').trigger('closetanbox');
+				editor.unload();
+			});	
+		}
+
+		__dbget(opdiv.idindex,insertDataToEditor);
+	}
+
 	var getLoginInfo = function(){
-		neeed(zone,{
+		needs(zone,{
 			'login_info' : {'url':'/logininfo'}
 			,null:[stat]
 		});
@@ -240,7 +268,7 @@
 
 	getLoginInfo();
 	
-	function loginPanel(){				
+	function menuLogin(){				
 		// tanbox.attr.box['width'] = 400;
 		// tanbox.attr.box['height'] = 300;
 		maskbox("<div id='sign' style=''><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
@@ -251,7 +279,7 @@
 			$('body').trigger('closetanbox');
 		});
 	}
-	add_action('login',loginPanel);
+	add_action('login',menuLogin);
 
 	function toLogin(){
 		var user = $('#user').val();
@@ -263,7 +291,7 @@
 		};
 
 		if(formv){
-			neeed(zone,{
+			needs(zone,{
 				to_login:{'url':'/login','data':JSON.stringify(data)},
 				null:[loginStat]
 			});
@@ -498,7 +526,7 @@
 		
 		_wangs.put(obj.id,obj);
 		idindex++;
-		neeed(zone,{
+		needs(zone,{
 			putstat:{'url':'/add','data':JSON.stringify(obj)}
 			,afun:[addfun,[type]]
 		});
@@ -534,7 +562,7 @@
 		// if(!cb)cb = function(){};
 		// if(fromback){
 		// 	var obj = {'id':id,'location': window.location.href}
-		// 	neeed(zone,{
+		// 	needs(zone,{
 		// 		getbackobj:{'url':'/get','data':JSON.stringify(obj)},
 		// 		null:[cb]
 		// 	});
@@ -567,7 +595,7 @@
 			}
 		}
 
-		neeed(zone,{
+		needs(zone,{
 			dbgetobj:getdata,
 			'null':funs
 		});
@@ -593,7 +621,7 @@
 		}
 	    console.log('edit ok');
 	    __put(obj);
-	 //    neeed(zone,{
+	 //    needs(zone,{
 		// 	editstat:{'url':'/edit','data':JSON.stringify(obj)}
 		// },editfun);		
 	}
@@ -667,7 +695,7 @@
 				do_action('login');
 			}
 		}
-		neeed(zone,{
+		needs(zone,{
 			removestat:{'url':'/remove','data':JSON.stringify(obj)}
 		},removefun);	
 	}
