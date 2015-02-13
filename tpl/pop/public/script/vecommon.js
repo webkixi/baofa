@@ -134,31 +134,70 @@ function __obj2str(o) {
 
 function __arg2arr(args){ return Array.prototype.slice.call(args); }
 
-var _ctx;
+/*
+ * init
+*/
+
+var 
+ctx,
+neeed={'length':0};
+
+//ajax stack priority high
+var 
+ajaxStack=[],
+ajaxVarStack=[],
+ajaxResultStack=[];
+
+//normal stack  priority low
+var 
+funStack = [],
+funVerStack = [],
+funResultStack = [];
+
+var resault={};
+
+//stack数据集合
+var all_stacks=[];
+
+
 function init(context,opts,callback){
-    var ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
-    var cbk = callback;
-    var req;
-    var ajaxitem;
-    var defaults = {
+    var 
+    req,
+    ajaxitem,
+    cbk = callback,
+    defaults = {
         url:'',
         method:'post',
         data:'',
-        type:'json',
-        async:true
-    }
+        type:'json'
+    };
 
-    //ajax stack priority high
-    var ajaxStack=[];
-    var ajaxVarStack=[];
-    var ajaxResultStack=[];
 
     //normal stack  priority low
-    var funStack = [];
-    var funVerStack = [];
-    var funResultStack = [];
+    if(funVerStack.length){
+        var 
+        pre_stacks = {
+            'ctx' : ctx,
+            'resault' : resault,
+            'fun_stack' : funStack,
+            'fun_ver_stack' : funVerStack,
+            'fun_result_stack' : funResultStack
+        };
+        all_stacks.push(pre_stacks);
+    }
 
-    var resault={};
+    ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
+    //ajax stack priority high
+    ajaxStack=[];
+    ajaxVarStack=[];
+    ajaxResultStack=[];
+
+
+    funStack = [];
+    funVerStack = [];
+    funResultStack = [];
+
+    resault={};
     for(var iii in opts){            
         if(__getClass(opts[iii])=='Object'){
             if(opts[iii].jquery){
@@ -193,11 +232,11 @@ function init(context,opts,callback){
             funVerStack.push(iii);                
             if(iii!=='null') add_action(iii,ary,ary[0].length,ctx);
         }else{
-            ctx[iii] = opts[iii];
+            if(iii='stop') init.stop(opts[iii]);
+            else
+                ctx[iii] = opts[iii];
         }
     }
-
-    //for svn update
 
     var tmp;
     function cb(err,data){
@@ -222,15 +261,56 @@ function init(context,opts,callback){
                 var tfun;
                 var tprompt;
                 var doact;
-                for(var i=0; i<funVerStack.length; i++){
-                    (function(j){
-                        doact = funVerStack[j];
-                        if(__getClass(funStack[j])=='Function'){
-                            ctx[doact] = funStack[j];
+                // for(var i=0; i<funVerStack.length; i++){
+                //     (function(j){
+                //         doact = funVerStack[j];
+                //         if(__getClass(funStack[j])=='Function'){
+                //             ctx[doact] = funStack[j];
+                //         }
+                //         else if(__getClass(funStack[j])=='Array'){
+                //             if(doact=='null') {
+                //                 var ary = funStack[j];
+                //                 for(var kkk=0; kkk<ary.length; kkk++){
+                //                     if(__getClass(ary[kkk])!=='Function'){
+                //                         // tips.pop('null后的数组元素必须为函数','alert');
+                //                         tips('null后的数组元素必须为函数','alert');
+                //                         return false;
+                //                     }
+                //                 }
+                //                 for(var kkk=0; kkk<ary.length; kkk++){
+                //                     (function(itr){
+                //                         ary[itr].apply(ctx);
+                //                     })(kkk);
+                //                 }
+                //             } else {
+                //                 doact = funVerStack[j];
+                //                 tfun = funStack[j][0];
+                //                 tprompt = funStack[j].slice(1);
+                //                 ctx[doact] = tfun;
+                //             }
+                //         }
+                //         if(tprompt&&tprompt.length>0){  
+                //             do_action(doact,tprompt);                       
+                //         }else{   
+                //             do_action(doact)                             
+                //         }
+                //     })(i)
+                // }
+
+                function execSyncFun(){
+                    var tmp;
+                    var ary;
+                    if(funVerStack.length>0){
+                        var _funs = {};
+                        _funs['name'] = funVerStack.shift();
+                        _funs['fun']  = funStack.shift();
+                        doact = _funs['name'];
+                        if(__getClass(_funs['fun'])=='Function'){
+                            ctx[doact] = _funs['fun'];
                         }
-                        else if(__getClass(funStack[j])=='Array'){
+                        else if(__getClass(_funs['fun'])=='Array'){
                             if(doact=='null') {
-                                var ary = funStack[j];
+                                ary = _funs['fun'];
                                 for(var kkk=0; kkk<ary.length; kkk++){
                                     if(__getClass(ary[kkk])!=='Function'){
                                         // tips.pop('null后的数组元素必须为函数','alert');
@@ -240,35 +320,53 @@ function init(context,opts,callback){
                                 }
                                 for(var kkk=0; kkk<ary.length; kkk++){
                                     (function(itr){
-                                        ary[itr].apply(ctx);
+                                        tmp = ary[itr].apply(ctx);
                                     })(kkk);
                                 }
                             } else {
-                                doact = funVerStack[j];
-                                tfun = funStack[j][0];
-                                tprompt = funStack[j].slice(1);
+                                tfun = _funs['fun'][0];
+                                tprompt = _funs['fun'].slice(1);
                                 ctx[doact] = tfun;
                             }
                         }
+
                         if(tprompt&&tprompt.length>0){  
-                            do_action(doact,tprompt);                       
-                        }else{   
-                            do_action(doact)                             
+                            tmp = do_action(doact,tprompt);
+                        }else{
+                            tmp = do_action(doact);
                         }
-                    })(i)
+
+                        if(tmp){
+                            if(tmp['done']=='next'){
+                                var rst = init.restore(tmp['value']);
+                                if(rst['done']==true){
+                                    execSyncFun();    
+                                }
+                            }else{
+                                execSyncFun();
+                            }
+                        }else{
+                            execSyncFun();
+                        }
+                    }
                 }
+                add_action('init_exec',execSyncFun);
+
+                execSyncFun();
+
+
+
             }
             if(callback) callback.apply(ctx);
         }
     }
 
-    function runajax(ttt){
+    function runajax(ttt){            
         $.ajax({
             url: ttt.url,
             dataType: ttt.type,
             data: ttt.data,
             type: ttt.method,
-            async: ttt.async,
             success: function(data){
                 if(!data||data=='')
                     data={};
@@ -281,7 +379,48 @@ function init(context,opts,callback){
             }
         });
     }
+
     cb();
+}
+
+init.stop = function(name){        
+    var pre_neeed;
+    if(!name) return false;
+    if(!all_stacks.length) return false;
+
+    if(all_stacks.length>0){            
+        pre_neeed = all_stacks.shift();
+        neeed[name] = pre_neeed;
+        neeed['length'] = parseInt(neeed['length'])+1;
+    }
+
+    do_action('init_exec');
+
+    // return {'value':name,'done':'stop'};
+}
+
+init.next = function(name){
+    if(!name) return false;
+    if(neeed.length<=0) return false;
+    if(!neeed[name]) return false;                
+    return {'value':name,'done':'next'};
+}    
+
+init.restore = function(name){        
+    var restore_neeed;
+    var rtn = {'value':undefined,'done':false};
+    if(!name) return rtn;
+    if(neeed.length<=0) return rtn;
+    if(!neeed[name]) return rtn;
+    restore_neeed = neeed[name];
+
+    funStack = restore_neeed['fun_stack'];
+    funVerStack = restore_neeed['fun_ver_stack'];
+    funResultStack = restore_neeed['fun_result_stack'];
+    ctx = restore_neeed['ctx'];
+    resault = restore_neeed['resault'];
+
+    return {'value':undefined,'done':true};
 }
 
 //hooks
@@ -298,9 +437,9 @@ function do_action(name){
     var tmpary = [];
     var withargs;
     var promptfun = false;  //是否带参函数
-    var argmts = __arg2arr(arguments);   
+    var argmts = __arg2arr(arguments);
     if(actmap.containsKey(name)){
-        funs = actmap.get(name);            
+        funs = actmap.get(name);
         if(funs.length>0){                                
             for(var i=0; i<funs.length; i++){
                 tmp = funs[i];                        
@@ -340,8 +479,11 @@ function do_action(name){
                     // }
                     if(tmp.ctx=='ve')tmp.ctx = window;
                     tmp.ctx[name] = tmp.fun.apply(tmp.ctx,argmts);
-                }else
+                    return tmp.ctx[name];
+                }else{
                     tmp.ctx[name] = tmp.fun.apply(tmp.ctx)  //tmp.fun();
+                    return tmp.ctx[name];
+                }
             }
         }
     }
@@ -355,11 +497,11 @@ function do_action(name){
 * @ctx context上下文
 *
 * SAMPLE 1
-* add_action('aaa',fun,3,window);
+* core.add_action('aaa',fun,3,window);
 * 
 * SAMPLE 2
 * var ctx = {'a':1,'b':2}
-* add_action('bbb',fun,2,ctx);
+* core.add_action('bbb',fun,2,ctx);
 */
 function add_action(name,fun,propnum,ctx){
     // clearTimeout(timeAddAction);
@@ -400,7 +542,7 @@ function add_action(name,fun,propnum,ctx){
     // }
 
     // var timeAddAction = setTimeout(addAct, 200);
-}    
+}      
 
 /*
 * 消息弹出抽象函数
