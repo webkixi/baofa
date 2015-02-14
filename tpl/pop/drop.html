@@ -1,0 +1,65 @@
+﻿<!DOCTYPE HTML>
+<html>
+
+<head>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>登录</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link rel="shortcut icon" type="image/x-icon" href="./public/img/favicon.ico">
+</head>
+<body>
+<!--header-->
+<div id="header" style="width:600px;height:600px;border:10px dashed #ccc;overflow: hidden; ">
+
+</div>
+<!--main end -->
+
+<script src="public/script/Jquery.1.8.3.min.js"></script>
+<script type="text/javascript">
+    var $target = $('#header');
+
+    function dropZone($target, onDrop){
+        $target.
+            bind('dragover', function(){
+                $target.addClass( 'drag-over' );
+                return false;
+            }).
+            bind("dragend", function () {
+                $target.removeClass( 'drag-over' );
+                return false;
+            }).
+            bind("dragleave", function () {
+                $target.removeClass( 'drag-over' );
+                return false;
+            }).
+            bind("drop", function(event) {
+                var file = event.originalEvent.dataTransfer.files[0];
+
+                event.stopPropagation();
+                event.preventDefault();
+
+                $target.removeClass( 'drag-over' );
+
+                var droppedImage = new Image();
+                var fileReader = new FileReader();
+
+                fileReader.onload = function (event) {
+                    droppedImage.src = event.target.result;
+                    $target.html(droppedImage);
+                };
+
+                fileReader.readAsDataURL(file);
+
+                onDrop(file);
+            });
+    }
+
+    dropZone($target, function(file){
+        console.log(file);
+    });
+</script>
+</body>
+</html>
