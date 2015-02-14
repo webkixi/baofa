@@ -107,13 +107,24 @@ function __obj2str(o) {
         if(typeof o == "string" || o == null ) {
             return o;
         }
-        if(typeof o == "object"){
+        if(__getClass(o)=='Function'){
+            return o.toString();
+        }
+        if(__getClass(o)=='Array'){
+            return o.toString();
+        }
+        // if(typeof o == "object"){
+        if(__getClass(o)=='Object'){
             if(!o.sort){
                 r[0]="{"
                 for(var i in o){
                     r[r.length]=i;
                     r[r.length]=":";
-                    r[r.length]=obj2str(o[i]);
+                    if(typeof o[i] =='object'&&o[i].top&&o[i].window&&o[i].location){
+                        r[r.length] = 'window';
+                    }else{
+                        r[r.length]=obj2str(o[i]);
+                    }
                     r[r.length]=",";
                 }
                 r[r.length-1]="}"
@@ -173,6 +184,7 @@ function init(context,opts,callback){
     };
 
 
+
     //normal stack  priority low
     if(funVerStack.length){
         var 
@@ -197,7 +209,7 @@ function init(context,opts,callback){
     funVerStack = [];
     funResultStack = [];
 
-    resault={};
+    resault={};        
     for(var iii in opts){            
         if(__getClass(opts[iii])=='Object'){
             if(opts[iii].jquery){
@@ -224,7 +236,6 @@ function init(context,opts,callback){
             funStack.push(fun);
             funVerStack.push(iii);
             add_action(iii,fun,fun.length,ctx);
-
         }else if(__getClass(opts[iii])=='Array'){                
             var ary = opts[iii];                
             if(__getClass(ary[0])!=='Function') return;                
@@ -236,7 +247,7 @@ function init(context,opts,callback){
             else
                 ctx[iii] = opts[iii];
         }
-    }
+    }        
 
     var tmp;
     function cb(err,data){
@@ -340,7 +351,7 @@ function init(context,opts,callback){
                             if(tmp['done']=='next'){
                                 var rst = init.restore(tmp['value']);
                                 if(rst['done']==true){
-                                    execSyncFun();    
+                                    execSyncFun();
                                 }
                             }else{
                                 execSyncFun();
@@ -386,20 +397,30 @@ function init(context,opts,callback){
 init.stop = function(name){        
     var pre_neeed;
     if(!name) return false;
-    if(!all_stacks.length) return false;
+    // if(!all_stacks.length) return false;
 
-    if(all_stacks.length>0){            
+    if(all_stacks.length>0){
         pre_neeed = all_stacks.shift();
         neeed[name] = pre_neeed;
         neeed['length'] = parseInt(neeed['length'])+1;
-    }
-
-    do_action('init_exec');
+        do_action('init_exec');
+    }else{            
+        var
+        cur_stacks = {
+            'ctx' : ctx,
+            'resault' : resault,
+            'fun_stack' : funStack,
+            'fun_ver_stack' : funVerStack,
+            'fun_result_stack' : funResultStack
+        };
+        neeed[name] = cur_stacks;
+        neeed['length'] = parseInt(neeed['length'])+1;
+    }       
 
     // return {'value':name,'done':'stop'};
 }
 
-init.next = function(name){
+init.next = function(name){        
     if(!name) return false;
     if(neeed.length<=0) return false;
     if(!neeed[name]) return false;                
@@ -542,7 +563,7 @@ function add_action(name,fun,propnum,ctx){
     // }
 
     // var timeAddAction = setTimeout(addAct, 200);
-}      
+}     
 
 /*
 * 消息弹出抽象函数
