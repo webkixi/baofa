@@ -19,35 +19,7 @@
 
 	    	this._body = $('body');
 	    	if(!$('#drawselect').length)
-	    		$('body').append("<div id='drawselect' title='右键编辑' style='z-index:1001;position:absolute;left:0;top:0;display:none;'></div>");	
-
-	    	
-	    	function initMenu(){
-		    	var 
-				gzmenu ='<div id="gzmenu"><ul>~lists~</ul></div>',
-		    	lists = '<li class="edit">编辑</li>\
-		    			 <li class="list">文章列表</li>\
-						 <li class="clone">克隆</li> \
-						 <li class="remove">删除</li>';
-
-				if(!zone.login_stat)
-		    		lists = '<li class="sign">注册/登录</li>';
-		    	
-		    	gzmenu = gzmenu.replace('~lists~',lists);
-
-				$('#gzmenu').remove();
-				$('body').append(gzmenu); 
-			}
-			add_action('fun_menu',initMenu);
-			do_action('fun_menu');
-
-			creatstyle('gzgzgz',function(gzgzgz){
-				gzgzgz.text('#gzmenu{position:absolute;width:150px;background-color:#fff;display:none;border:1px solid #666;border-bottom-width:0;}\
-							#gzmenu ul{}\
-							#gzmenu li{list-style:none;text-indent:1em;}\
-							#gzmenu li {display:block;height:30px;line-height:30px;border-bottom:1px solid #666;text-decoration:none;color:#666;font:12px/30px tahoma;}\
-							#gzmenu li:hover{background:#eee;color:black;} ');
-			});			
+	    		$('body').append("<div id='drawselect' title='右键编辑' style='z-index:1001;position:absolute;left:0;top:0;display:none;'></div>");
 
 	    	this._gzs = [];
 	    	this._pen = $('#drawselect');
@@ -124,49 +96,91 @@
 				}else if(_pen.width()>3&&_pen.height()>3)
 					tips('最小30x30',1000);						
 				pos = {};						
-			});	
-			
-
-			$('#gzmenu ul li')
-			.mousedown(function(e){
-				e=e||arguments[0];
-				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
-				
-				if(this.className.indexOf('sign')>-1){
-					menuLogin();		
-				}
-				if(this.className.indexOf('list')>-1){
-					// loginPanel();	
-					menuList();
-					// tips('文章列表');
-				}
-				if(this.className.indexOf('remove')>-1){
-					if( confirm('确认要删除吗？') ){
-						__remove(opdiv);
-					}else{
-						tips('请小心操作','alert');
-					}
-				}
-				if(this.className.indexOf('clone')>-1){
-					menuClone(opdiv);
-				}
-				var editor;
-				if(this.className.indexOf('edit')>-1){
-					// start edit content(markdown)
-					menuEdit();
-				}
 			});
+			
 	        return this;
 	    }
 	}
 
-	function menuList(src){
-		var api = {'url':'/list','data':JSON.stringify( {'len':20 } )};
-		needs(zone,{
-			lists : api
-		},function(){
-			if(zone.lists){
+	function initContextMenu(){
+		var 
+		gzmenu ='<div id="gzmenu"><ul>~lists~</ul></div>',
+		lists = '<li class="edit">编辑</li>\
+				 <li class="list">文章列表</li>\
+				 <li class="clone">克隆</li> \
+				 <li class="remove">删除</li>';
 
+		if(!zone.login_stat)
+			lists = '<li class="sign">注册/登录</li>';
+		
+		gzmenu = gzmenu.replace('~lists~',lists);
+
+		$('#gzmenu').remove();
+		$('body').append(gzmenu); 
+
+		$('#gzmenu ul li') .mousedown(function(e){
+			e=e||arguments[0];
+			e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
+			
+			if(this.className.indexOf('sign')>-1){
+				menuLogin();		
+			}
+			if(this.className.indexOf('list')>-1){
+				// loginPanel();	
+				renderMenuList();
+				// tips('文章列表');
+			}
+			if(this.className.indexOf('remove')>-1){
+				if( confirm('确认要删除吗？') ){
+					__remove(opdiv);
+				}else{
+					tips('请小心操作','alert');
+				}
+			}
+			if(this.className.indexOf('clone')>-1){
+				menuClone(opdiv);
+			}
+			var editor;
+			if(this.className.indexOf('edit')>-1){
+				// start edit content(markdown)
+				menuEdit();
+			}
+		});
+	}
+	add_action('fun_menu',initContextMenu);
+	do_action('fun_menu');
+
+	creatstyle('gzgzgz',function(gzgzgz){
+		gzgzgz.text('#gzmenu{position:absolute;width:150px;background-color:#fff;display:none;border:1px solid #666;border-bottom-width:0;}\
+					#gzmenu ul{}\
+					#gzmenu li{list-style:none;text-indent:1em;}\
+					#gzmenu li {display:block;height:30px;line-height:30px;border-bottom:1px solid #666;text-decoration:none;color:#666;font:12px/30px tahoma;}\
+					#gzmenu li:hover{background:#eee;color:black;} ');
+	});	
+
+	function renderMenuList(src){
+		var 
+		tpl,
+		api = {
+			'list_data' : {'url':'/list','data':JSON.stringify( {'len':20 } )} , 
+			'normal_tpl': {'url':'/tpl'}
+		};
+		tpl = zone.tpl = {};
+
+		needs(zone, {
+			lists    : api['list_data'] ,
+			list_tmp : function(){				
+				needs.stop('get_list_data');
+				needs(tpl, {
+					'nml'    : api['normal_tpl'] ,
+					'render' : function(){
+						console.log(tpl['nml']);
+						needs.next('get_list_data');
+					}
+				});
+			} ,
+			list_eqp : function(){
+				console.log('aaaaaaaaaaaaaa');
 			}
 		});
 	}

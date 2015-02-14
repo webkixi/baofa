@@ -18,7 +18,7 @@ var tpl = require('./tpl').tpl;
 var formv = require('./toolkit').formv;
 
 
-// var fs = require('fs');
+var fs = require('fs');
 // var ws = fs.createWriteStream('message.txt');
 
 var
@@ -65,6 +65,7 @@ app
 .post('/edit',edit)
 .post('/logininfo',getLoginStat)
 .post('/login',login)
+.post('/tpl',gettpl)
 .post('/list',getArticleList);
 // .post('/:title',dealindex);
 
@@ -496,10 +497,13 @@ function *get(){
  */
 function *getArticleList(len){
 	if(!len) len = 10;
+	
 	var 
 	body = yield parse.json(this);
 	if(body['len']&&body['len']>0) len = body['len'];
-	var list = yield zrscan('article','','','',len);
+	
+	var 
+	list = yield zrscan('article','','','',len);
 	
 	var 
 	article_list=[],
@@ -520,9 +524,33 @@ function *getArticleList(len){
 			article_list.push(tmp_obj);
 		}
 	}
-	console.log(article_list);
 
-	// console.log(list);
+	this.body = article_list;
+}
+
+
+
+function *gettpl(){
+	var 
+	tpl,
+	tmp_tpl,
+	body;
+
+	if(this.request.length>0){
+		body = yield parse.json(this);
+	}else{
+		body = {};
+	}
+	
+	if(body['tpl']&&body['tpl']!='') tpl = body['tpl']+'.html';
+	else
+		tpl = 'normal.html';
+
+	tmp_tpl = yield function(fn){ fs.readFile('tpl/lists/'+tpl,fn) };
+
+	// console.log(tmp_tpl);
+	this.body = 'abc';
+
 }
 
 /**
