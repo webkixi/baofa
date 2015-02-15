@@ -102,32 +102,27 @@ var HashMap = function() {
 *  o - json obj
 */
 function __obj2str(o) {  
-    (function obj2str(o){
+    var 
+    str = (function obj2str(o){
         var r = [];
         if(typeof o == "string" || o == null ) {
             return o;
-        }
-        if(__getClass(o)=='Function'){
-            return o.toString();
-        }
-        if(__getClass(o)=='Array'){
-            return o.toString();
-        }
-        // if(typeof o == "object"){
-        if(__getClass(o)=='Object'){
+        }            
+        if(typeof o == "object"){
             if(!o.sort){
                 r[0]="{"
                 for(var i in o){
                     r[r.length]=i;
                     r[r.length]=":";
                     if(typeof o[i] =='object'&&o[i].top&&o[i].window&&o[i].location){
-                        r[r.length] = 'window';
+                        r[r.length] = "ve";
                     }else{
                         r[r.length]=obj2str(o[i]);
                     }
                     r[r.length]=",";
                 }
-                r[r.length-1]="}"
+                if(r.length>1) r[r.length-1]="}";
+                else r[r.length]="}";
             }else{
                 r[0]="["
                 // alert(o.length);
@@ -135,12 +130,14 @@ function __obj2str(o) {
                     r[r.length]=obj2str(o[i]);
                     r[r.length]=",";
                 }
-                r[r.length-1]="]"
+                if(r.length>1) r[r.length-1]="]";
+                else r[r.length]="]";
             }
             return r.join("");
         }
         return o.toString();
-    })(o);
+    })(o);        
+    return str;
 } 
 
 function __arg2arr(args){ return Array.prototype.slice.call(args); }
@@ -154,22 +151,19 @@ ctx,
 neeed={'length':0};
 
 //ajax stack priority high
-var 
-ajaxStack=[],
-ajaxVarStack=[],
-ajaxResultStack=[];
+// var 
+// ajaxStack=[],
+// ajaxVarStack=[];
 
-//normal stack  priority low
-var 
-funStack = [],
-funVerStack = [],
-funResultStack = [];
+// //normal stack  priority low
+// var 
+// funStack = [],
+// funVerStack = [];
 
 var resault={};
 
 //stack数据集合
 var all_stacks=[];
-
 
 function init(context,opts,callback){
     var 
@@ -183,33 +177,20 @@ function init(context,opts,callback){
         type:'json'
     };
 
-
+    var 
+    ajaxStack=[],
+    ajaxVarStack=[];
 
     //normal stack  priority low
-    if(funVerStack.length){
-        var 
-        pre_stacks = {
-            'ctx' : ctx,
-            'resault' : resault,
-            'fun_stack' : funStack,
-            'fun_ver_stack' : funVerStack,
-            'fun_result_stack' : funResultStack
-        };
-        all_stacks.push(pre_stacks);
-    }
+    var 
+    funStack = [],
+    funVerStack = [];
+    
 
     ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
     //ajax stack priority high
-    ajaxStack=[];
-    ajaxVarStack=[];
-    ajaxResultStack=[];
+    // resault={};
 
-
-    funStack = [];
-    funVerStack = [];
-    funResultStack = [];
-
-    resault={};        
     for(var iii in opts){            
         if(__getClass(opts[iii])=='Object'){
             if(opts[iii].jquery){
@@ -240,35 +221,55 @@ function init(context,opts,callback){
             var ary = opts[iii];                
             if(__getClass(ary[0])!=='Function') return;                
             funStack.push(ary);
-            funVerStack.push(iii);                
+            funVerStack.push(iii);
             if(iii!=='null') add_action(iii,ary,ary[0].length,ctx);
         }else{
             if(iii='stop') init.stop(opts[iii]);
             else
                 ctx[iii] = opts[iii];
         }
-    }        
+    }
+
+    //normal stack  priority low
+    // if(funVerStack.length){
+    //     var 
+    //     pre_stacks = {
+    //         'ctx' : ctx,
+    //         'resault' : resault,
+    //         'fun_stack' : funStack,
+    //         'fun_ver_stack' : funVerStack
+    //     };
+    //     all_stacks.push($.extend(true,{},pre_stacks));
+    // }   
+
+    var 
+    pre_stacks = {
+        'ctx' : ctx,
+        'resault' : resault,
+        'fun_stack' : funStack,
+        'fun_ver_stack' : funVerStack
+    };
+    // all_stacks.push($.extend(true,{},pre_stacks));
+    all_stacks.push(pre_stacks);
 
     var tmp;
     function cb(err,data){
         if(data) {    
-            var vtmp = ajaxVarStack.shift();
+            var vtmp = ajaxVarStack.shift();                
             resault[vtmp] = data;
-            ajaxResultStack.push(data);
         }
         if(ajaxStack.length>0){
             tmp = ajaxStack.shift();
             runajax(tmp);
         }else{
             for(var v in resault){
-                ctx[v] = resault[v];                
+                ctx[v] = resault[v];
             }
             ajaxStack=[];
             ajaxVarStack=[];
-            ajaxResultStack=[];
             // resault={};
 
-            if(funVerStack.length>0){                                  
+            if(funVerStack.length>0){
                 var tfun;
                 var tprompt;
                 var doact;
@@ -362,11 +363,7 @@ function init(context,opts,callback){
                     }
                 }
                 add_action('init_exec',execSyncFun);
-
                 execSyncFun();
-
-
-
             }
             if(callback) callback.apply(ctx);
         }
@@ -403,19 +400,18 @@ init.stop = function(name){
         pre_neeed = all_stacks.shift();
         neeed[name] = pre_neeed;
         neeed['length'] = parseInt(neeed['length'])+1;
-        do_action('init_exec');
-    }else{            
-        var
-        cur_stacks = {
-            'ctx' : ctx,
-            'resault' : resault,
-            'fun_stack' : funStack,
-            'fun_ver_stack' : funVerStack,
-            'fun_result_stack' : funResultStack
-        };
-        neeed[name] = cur_stacks;
-        neeed['length'] = parseInt(neeed['length'])+1;
-    }       
+        // do_action('init_exec');
+    }else{
+        // var
+        // cur_stacks = {
+        //     'ctx' : ctx,
+        //     'resault' : resault,
+        //     'fun_stack' : funStack,
+        //     'fun_ver_stack' : funVerStack
+        // };            
+        // neeed[name] = $.extend(true,{},cur_stacks);
+        // neeed['length'] = parseInt(neeed['length'])+1;
+    }
 
     // return {'value':name,'done':'stop'};
 }
@@ -433,11 +429,10 @@ init.restore = function(name){
     if(!name) return rtn;
     if(neeed.length<=0) return rtn;
     if(!neeed[name]) return rtn;
-    restore_neeed = neeed[name];
+    restore_neeed = neeed[name];        
 
     funStack = restore_neeed['fun_stack'];
     funVerStack = restore_neeed['fun_ver_stack'];
-    funResultStack = restore_neeed['fun_result_stack'];
     ctx = restore_neeed['ctx'];
     resault = restore_neeed['resault'];
 
