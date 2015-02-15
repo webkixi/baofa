@@ -163,24 +163,41 @@
 		tpl,
 		api = {
 			'list_data' : {'url':'/list','data':JSON.stringify( {'len':20 } )} , 
-			'normal_tpl': {'url':'/tpl'}
+			'normal_tpl': {'url':'/tpl','type':'html'}
 		};
-		tpl = zone.tpl = {};
+		// zone.tpl = {};
+		// tpl = zone.tpl;
+
+		// needs(zone, {
+		// 	lists    : api['list_data'] ,
+		// 	list_tmp : function(){				
+		// 		needs.stop('get_list_data');
+		// 		needs(tpl, {
+		// 			'nml'    : api['normal_tpl'] ,
+		// 			'render' : function(){
+		// 				console.log(tpl['nml']);
+		// 				needs.next('get_list_data');
+		// 			}
+		// 		});
+		// 	} ,
+		// 	list_eqp : function(){
+		// 		console.log('aaaaaaaaaaaaaa');
+		// 	}
+		// });
 
 		needs(zone, {
 			lists    : api['list_data'] ,
 			list_tmp : function(){				
-				needs.stop('get_list_data');
-				needs(tpl, {
-					'nml'    : api['normal_tpl'] ,
-					'render' : function(){
-						console.log(tpl['nml']);
-						needs.next('get_list_data');
+				needs(zone, {
+					nml    : api['normal_tpl'],
+					render : function(){
+						console.log(zone.nml);
+						// console.log('xxxxxxxx');
 					}
 				});
 			} ,
 			list_eqp : function(){
-				console.log('aaaaaaaaaaaaaa');
+				// console.log('aaaaaaaaaaaaaa');
 			}
 		});
 	}

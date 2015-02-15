@@ -548,8 +548,10 @@ function *gettpl(){
 
 	tmp_tpl = yield function(fn){ fs.readFile('tpl/lists/'+tpl,fn) };
 
-	// console.log(tmp_tpl);
-	this.body = 'abc';
+	// console.log(tmp_tpl.toString());
+	// this.body = '{"value":"abc"}';
+	var aaa=tmp_tpl.toString();
+	this.body = aaa;
 
 }
 

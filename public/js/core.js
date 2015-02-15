@@ -4,32 +4,27 @@
 function __arg2arr(args){ return Array.prototype.slice.call(args); }
 
 function __obj2str(o) {  
-    (function obj2str(o){
+    var 
+    str = (function obj2str(o){
         var r = [];
         if(typeof o == "string" || o == null ) {
             return o;
-        }
-        if(__getClass(o)=='Function'){
-            return o.toString();
-        }
-        if(__getClass(o)=='Array'){
-            return o.toString();
-        }
-        // if(typeof o == "object"){
-        if(__getClass(o)=='Object'){
+        }            
+        if(typeof o == "object"){
             if(!o.sort){
                 r[0]="{"
                 for(var i in o){
                     r[r.length]=i;
                     r[r.length]=":";
                     if(typeof o[i] =='object'&&o[i].top&&o[i].window&&o[i].location){
-                        r[r.length] = 'window';
+                        r[r.length] = "ve";
                     }else{
                         r[r.length]=obj2str(o[i]);
                     }
                     r[r.length]=",";
                 }
-                r[r.length-1]="}"
+                if(r.length>1) r[r.length-1]="}";
+                else r[r.length]="}";
             }else{
                 r[0]="["
                 // alert(o.length);
@@ -37,12 +32,14 @@ function __obj2str(o) {
                     r[r.length]=obj2str(o[i]);
                     r[r.length]=",";
                 }
-                r[r.length-1]="]"
+                if(r.length>1) r[r.length-1]="]";
+                else r[r.length]="]";
             }
             return r.join("");
         }
         return o.toString();
-    })(o);
+    })(o);        
+    return str;
 } 
 
 
@@ -181,20 +178,14 @@ neeed={'length':0};
 //ajax stack priority high
 var 
 ajaxStack=[],
-ajaxVarStack=[],
-ajaxResultStack=[];
+ajaxVarStack=[];
 
 //normal stack  priority low
 var 
 funStack = [],
-funVerStack = [],
-funResultStack = [];
+funVerStack = [];
 
 var resault={};
-
-//stack数据集合
-var all_stacks=[];
-
 
 function needs(context,opts,callback){
     var 
@@ -208,30 +199,10 @@ function needs(context,opts,callback){
         type:'json'
     };
 
-
-    //normal stack  priority low
-    if(funVerStack.length){
-        var 
-        pre_stacks = {
-            'ctx' : ctx,
-            'resault' : resault,
-            'fun_stack' : funStack,
-            'fun_ver_stack' : funVerStack,
-            'fun_result_stack' : funResultStack
-        };
-        all_stacks.push(pre_stacks);
-    }
+    var tmp_fun_stack = [];
+    var tmp_fun_var_stack = [];
 
     ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
-    //ajax stack priority high
-    ajaxStack=[];
-    ajaxVarStack=[];
-    ajaxResultStack=[];
-
-
-    funStack = [];
-    funVerStack = [];
-    funResultStack = [];
 
     resault={};
     for(var iii in opts){            
@@ -257,15 +228,19 @@ function needs(context,opts,callback){
             }
         }else if(__getClass(opts[iii])=='Function'){
             var fun = opts[iii];
-            funStack.push(fun);
-            funVerStack.push(iii);
+
+            tmp_fun_stack.push(fun);
+            tmp_fun_var_stack.push(iii);
+
             add_action(iii,fun,fun.length,ctx);
 
         }else if(__getClass(opts[iii])=='Array'){                
             var ary = opts[iii];                
-            if(__getClass(ary[0])!=='Function') return;                
-            funStack.push(ary);
-            funVerStack.push(iii);                
+            if(__getClass(ary[0])!=='Function') return;   
+
+            tmp_fun_stack.push(ary);
+            tmp_fun_var_stack.push(iii);
+
             if(iii!=='null') add_action(iii,ary,ary[0].length,ctx);
         }else{
             if(iii='stop') needs.stop(opts[iii]);
@@ -274,12 +249,16 @@ function needs(context,opts,callback){
         }
     }
 
+    for(var i=(tmp_fun_var_stack.length-1); i>=0; i--){
+        funVerStack.unshift(tmp_fun_var_stack[i]);
+        funStack.unshift(tmp_fun_stack[i]);
+    }
+
     var tmp;
     function cb(err,data){
         if(data) {    
             var vtmp = ajaxVarStack.shift();
             resault[vtmp] = data;
-            ajaxResultStack.push(data);
         }
         if(ajaxStack.length>0){
             tmp = ajaxStack.shift();
@@ -290,7 +269,6 @@ function needs(context,opts,callback){
             }
             ajaxStack=[];
             ajaxVarStack=[];
-            ajaxResultStack=[];
             // resault={};
 
             if(funVerStack.length>0){                                  
@@ -372,25 +350,13 @@ function needs(context,opts,callback){
                             tmp = do_action(doact);
                         }
 
-                        if(tmp){
-                            if(tmp['done']=='next'){
-                                var rst = needs.restore(tmp['value']);
-                                if(rst['done']==true){
-                                    execSyncFun();    
-                                }
-                            }else{
-                                execSyncFun();
-                            }
-                        }else{
-                            execSyncFun();
+                        if(funVerStack.length>0){
+                            execSyncFun();   
                         }
                     }
                 }
-                add_action('init_exec',execSyncFun);
 
                 execSyncFun();
-
-
 
             }
             if(callback) callback.apply(ctx);
@@ -419,45 +385,6 @@ function needs(context,opts,callback){
     cb();
 }
 
-needs.stop = function(name){        
-    var pre_neeed;
-    if(!name) return false;
-    if(!all_stacks.length) return false;
-
-    if(all_stacks.length>0){            
-        pre_neeed = all_stacks.shift();
-        neeed[name] = pre_neeed;
-        neeed['length'] = parseInt(neeed['length'])+1;
-    }
-
-    do_action('init_exec');
-
-    // return {'value':name,'done':'stop'};
-}
-
-needs.next = function(name){
-    if(!name) return false;
-    if(neeed.length<=0) return false;
-    if(!neeed[name]) return false;                
-    return {'value':name,'done':'next'};
-}    
-
-needs.restore = function(name){        
-    var restore_neeed;
-    var rtn = {'value':undefined,'done':false};
-    if(!name) return rtn;
-    if(neeed.length<=0) return rtn;
-    if(!neeed[name]) return rtn;
-    restore_neeed = neeed[name];
-
-    funStack = restore_neeed['fun_stack'];
-    funVerStack = restore_neeed['fun_ver_stack'];
-    funResultStack = restore_neeed['fun_result_stack'];
-    ctx = restore_neeed['ctx'];
-    resault = restore_neeed['resault'];
-
-    return {'value':undefined,'done':true};
-}
 
 //hooks
 /*
@@ -515,10 +442,10 @@ function do_action(name){
                     // }
                     if(tmp.ctx=='ve')tmp.ctx = window;
                     tmp.ctx[name] = tmp.fun.apply(tmp.ctx,argmts);
-                    return tmp.ctx[name];
+                    // return tmp.ctx[name];
                 }else{
                     tmp.ctx[name] = tmp.fun.apply(tmp.ctx)  //tmp.fun();
-                    return tmp.ctx[name];
+                    // return tmp.ctx[name];
                 }
             }
         }
