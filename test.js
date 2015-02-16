@@ -521,7 +521,7 @@ function *getArticleList(len){
 			tmp_page = tmp[0];
 			tmp_id = tmp[1];
 			tmp_obj = yield hget(tmp_page+'_data',tmp_id);
-			article_list.push(tmp_obj);
+			article_list.push(JSON.parse(tmp_obj));
 		}
 	}
 

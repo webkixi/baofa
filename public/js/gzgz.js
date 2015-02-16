@@ -127,7 +127,7 @@
 			}
 			if(this.className.indexOf('list')>-1){
 				// loginPanel();	
-				renderMenuList();
+				renderMenuList(opdiv);
 				// tips('文章列表');
 			}
 			if(this.className.indexOf('remove')>-1){
@@ -186,15 +186,18 @@
 		// });
 
 		needs(zone, {
-			lists    : api['list_data'] ,
+			lists  : api['list_data'] ,
+			nml    : api['normal_tpl'],
 			list_tmp : function(){				
-				needs(zone, {
-					nml    : api['normal_tpl'],
-					render : function(){
-						console.log(zone.nml);
-						// console.log('xxxxxxxx');
-					}
-				});
+				var 
+				tmp_str = '';
+				tmp_tpl = zone.nml,
+				data = zone.lists;
+
+				for(var i=0; i<data.length; i++){
+					tmp_str += rpl(tmp_tpl,data[i]);
+				}
+				do_action('insertCnt',opdiv,tmp_str);
 			} ,
 			list_eqp : function(){
 				// console.log('aaaaaaaaaaaaaa');
@@ -249,7 +252,7 @@
     	editor.setAutoScrollEditorIntoView(true);
     	editor.setOption("maxLines", 60);	
     	*/
-    
+
     	function aftInsertDataToEditor(){
 	    	one('#submit',null,function(){
 	    	// $('#submit').click(function(){
@@ -264,11 +267,7 @@
 				// save data to local store
 				editor.save(true);
 
-				if($(opdiv.div).find('.md-body').length){								
-					$(opdiv.div).find('.md-body').html(content);
-				}else{							
-					$(opdiv.div).append('<div class="md-wrap"><div class="md-body">'+content+'</div></div>');
-				}
+				insertCntTodiv(opdiv,content);
 				
 				__put(opdiv.div,data,'md');
 			});
@@ -281,6 +280,15 @@
 
 		__dbget(opdiv.idindex,insertDataToEditor);
 	}
+
+	var insertCntTodiv = function(odiv,cnt){
+		if($(odiv.div).find('.md-body').length){								
+			$(odiv.div).find('.md-body').html(cnt);
+		}else{							
+			$(odiv.div).append('<div class="md-wrap"><div class="md-body">'+cnt+'</div></div>');
+		}
+	}
+	add_action('insertCnt',insertCntTodiv,insertCntTodiv.length);
 
 	var getLoginInfo = function(){
 		needs(zone,{

@@ -90,6 +90,14 @@ function creatstyle(name,cb){
     cb && cb.call(this,nstyle);
 }
 
+var rpl=function(tmp,ve){
+    if(!ve)return false;
+    tmp = tmp.replace(/\{\{(.*?)\}\}/gi,function(a,b){
+            return eval(b);
+        });
+    return tmp;
+}
+
 /*
 * msgtips 消息弹出窗，为tipsbox抽象的实例
 * @msg 传入的消息
