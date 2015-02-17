@@ -148,28 +148,29 @@ function __arg2arr(args){ return Array.prototype.slice.call(args); }
 
 var 
 ctx,
+ajaxing=false,
 neeed={'length':0};
 
 //ajax stack priority high
-// var 
-// ajaxStack=[],
-// ajaxVarStack=[];
+var 
+ajaxStack=[],
+ajaxVarStack=[];
 
-// //normal stack  priority low
-// var 
-// funStack = [],
-// funVerStack = [];
+//normal stack  priority low
+var 
+funStack = [],
+funVerStack = [];
 
-var resault={};
+var 
+resault={};
 
-//stack数据集合
-var all_stacks=[];
-
-function init(context,opts,callback){
+function needs(context,opts,callback){
     var 
     req,
-    ajaxitem,
+    ajaxitem,        
     cbk = callback,
+    tmp_fun_stack = [],
+    tmp_fun_var_stack = [],
     defaults = {
         url:'',
         method:'post',
@@ -177,19 +178,7 @@ function init(context,opts,callback){
         type:'json'
     };
 
-    var 
-    ajaxStack=[],
-    ajaxVarStack=[];
-
-    //normal stack  priority low
-    var 
-    funStack = [],
-    funVerStack = [];
-    
-
     ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
-    //ajax stack priority high
-    // resault={};
 
     for(var iii in opts){            
         if(__getClass(opts[iii])=='Object'){
@@ -209,105 +198,55 @@ function init(context,opts,callback){
                         ajaxitem.vari = iii;
                         ajaxStack.push(ajaxitem);
                         ajaxVarStack.push(iii);
+                        ajaxing = true;
                     }
                 }                    
             }
         }else if(__getClass(opts[iii])=='Function'){
             var fun = opts[iii];
-            funStack.push(fun);
-            funVerStack.push(iii);
+
+            tmp_fun_stack.push(fun);
+            tmp_fun_var_stack.push(iii);
+
             add_action(iii,fun,fun.length,ctx);
+
         }else if(__getClass(opts[iii])=='Array'){                
             var ary = opts[iii];                
-            if(__getClass(ary[0])!=='Function') return;                
-            funStack.push(ary);
-            funVerStack.push(iii);
+            if(__getClass(ary[0])!=='Function') return;   
+
+            tmp_fun_stack.push(ary);
+            tmp_fun_var_stack.push(iii);
+
             if(iii!=='null') add_action(iii,ary,ary[0].length,ctx);
         }else{
-            if(iii='stop') init.stop(opts[iii]);
-            else
-                ctx[iii] = opts[iii];
+            ctx[iii] = opts[iii];
         }
     }
 
-    //normal stack  priority low
-    // if(funVerStack.length){
-    //     var 
-    //     pre_stacks = {
-    //         'ctx' : ctx,
-    //         'resault' : resault,
-    //         'fun_stack' : funStack,
-    //         'fun_ver_stack' : funVerStack
-    //     };
-    //     all_stacks.push($.extend(true,{},pre_stacks));
-    // }   
-
-    var 
-    pre_stacks = {
-        'ctx' : ctx,
-        'resault' : resault,
-        'fun_stack' : funStack,
-        'fun_ver_stack' : funVerStack
-    };
-    // all_stacks.push($.extend(true,{},pre_stacks));
-    all_stacks.push(pre_stacks);
+    for(var i=(tmp_fun_var_stack.length-1); i>=0; i--){
+        funVerStack.unshift(tmp_fun_var_stack[i]);
+        funStack.unshift(tmp_fun_stack[i]);
+    }
 
     var tmp;
     function cb(err,data){
         if(data) {    
-            var vtmp = ajaxVarStack.shift();                
+            var vtmp = ajaxVarStack.shift();
             resault[vtmp] = data;
+            ajaxing = false;
         }
         if(ajaxStack.length>0){
             tmp = ajaxStack.shift();
             runajax(tmp);
         }else{
             for(var v in resault){
-                ctx[v] = resault[v];
+                ctx[v] = resault[v];                
             }
-            ajaxStack=[];
-            ajaxVarStack=[];
-            // resault={};
 
-            if(funVerStack.length>0){
+            if(funVerStack.length>0){                                  
                 var tfun;
                 var tprompt;
                 var doact;
-                // for(var i=0; i<funVerStack.length; i++){
-                //     (function(j){
-                //         doact = funVerStack[j];
-                //         if(__getClass(funStack[j])=='Function'){
-                //             ctx[doact] = funStack[j];
-                //         }
-                //         else if(__getClass(funStack[j])=='Array'){
-                //             if(doact=='null') {
-                //                 var ary = funStack[j];
-                //                 for(var kkk=0; kkk<ary.length; kkk++){
-                //                     if(__getClass(ary[kkk])!=='Function'){
-                //                         // tips.pop('null后的数组元素必须为函数','alert');
-                //                         tips('null后的数组元素必须为函数','alert');
-                //                         return false;
-                //                     }
-                //                 }
-                //                 for(var kkk=0; kkk<ary.length; kkk++){
-                //                     (function(itr){
-                //                         ary[itr].apply(ctx);
-                //                     })(kkk);
-                //                 }
-                //             } else {
-                //                 doact = funVerStack[j];
-                //                 tfun = funStack[j][0];
-                //                 tprompt = funStack[j].slice(1);
-                //                 ctx[doact] = tfun;
-                //             }
-                //         }
-                //         if(tprompt&&tprompt.length>0){  
-                //             do_action(doact,tprompt);                       
-                //         }else{   
-                //             do_action(doact)                             
-                //         }
-                //     })(i)
-                // }
 
                 function execSyncFun(){
                     var tmp;
@@ -319,6 +258,7 @@ function init(context,opts,callback){
                         doact = _funs['name'];
                         if(__getClass(_funs['fun'])=='Function'){
                             ctx[doact] = _funs['fun'];
+                            tfun = _funs['fun'];
                         }
                         else if(__getClass(_funs['fun'])=='Array'){
                             if(doact=='null') {
@@ -342,27 +282,17 @@ function init(context,opts,callback){
                             }
                         }
 
-                        if(tprompt&&tprompt.length>0){  
+                        if(tprompt&&tprompt.length>0){
                             tmp = do_action(doact,tprompt);
                         }else{
                             tmp = do_action(doact);
                         }
 
-                        if(tmp){
-                            if(tmp['done']=='next'){
-                                var rst = init.restore(tmp['value']);
-                                if(rst['done']==true){
-                                    execSyncFun();
-                                }
-                            }else{
-                                execSyncFun();
-                            }
-                        }else{
+                        if(funVerStack.length>0&&!ajaxing){
                             execSyncFun();
                         }
                     }
                 }
-                add_action('init_exec',execSyncFun);
                 execSyncFun();
             }
             if(callback) callback.apply(ctx);
@@ -389,54 +319,6 @@ function init(context,opts,callback){
     }
 
     cb();
-}
-
-init.stop = function(name){        
-    var pre_neeed;
-    if(!name) return false;
-    // if(!all_stacks.length) return false;
-
-    if(all_stacks.length>0){
-        pre_neeed = all_stacks.shift();
-        neeed[name] = pre_neeed;
-        neeed['length'] = parseInt(neeed['length'])+1;
-        // do_action('init_exec');
-    }else{
-        // var
-        // cur_stacks = {
-        //     'ctx' : ctx,
-        //     'resault' : resault,
-        //     'fun_stack' : funStack,
-        //     'fun_ver_stack' : funVerStack
-        // };            
-        // neeed[name] = $.extend(true,{},cur_stacks);
-        // neeed['length'] = parseInt(neeed['length'])+1;
-    }
-
-    // return {'value':name,'done':'stop'};
-}
-
-init.next = function(name){        
-    if(!name) return false;
-    if(neeed.length<=0) return false;
-    if(!neeed[name]) return false;                
-    return {'value':name,'done':'next'};
-}    
-
-init.restore = function(name){        
-    var restore_neeed;
-    var rtn = {'value':undefined,'done':false};
-    if(!name) return rtn;
-    if(neeed.length<=0) return rtn;
-    if(!neeed[name]) return rtn;
-    restore_neeed = neeed[name];        
-
-    funStack = restore_neeed['fun_stack'];
-    funVerStack = restore_neeed['fun_ver_stack'];
-    ctx = restore_neeed['ctx'];
-    resault = restore_neeed['resault'];
-
-    return {'value':undefined,'done':true};
 }
 
 //hooks
