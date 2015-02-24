@@ -90,8 +90,8 @@ function creatstyle(name,cb){
     cb && cb.call(this,nstyle);
 }
 
-var rpl=function(tmp,ve){
-    if(!ve)return false;
+var rpl=function(tmp,data){
+    if(!data)return false;
     tmp = tmp.replace(/\{\{(.*?)\}\}/gi,function(a,b){
             return eval(b);
         });

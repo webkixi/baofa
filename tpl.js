@@ -81,4 +81,19 @@ var tpl = function(tpl,data){
     }
 }
 
+var tmpl = function(doc,cb){
+    // env(doc,function(err,window){
+    //     $ = jQuery = jq(window);
+    //     if(cb) cb.call(null,$);
+    // });
+    
+    return function(fn){
+        env(doc,function(err,window){
+            $ = jQuery = jq(window);        
+            fn(null,$);
+        });
+    }
+}
+
 exports.tpl = tpl;
+exports.tmpl = tmpl;

@@ -11,10 +11,10 @@ var ssdb = require('ssdb');
 var sc = ssdb.createClient();
 
 
-
 var _ = require('underscore');
 var crypto = require('crypto');
 var tpl = require('./tpl').tpl;
+var tmpl = require('./tpl').tmpl;
 var formv = require('./toolkit').formv;
 
 
@@ -65,9 +65,9 @@ app
 .post('/edit',edit)
 .post('/logininfo',getLoginStat)
 .post('/login',login)
-.post('/tpl',gettpl)
-.post('/list',getArticleList);
-// .post('/:title',dealindex);
+.post('/tpl',getTpl)
+// .post('/list',getArticleList);
+.post('/:title',dealindex);
 
 //如果函数/生成器定义方式为 var abc=... 表示从数据库函数
 var hset = function(name,key,val){
@@ -343,10 +343,11 @@ function *dealindex(){
 	router = this.req._parsedUrl;
 	pathname = router.pathname.replace('/','');
 	if(pathname=='list'){
-		yield getArticleList;
+		var 
+		body = yield parse.json(this);
+		if(!body.page) body.page=1;		
+		this.body = yield getArticleList(body.page);
 	}
-	// var page = yield function(kkk){client.hexists('kixi','index',kkk)};	
-	// var body = yield parse.json(this);
 }
 
 /**
@@ -495,17 +496,21 @@ function *get(){
  * [*get rebuild the unit and save the unit propty into ssdb]
  * @Schema  hdel('index','attr',val) hdel('index_data','0',val)
  */
-function *getArticleList(len){
-	if(!len) len = 10;
+function *getArticleList(page){
+	var 
+	len = 10,
+	page_size = 10,
+	page_start = 0,
+	page_end = 10;
+	if(!page) {
+		page = 1;
+	}
+
+	page_start = (parseInt(page)-1)*page_size;
+	page_end = parseInt(page)*page_size-1;
 	
 	var 
-	body = yield parse.json(this);
-	if(body['len']&&body['len']>0) len = body['len'];
-	
-	var 
-	list = yield zrscan('article','','','',len);
-	
-	var 
+	list = yield function(fn){sc.zrange('article',page_start,page_end,fn)},
 	article_list=[],
 	article_titles=[];
 
@@ -525,19 +530,76 @@ function *getArticleList(len){
 		}
 	}
 
-	this.body = article_list;
+	var 
+	title,
+	des,
+	looper='',
+	tpl = yield getTpl;
+
+	var $ = yield tmpl(tpl.toString());
+	for(var i=0; i<article_list.length; i++){
+		var cnt = $(article_list[i].cnt);
+		if(cnt[0]._nodeName=='h1'){
+			title = cnt[0].outerHTML;
+			// des = article_list[i].cnt.replace(/<[\/\!]*?[^<>]*?>/g,'').replace(/[\r\n]/g,'');
+			des = cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,'');
+			des = _subString(des,100,true);
+		}else{
+			title = '<h1>'+_subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),30)+'</h1>';
+			des = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),100,true);
+		}
+		looper+=rpl($('ul').html(),{'title':title,'des':'<p>'+des+'</p>'});
+	}
+
+	return $('ul').html(looper).prop('outerHTML');
+	
 }
 
 
 
-function *gettpl(){
+/* 2007-11-28 XuJian */  
+//截取字符串 包含中文处理  
+//(串,长度,增加...)  
+var _subString = function(str, len, hasDot)  
+{  
+    var newLength = 0;  
+    var newStr = "";  
+    var chineseRegex = /[^\x00-\xff]/g;  
+    var singleChar = "";  
+    var strLength = str.replace(chineseRegex,"**").length;  
+    for(var i = 0;i < strLength;i++) {
+        singleChar = str.charAt(i).toString();  
+        if(singleChar.match(chineseRegex) != null) newLength += 2;
+        else newLength++;
+
+        if(newLength > len) break;
+        newStr += singleChar;  
+    }
+    if(hasDot && strLength > len) newStr += "...";
+    return newStr;
+}
+
+function cleanHtml(html){
+	return html.replace(/<[\/\!]*?[^<>]*?>/g,'');
+}
+
+var rpl=function(tmp,data){
+	// console.log(data);
+    if(!data)return false;
+    tmp = tmp.replace(/\{\{(.*?)\}\}/gi,function(a,b){
+            return eval(b);
+        });
+    return tmp;
+}
+
+function *getTpl(){
 	var 
 	tpl,
 	tmp_tpl,
 	body;
 
 	if(this.request.length>0){
-		body = yield parse.json(this);
+		body = parse.json(this);
 	}else{
 		body = {};
 	}
@@ -546,12 +608,8 @@ function *gettpl(){
 	else
 		tpl = 'normal.html';
 
-	tmp_tpl = yield function(fn){ fs.readFile('tpl/lists/'+tpl,fn) };
-
-	// console.log(tmp_tpl.toString());
-	// this.body = '{"value":"abc"}';
-	var aaa=tmp_tpl.toString();
-	this.body = aaa;
+	return yield function(fn){ fs.readFile('tpl/lists/'+tpl,fn) };
+	// this.body = yield function(fn){ fs.readFile('tpl/lists/'+tpl,fn) };
 
 }
 

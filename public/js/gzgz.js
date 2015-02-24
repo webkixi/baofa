@@ -162,7 +162,7 @@
 		var 
 		tpl,
 		api = {
-			'list_data' : {'url':'/list','data':JSON.stringify( {'len':20 } )} , 
+			'list_data' : {'url':'/list','data':JSON.stringify( {'page':1 } ),'type':'html'} , 
 			'normal_tpl': {'url':'/tpl','type':'html'}
 		};
 		// zone.tpl = {};
@@ -185,21 +185,35 @@
 		// 	}
 		// });
 
+		// needs(zone, {
+		// 	lists  : api['list_data'] ,
+		// 	nml    : api['normal_tpl'],
+		// 	list_tmp : function(){				
+		// 		var 
+		// 		tmp_str = '',
+		// 		tmp_tpl = zone.nml,
+		// 		tmp_looper = $(tmp_tpl).find('li').prop('outerHTML');
+		// 		data = zone.lists;
+
+
+		// 		for(var i=0; i<data.length; i++){
+		// 			tmp_str += rpl(tmp_looper,data[i]);
+		// 		}
+		// 		tmp_tpl = $(tmp_tpl).html(tmp_str).prop('outerHTML');
+		// 		do_action('insertCnt',opdiv,tmp_tpl);
+		// 	} ,
+		// 	list_save : function(){
+		// 		// console.log('aaaaaaaaaaaaaa');
+		// 	}
+		// });
+		// 
 		needs(zone, {
 			lists  : api['list_data'] ,
-			nml    : api['normal_tpl'],
-			list_tmp : function(){				
-				var 
-				tmp_str = '';
-				tmp_tpl = zone.nml,
-				data = zone.lists;
-
-				for(var i=0; i<data.length; i++){
-					tmp_str += rpl(tmp_tpl,data[i]);
-				}
-				do_action('insertCnt',opdiv,tmp_str);
+			list_tmp : function(){			
+				console.log(zone.lists);					
+				do_action('insertCnt',opdiv,zone.lists);
 			} ,
-			list_eqp : function(){
+			list_save : function(){
 				// console.log('aaaaaaaaaaaaaa');
 			}
 		});
@@ -285,7 +299,7 @@
 		if($(odiv.div).find('.md-body').length){								
 			$(odiv.div).find('.md-body').html(cnt);
 		}else{							
-			$(odiv.div).append('<div class="md-wrap"><div class="md-body">'+cnt+'</div></div>');
+			$(odiv.div).prepend('<div class="md-wrap"><div class="md-body">'+cnt+'</div></div>');
 		}
 	}
 	add_action('insertCnt',insertCntTodiv,insertCntTodiv.length);
