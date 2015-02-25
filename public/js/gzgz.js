@@ -90,7 +90,11 @@
 			})
 			.mouseup(function(e){
 				e = e||arguments[0];
-				pendraw = false;  // 
+				pendraw = false;  // 				
+				if(_rzaction){
+					$(document).trigger('resizeunit');
+					_rzaction = false;
+				}
 				if(_pen.width()>30&&_pen.height()>30){
 					kkk = e.ctrlKey ? new preCreatSubDiv(_pen,thegz,'float') : new preCreatSubDiv(_pen,thegz);
 				}else if(_pen.width()>3&&_pen.height()>3)
@@ -152,7 +156,7 @@
 
 	creatstyle('gzgzgz',function(gzgzgz){
 		gzgzgz.text('#gzmenu{position:absolute;width:150px;background-color:#fff;display:none;border:1px solid #666;border-bottom-width:0;}\
-					#gzmenu ul{}\
+					#gzmenu ul{padding:0;margin:0}\
 					#gzmenu li{list-style:none;text-indent:1em;}\
 					#gzmenu li {display:block;height:30px;line-height:30px;border-bottom:1px solid #666;text-decoration:none;color:#666;font:12px/30px tahoma;}\
 					#gzmenu li:hover{background:#eee;color:black;} ');
@@ -165,52 +169,10 @@
 			'list_data' : {'url':'/list','data':JSON.stringify( {'page':1 } ),'type':'html'} , 
 			'normal_tpl': {'url':'/tpl','type':'html'}
 		};
-		// zone.tpl = {};
-		// tpl = zone.tpl;
-
-		// needs(zone, {
-		// 	lists    : api['list_data'] ,
-		// 	list_tmp : function(){				
-		// 		needs.stop('get_list_data');
-		// 		needs(tpl, {
-		// 			'nml'    : api['normal_tpl'] ,
-		// 			'render' : function(){
-		// 				console.log(tpl['nml']);
-		// 				needs.next('get_list_data');
-		// 			}
-		// 		});
-		// 	} ,
-		// 	list_eqp : function(){
-		// 		console.log('aaaaaaaaaaaaaa');
-		// 	}
-		// });
-
-		// needs(zone, {
-		// 	lists  : api['list_data'] ,
-		// 	nml    : api['normal_tpl'],
-		// 	list_tmp : function(){				
-		// 		var 
-		// 		tmp_str = '',
-		// 		tmp_tpl = zone.nml,
-		// 		tmp_looper = $(tmp_tpl).find('li').prop('outerHTML');
-		// 		data = zone.lists;
-
-
-		// 		for(var i=0; i<data.length; i++){
-		// 			tmp_str += rpl(tmp_looper,data[i]);
-		// 		}
-		// 		tmp_tpl = $(tmp_tpl).html(tmp_str).prop('outerHTML');
-		// 		do_action('insertCnt',opdiv,tmp_tpl);
-		// 	} ,
-		// 	list_save : function(){
-		// 		// console.log('aaaaaaaaaaaaaa');
-		// 	}
-		// });
-		// 
 		needs(zone, {
 			lists  : api['list_data'] ,
 			list_tmp : function(){			
-				console.log(zone.lists);					
+				// console.log(zone.lists);					
 				do_action('insertCnt',opdiv,zone.lists);
 			} ,
 			list_save : function(){
@@ -497,8 +459,6 @@
 			$(_unit).mouseup(function(e){
 				e = e||arguments[0];
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
-				_rzaction = false;   
-				$(document).trigger('resizeunit');
 				that.div.style.zIndex = 1000;			
 				if(unitdrag&&e.ctrlKey){					
 					that.move = {"left":that.div.style.left,"top":that.div.style.top}

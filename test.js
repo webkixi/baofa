@@ -545,13 +545,13 @@ function *getArticleList(page){
 			des = cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,'');
 			des = _subString(des,100,true);
 		}else{
-			title = '<h1>'+_subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),30)+'</h1>';
+			title = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),16);
 			des = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),100,true);
 		}
-		looper+=rpl($('ul').html(),{'title':title,'des':'<p>'+des+'</p>'});
-	}
+		looper+=rpl($('._list').html(),{'title':title,'des':des});
+	}	
 
-	return $('ul').html(looper).prop('outerHTML');
+	return $('._list').html(looper).prop('outerHTML');
 	
 }
 
