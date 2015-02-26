@@ -43,22 +43,12 @@ function __obj2str(o) {
 } 
 
 
-function __measureDoc(){      
-    if(!jQuery.support.opacity){
-        var 
-        doch = document.documentElement.clientHeight||document.body.clientHeight, 
-        docw = document.documentElement.clientWidth||document.body.clientWidth,
-        docST = document.documentElement.scrollTop||document.body.scrollTop,
-        docSL = document.documentElement.scrollLeft||document.body.scrollLeft;
-        return {dw:docw,dh:doch,st:docST,sl:docSL};
-    }else{        
-        var 
-        doch = document.body.clientHeight||document.documentElement.clientHeight,
-        docw = document.body.clientWidth||document.documentElement.clientWidth,
-        docST = document.body.scrollTop||document.documentElement.scrollTop,
-        docSL = document.body.scrollLeft||document.documentElement.scrollLeft;
-        return {dw:docw,dh:doch,st:docST,sl:docSL};
-    }
+function __measureDoc(){
+    var doch = window.innerHeight||document.documentElement.offsetHeight||document.body.clientHieght;
+    var docw = window.innerWidth||document.documentElement.offsetWidth||document.body.clientWidth;
+    var docST = document.documentElement.scrollTop||document.body.scrollTop;
+    var docSL = document.documentElement.scrollLeft||document.body.scrollLeft;
+    return {dw:docw,dh:doch,st:docST,sl:docSL};
 };
 
 function HashMap() {  

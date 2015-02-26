@@ -102,21 +102,27 @@ var HashMap = function() {
 *  o - json obj
 */
 function __obj2str(o) {  
-    (function obj2str(o){
+    var 
+    str = (function obj2str(o){
         var r = [];
         if(typeof o == "string" || o == null ) {
             return o;
-        }
+        }            
         if(typeof o == "object"){
             if(!o.sort){
                 r[0]="{"
                 for(var i in o){
                     r[r.length]=i;
                     r[r.length]=":";
-                    r[r.length]=obj2str(o[i]);
+                    if(typeof o[i] =='object'&&o[i].top&&o[i].window&&o[i].location){
+                        r[r.length] = "ve";
+                    }else{
+                        r[r.length]=obj2str(o[i]);
+                    }
                     r[r.length]=",";
                 }
-                r[r.length-1]="}"
+                if(r.length>1) r[r.length-1]="}";
+                else r[r.length]="}";
             }else{
                 r[0]="["
                 // alert(o.length);
@@ -124,41 +130,52 @@ function __obj2str(o) {
                     r[r.length]=obj2str(o[i]);
                     r[r.length]=",";
                 }
-                r[r.length-1]="]"
+                if(r.length>1) r[r.length-1]="]";
+                else r[r.length]="]";
             }
             return r.join("");
         }
         return o.toString();
-    })(o);
-} 
+    })(o);        
+    return str;
+}
 
 function __arg2arr(args){ return Array.prototype.slice.call(args); }
 
-var _ctx;
+var 
+ctx,
+ajaxing=false,
+neeed={'length':0};
+
+//ajax stack priority high
+var 
+ajaxStack=[],
+ajaxVarStack=[];
+
+//normal stack  priority low
+var 
+funStack = [],
+funVerStack = [];
+
+var 
+resault={};
+
 function init(context,opts,callback){
-    var ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
-    var cbk = callback;
-    var req;
-    var ajaxitem;
-    var defaults = {
+    var 
+    req,
+    ajaxitem,        
+    cbk = callback,
+    tmp_fun_stack = [],
+    tmp_fun_var_stack = [],
+    defaults = {
         url:'',
         method:'post',
         data:'',
-        type:'json',
-        async:true
-    }
+        type:'json'
+    };
 
-    //ajax stack priority high
-    var ajaxStack=[];
-    var ajaxVarStack=[];
-    var ajaxResultStack=[];
+    ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
 
-    //normal stack  priority low
-    var funStack = [];
-    var funVerStack = [];
-    var funResultStack = [];
-
-    var resault={};
     for(var iii in opts){            
         if(__getClass(opts[iii])=='Object'){
             if(opts[iii].jquery){
@@ -177,24 +194,34 @@ function init(context,opts,callback){
                         ajaxitem.vari = iii;
                         ajaxStack.push(ajaxitem);
                         ajaxVarStack.push(iii);
+                        ajaxing = true;
                     }
                 }                    
             }
         }else if(__getClass(opts[iii])=='Function'){
             var fun = opts[iii];
-            funStack.push(fun);
-            funVerStack.push(iii);
+
+            tmp_fun_stack.push(fun);
+            tmp_fun_var_stack.push(iii);
+
             add_action(iii,fun,fun.length,ctx);
 
         }else if(__getClass(opts[iii])=='Array'){                
             var ary = opts[iii];                
-            if(__getClass(ary[0])!=='Function') return;                
-            funStack.push(ary);
-            funVerStack.push(iii);                
+            if(__getClass(ary[0])!=='Function') return;   
+
+            tmp_fun_stack.push(ary);
+            tmp_fun_var_stack.push(iii);
+
             if(iii!=='null') add_action(iii,ary,ary[0].length,ctx);
         }else{
             ctx[iii] = opts[iii];
         }
+    }
+
+    for(var i=(tmp_fun_var_stack.length-1); i>=0; i--){
+        funVerStack.unshift(tmp_fun_var_stack[i]);
+        funStack.unshift(tmp_fun_stack[i]);
     }
 
     var tmp;
@@ -202,7 +229,7 @@ function init(context,opts,callback){
         if(data) {    
             var vtmp = ajaxVarStack.shift();
             resault[vtmp] = data;
-            ajaxResultStack.push(data);
+            ajaxing = false;
         }
         if(ajaxStack.length>0){
             tmp = ajaxStack.shift();
@@ -211,24 +238,27 @@ function init(context,opts,callback){
             for(var v in resault){
                 ctx[v] = resault[v];                
             }
-            ajaxStack=[];
-            ajaxVarStack=[];
-            ajaxResultStack=[];
-            // resault={};
 
             if(funVerStack.length>0){                                  
                 var tfun;
                 var tprompt;
                 var doact;
-                for(var i=0; i<funVerStack.length; i++){
-                    (function(j){
-                        doact = funVerStack[j];
-                        if(__getClass(funStack[j])=='Function'){
-                            ctx[doact] = funStack[j];
+
+                function execSyncFun(){
+                    var tmp;
+                    var ary;
+                    if(funVerStack.length>0){
+                        var _funs = {};
+                        _funs['name'] = funVerStack.shift();
+                        _funs['fun']  = funStack.shift();
+                        doact = _funs['name'];
+                        if(__getClass(_funs['fun'])=='Function'){
+                            ctx[doact] = _funs['fun'];
+                            tfun = _funs['fun'];
                         }
-                        else if(__getClass(funStack[j])=='Array'){
+                        else if(__getClass(_funs['fun'])=='Array'){
                             if(doact=='null') {
-                                var ary = funStack[j];
+                                ary = _funs['fun'];
                                 for(var kkk=0; kkk<ary.length; kkk++){
                                     if(__getClass(ary[kkk])!=='Function'){
                                         // tips.pop('null后的数组元素必须为函数','alert');
@@ -238,23 +268,28 @@ function init(context,opts,callback){
                                 }
                                 for(var kkk=0; kkk<ary.length; kkk++){
                                     (function(itr){
-                                        ary[itr].apply(ctx);
+                                        tmp = ary[itr].apply(ctx);
                                     })(kkk);
                                 }
                             } else {
-                                doact = funVerStack[j];
-                                tfun = funStack[j][0];
-                                tprompt = funStack[j].slice(1);
+                                tfun = _funs['fun'][0];
+                                tprompt = _funs['fun'].slice(1);
                                 ctx[doact] = tfun;
                             }
                         }
-                        if(tprompt&&tprompt.length>0){  
-                            do_action(doact,tprompt);                       
-                        }else{   
-                            do_action(doact)                             
+
+                        if(tprompt&&tprompt.length>0){
+                            tmp = do_action(doact,tprompt);
+                        }else{
+                            tmp = do_action(doact);
                         }
-                    })(i)
+
+                        if(funVerStack.length>0&&!ajaxing){
+                            execSyncFun();
+                        }
+                    }
                 }
+                execSyncFun();
             }
             if(callback) callback.apply(ctx);
         }
@@ -266,7 +301,6 @@ function init(context,opts,callback){
             dataType: ttt.type,
             data: ttt.data,
             type: ttt.method,
-            async: ttt.async,
             success: function(data){
                 if(!data||data=='')
                     data={};
@@ -279,6 +313,7 @@ function init(context,opts,callback){
             }
         });
     }
+
     cb();
 }
 
@@ -296,9 +331,9 @@ function do_action(name){
     var tmpary = [];
     var withargs;
     var promptfun = false;  //是否带参函数
-    var argmts = __arg2arr(arguments);   
+    var argmts = __arg2arr(arguments);
     if(actmap.containsKey(name)){
-        funs = actmap.get(name);            
+        funs = actmap.get(name);
         if(funs.length>0){                                
             for(var i=0; i<funs.length; i++){
                 tmp = funs[i];                        
@@ -338,8 +373,11 @@ function do_action(name){
                     // }
                     if(tmp.ctx=='ve')tmp.ctx = window;
                     tmp.ctx[name] = tmp.fun.apply(tmp.ctx,argmts);
-                }else
+                    // return tmp.ctx[name];
+                }else{
                     tmp.ctx[name] = tmp.fun.apply(tmp.ctx)  //tmp.fun();
+                    // return tmp.ctx[name];
+                }
             }
         }
     }
@@ -353,11 +391,11 @@ function do_action(name){
 * @ctx context上下文
 *
 * SAMPLE 1
-* add_action('aaa',fun,3,window);
+* core.add_action('aaa',fun,3,window);
 * 
 * SAMPLE 2
 * var ctx = {'a':1,'b':2}
-* add_action('bbb',fun,2,ctx);
+* core.add_action('bbb',fun,2,ctx);
 */
 function add_action(name,fun,propnum,ctx){
     // clearTimeout(timeAddAction);
@@ -398,7 +436,7 @@ function add_action(name,fun,propnum,ctx){
     // }
 
     // var timeAddAction = setTimeout(addAct, 200);
-}    
+}  
 
 /*
 * 消息弹出抽象函数
@@ -465,8 +503,8 @@ function form_valide(opts) {
         email    : /^[\.a-zA-Z0-9_=-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
         username : /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/, 
         verify   : /^[a-z\d]{4}$/i,
-        verify_m : /^[\d]{6}$/,            
-        mobile   : /^(13[0-9]{9}|15[012356789][0-9]{8}|18[0256789][0-9]{8}|147[0-9]{8})$/, //手机       
+        verify_m : /^[\d]{6}$/,
+        mobile   : /^(13[0-9]{9}|15[012356789][0-9]{8}|18[0256789][0-9]{8}|147[0-9]{8})$/, //手机
         url      : /^http[s]?:\/\/([\w-]+\.)+[\w-]+([\w-.\/?%&=]*)?$/, //url
         ip4      : /^(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)$/, //ip地址
         notempty : /^\S+$/, //非空
@@ -485,21 +523,21 @@ function form_valide(opts) {
         var tips = block.tips;
         popmsg=block.popmsg;        
         if (!val){
-            if(arguments.length==0){            	
+            if(arguments.length==0){                
                 return ckstat;
             }
             else{       
                 if(popmsg){
-	                if(msg) tips(msg,'alert');
-	                else if(name) tips(name+'不能为空','alert');
-	                else tips(reg+'不能为空','alert');
-              	}
+                    if(msg) tips(msg,'alert');
+                    else if(name) tips(name+'不能为空','alert');
+                    else tips(reg+'不能为空','alert');
+                }
                 ckstat = false;
                 return function(){ 
-                	if(arguments.length==0) return ckstat;
-                	else{
-                		return arguments.callee;
-                	}
+                    if(arguments.length==0) return ckstat;
+                    else{
+                        return arguments.callee;
+                    }
                 };
             }
         }
@@ -523,10 +561,10 @@ function form_valide(opts) {
                     tips(msg,'alert');
             }
             return function(){ 
-            	if(arguments.length==0) return ckstat; 
-            	else{
-	            	return arguments.callee;
-	        }
+                if(arguments.length==0) return ckstat; 
+                else{
+                    return arguments.callee;
+                }
             };
         }
         return self;
@@ -556,9 +594,10 @@ var _subString = function(str, len, hasDot)
 }
 
 function __measureDoc(){
-    var doch = document.documentElement.clientHeight, docw = document.documentElement.clientWidth,
-    docST = document.documentElement.scrollTop||document.body.scrollTop,
-    docSL = document.documentElement.scrollLeft||document.body.scrollLeft;
+    var doch = window.innerHeight||document.documentElement.offsetHeight||document.body.clientHieght;
+    var docw = window.innerWidth||document.documentElement.offsetWidth||document.body.clientWidth;
+    var docST = document.documentElement.scrollTop||document.body.scrollTop;
+    var docSL = document.documentElement.scrollLeft||document.body.scrollLeft;
     return {dw:docw,dh:doch,st:docST,sl:docSL};
 };
 
@@ -614,96 +653,137 @@ var urlparse = function (url) {
 * @cb  动画结束后的回调函数
 */
 var msgtips = function(msg,stat,cb){
-    var msg_left, msg_top;
-    var docRect = __measureDoc();
-    var scrollleft = docRect.sl;
-    var scrolltop = docRect.st;
-    var clientwidth = docRect.dw;
-    var clientheight = docRect.dh;  
+var msg_left, msg_top;
+var docRect = __measureDoc();
+var scrollleft = docRect.sl;
+var scrolltop = docRect.st;
+var clientwidth = docRect.dw;
+var clientheight = docRect.dh;  
 
-    var msgtip = new tipsbox();
-    //新建消息实例，可定制
-    msgtip.tipsItem =function(stat){
-        var tip = document.createElement('div');
-        var subtip = document.createElement('div');
-        var bgcolor='background-color:#4ba2f9;';
-        tip.className = 'showmsg';
-        if(stat=='alert'){
-            bgcolor='background-color:rgb(211, 13, 21);';
-        }
-        tip.style.cssText = 'display:none;width:100%;text-align:center; margin-top:10px;color:#fff;line-height:40px;font-size:16px;'+bgcolor;
-        return tip;
+var msgtip = new tipsbox();
+//新建消息实例，可定制
+msgtip.tipsItem =function(stat){
+    var tip = document.createElement('div');
+    var subtip = document.createElement('div');
+    var bgcolor='background-color:#4ba2f9;';
+    tip.className = 'showmsg';
+    if(stat=='alert'){
+        bgcolor='background-color:rgb(211, 13, 21);';
     }
-
-    //消息实例容器，可定制
-    msgtip.tipsBox=function(stat){            
-        msg_left = Math.round((parseInt(clientwidth)-300)/2);
-        msg_top = 'top:0;';
-        if(stat=='alert'){
-            msg_top = Math.round((parseInt(clientheight)-150)/2);
-            msg_top = 'top:'+msg_top+'px;height:200px;overflow:hidden;';
-        }
-        $('#msgcontainer').length ? '' : $('body').append('<div id="msgcontainer" style="z-Index:10030;width:300px;position:fixed;top:10px;'+msg_top+'left:'+msg_left+'px;"></div>');
-        return $('#msgcontainer')[0];
-    }
-
-    msgtip.anim=function(item,container){
-        clearTimeout(ggg);
-        $(item).fadeIn('slow').delay(2000).animate({'height':0,'opacity':0,'margin':0},300);
-        var ggg = setTimeout(function(){
-            $(item).remove();
-            if($('.showmsg').length==0) $(container).remove();
-            do_action('do_tipsbox');
-        }, 3000);
-    }
-
-    if(cb) msgtip.pop(msg,stat,cb);
-    else
-        msgtip.pop(msg,stat);
+    tip.style.cssText = 'display:none;width:100%;text-align:center; margin-top:10px;color:#fff;line-height:40px;font-size:16px;'+bgcolor;
+    return tip;
 }
 
-
-function tanbox(msg,stat,cb){
-    var docRect = __measureDoc();
-    var scrollleft = docRect.sl;
-    var scrolltop = docRect.st;
-    var clientwidth = docRect.dw;
-    var clientheight = docRect.dh;
-
-    var tan = new tipsbox();
-    tan.tipsBox = function(stat){
-        // var tip = document.createElement('div');        
-        var msg_left = Math.round((parseInt(clientwidth)-500)/2);
-        var msg_top = Math.round((parseInt(clientheight)-500)/2);
-        var tanboxhtml = '<div id="msgtan" style="display:none;background-color:#fff;z-Index:10000;width:500px;height:500px;position:fixed;top:'+msg_top+'px;left:'+msg_left+'px;"></div>';
-        $('#msgtan').length ? 
-        (function(){
-            $('#msgtan').remove();
-            $('body').append(tanboxhtml);
-        })()
-        : $('body').append(tanboxhtml);
-        return $('#msgtan')[0];
-    };
-    tan.tipsItem = function(stat){
-        var subtip = document.createElement('div');
-        subtip.id = 'tancontent'
-        subtip.style.cssText = 'width:100%;height:100%;text-align:center;display:'        
-        return subtip;
-    };
-    tan.anim = function(item,container){
-        $(container).fadeIn(1000).delay(2000).fadeOut('slow');
-        setTimeout(function(){
-            $(container).remove();
-        }, 3000);
-    };
-
-    if(cb) tan.pop(msg,stat,cb);
-    else
-        tan.pop(msg,stat);
+//消息实例容器，可定制
+msgtip.tipsBox=function(stat){            
+    msg_left = Math.round((parseInt(clientwidth)-300)/2);
+    msg_top = 'top:0;';
+    if(stat=='alert'){
+        msg_top = Math.round((parseInt(clientheight)-150)/2);
+        msg_top = 'top:'+msg_top+'px;height:200px;overflow:hidden;';
+    }
+    $('#msgcontainer').length ? '' : $('body').append('<div id="msgcontainer" style="z-Index:10030;width:300px;position:fixed;top:10px;'+msg_top+'left:'+msg_left+'px;"></div>');
+    return $('#msgcontainer')[0];
 }
 
-window.tanbox = tanbox;
+msgtip.anim=function(item,container){
+    clearTimeout(ggg);
+    $(item).fadeIn('slow').delay(2000).animate({'height':0,'opacity':0,'margin':0},300);
+    var ggg = setTimeout(function(){
+        $(item).remove();
+        if($('.showmsg').length==0) $(container).remove();
+        do_action('do_tipsbox');
+    }, 3000);
+}
+
+if(cb) msgtip.pop(msg,stat,cb);
+else
+    msgtip.pop(msg,stat);
+}
 window.tips = msgtips;
+
+
+function maskBox(msg,stat,cb){    
+var 
+docRect = __measureDoc()
+scroll_left   = docRect.sl,
+scroll_top    = docRect.st,
+client_width  = docRect.dw,
+client_height = docRect.dh,
+mask_tpl='',
+container_tpl ='',
+cent_tpl ='';
+tan = new core.tipsbox();
+
+if(!stat) stat='normal';
+
+tan.tipsBox = function(stat){
+    $('#bg_container').remove();
+    box_left  = Math.round((parseInt(client_width)-400)/2),
+    box_top   = Math.round((parseInt(client_height)-566)/2);
+    container_tpl = document.getElementById('bg_container');
+    if(!container_tpl){
+        container_tpl = document.createElement('div');
+        container_tpl.id = 'bg_container';
+        container_tpl.style.cssText = 'width:400px;height:566px;\
+                                display:block;position:fixed;z-Index:10001;\
+                                left:'+box_left+'px;\
+                                top :'+box_top+'px;';
+    }
+    $('body').append(container_tpl);
+    return container_tpl;
+};
+
+tan.tipsItem = function(stat){
+    $('#maskcontent').remove();
+    cent_tpl   = document.createElement('div');
+    cent_tpl.id  = 'maskcontent'
+    cent_tpl.style.cssText = 'width:100%;height:100%;display:block;position:relative;\
+                            background-color:#fff;';
+
+    return cent_tpl;
+};
+
+tan.anim = function(item,box,stat){
+    $('#maskbox').remove();
+    if(stat=='md'||stat!=='sign'){
+        mask_tpl = document.getElementById('mask_tpl');
+        if(!mask_tpl){
+            mask_tpl   = document.createElement('div');
+            mask_tpl.id  = 'maskbox';
+            mask_tpl.style.cssText = 'width:100%;height:100%;display:block;\
+                                      position:fixed;left:0;top:0;\
+                                      background-color:#000;opacity:0.6;z-Index:10000;';
+
+            $('body').append(mask_tpl);                    
+        }
+
+        var closebtn = new Image();
+        closebtn.id = 'closePop';
+        closebtn.src = '/app/Tpl/ve_2_1/vetpl/Style/Css/img/icon-close.png';
+        
+        $('#maskcontent').append(closebtn);
+        $(closebtn).css({'position':'absolute','right':'30px','top':'20px','cursor':'pointer'});
+
+        $('#maskbox').show();
+        $(box).fadeIn(300);
+        $('#closePop').click(function(){
+                $(box).remove();
+                $('#maskbox').remove();
+        })
+    }else{          
+        $(box).fadeIn(1000).delay(2000).fadeOut('slow');        
+    }
+};
+
+if(cb) tan.pop(msg,stat,cb);
+else
+    tan.pop(msg,stat);
+
+return tan;
+}
+
+window.maskbox = maskBox;
 
 
 
