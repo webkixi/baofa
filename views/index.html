@@ -10,7 +10,7 @@
         z-index:1000;background-color:#fff;border:1px solid #ddd;
     }
     .wangwang .md-wrap{
-        margin:0px 10px;
+        margin:15px 0;
     }
     .wangwang>.rzunit{
         width:8px;
@@ -40,21 +40,24 @@
 <script type='text/javascript' src='js/jq183.js'></script>
 </head>
 <body>    
+<div class="container">
 
-<div class='outer' style="width:100%;height:auto;">
-    <div class='inner' style='width:1000px;margin:0 auto;height:auto;position:relative'>
-        <div class='gzgz' style='width:100%;height:2000px;background-color:#333;'>
-            
+    <div class='outer' style="width:100%;height:auto;">
+        <div class='inner' style='height:auto;position:relative'>
+            <div class='gzgz' style='width:100%;height:auto;min-height:2000px;background-color:#333;'>
+                
+            </div>
         </div>
     </div>
-</div>
 
-<div class='outer' style="width:100%;height:auto;margin-top:10px;">
-    <div class='inner' style='width:1000px;margin:0 auto;height:auto;position:relative'>
-        <div class='gzgz' style='width:100%;height:500px;background-color:#333;'>
-            
+    <div class='outer' style="width:100%;height:auto;margin-top:10px;">
+        <div class='inner' style='height:auto;position:relative'>
+            <div class='gzgz' style='width:100%;height:500px;background-color:#333;'>
+                
+            </div>
         </div>
     </div>
+
 </div>
 
 <script type='text/javascript' src='js/core.js'></script>
@@ -63,22 +66,15 @@
 <script type='text/javascript' src='js/prettify.min.js'></script>
 <script type='text/javascript' src='js/gzgz.js'></script>
 <script type="text/javascript">
-var epic_opts = {
-    container: 'epiceditor',
-    textarea: null,
-    basePath: 'js',
-    parser: marked,
-    file: {
-        name: 'epiceditor',
-        defaultContent: '',
-        autoSave: 100
-    },    
-    autogrow: false
-}
-$(window).load(function () {
+add_action('code_highlight',function(){
     $("pre").addClass("prettyprint");
     prettyPrint();
 });
+
+$(window).load(function () {
+    do_action('code_highlight');    
+});
+
 </script>
 </body>
 </html>
@@ -91,11 +87,12 @@ $(window).load(function () {
 	//bc(data[0]);
     var looptpl=[];
     $('.gzgz').each(function(j,v){
+        looptpl[j]='';
         if(data && data.length>0){
             for(var i=0; i<data.length; i++){
                 var unit = data[i];
                 if(unit.gzindex==j){
-                    if(unit.cnt!=''){
+                    if(unit.cnt&&unit.cnt!=''){
                             var uuu =$(unit.unit);                            
                             uuu.find('.md-wrap').remove();
                             uuu.prepend('<div class="md-wrap"><div class="md-body">'+unit.cnt+'</div></div>');

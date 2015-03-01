@@ -108,31 +108,30 @@
 
 	function initContextMenu(){
 		var 
-		gzmenu ='<div id="gzmenu"><ul>~lists~</ul></div>',
-		lists = '<li class="edit">编辑</li>\
-				 <li class="list">文章列表</li>\
-				 <li class="clone">克隆</li> \
-				 <li class="remove">删除</li>';
+		gzmenu ='<div id="gzmenu" class="list-group">~lists~</div>',
+		lists = '<a class="edit list-group-item">编辑</a>\
+				 <a class="edit list-group-item">写文章 <span class="badge">14</span></a>\
+				 <a class="listarticle list-group-item">文章列表</a>\
+				 <a class="clone list-group-item">克隆</a> \
+				 <a class="remove list-group-item">删除</a>';
 
 		if(!zone.login_stat)
-			lists = '<li class="sign">注册/登录</li>';
+			lists = '<a class="sign list-group-item">注册/登录</a>';
 		
 		gzmenu = gzmenu.replace('~lists~',lists);
 
 		$('#gzmenu').remove();
 		$('body').append(gzmenu); 
 
-		$('#gzmenu ul li') .mousedown(function(e){
+		$('#gzmenu .list-group-item').mousedown(function(e){
 			e=e||arguments[0];
 			e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
 			
 			if(this.className.indexOf('sign')>-1){
 				menuLogin();		
 			}
-			if(this.className.indexOf('list')>-1){
-				// loginPanel();	
+			if(this.className.indexOf('listarticle')>-1){
 				renderMenuList(opdiv);
-				// tips('文章列表');
 			}
 			if(this.className.indexOf('remove')>-1){
 				if( confirm('确认要删除吗？') ){
@@ -155,11 +154,14 @@
 	do_action('fun_menu');
 
 	creatstyle('gzgzgz',function(gzgzgz){
-		gzgzgz.text('#gzmenu{position:absolute;width:150px;background-color:#fff;display:none;border:1px solid #666;border-bottom-width:0;}\
-					#gzmenu ul{padding:0;margin:0}\
-					#gzmenu li{list-style:none;text-indent:1em;}\
-					#gzmenu li {display:block;height:30px;line-height:30px;border-bottom:1px solid #666;text-decoration:none;color:#666;font:12px/30px tahoma;}\
-					#gzmenu li:hover{background:#eee;color:black;} ');
+		gzgzgz.text('#gzmenu{position:absolute;width:150px;display:none;}\
+				#gzmenu .list-group-item{padding:7px 15px;}\
+			');
+		// gzgzgz.text('#gzmenu{position:absolute;width:150px;background-color:#fff;display:none;border:1px solid #666;border-bottom-width:0;}\
+		// 			#gzmenu ul{padding:0;margin:0}\
+		// 			#gzmenu li{list-style:none;text-indent:1em;}\
+		// 			#gzmenu li {display:block;height:30px;line-height:30px;border-bottom:1px solid #666;text-decoration:none;color:#666;font:12px/30px tahoma;}\
+		// 			#gzmenu li:hover{background:#eee;color:black;} ');
 	});	
 
 	function renderMenuList(src){
@@ -187,12 +189,24 @@
 		$(clone).css('left',parseInt($(clone).css('left'))+30+'px');
 		$(clone).css('top',parseInt($(clone).css('top'))+20+'px');
 		$(src.container).append(clone);
-		new _unitDiv(clone,src.container);
 		__clone(src,clone);
+		new _unitDiv(clone,src.container);
 		tips('clone ok',1000);
 	}
 
 	function menuEdit(){
+		var epic_opts = {
+		    container: 'epiceditor',
+		    textarea: null,
+		    basePath: 'js',
+		    parser: marked,
+		    file: {
+		        name: 'epiceditor',
+		        defaultContent: '',
+		        autoSave: 100
+		    },    
+		    autogrow: false
+		}
 		/*epiceditor*/
 		tanbox("<div id='epiceditor' style='width:600px;height:300px;'>\
 			</div><div class='form'>\
@@ -261,8 +275,9 @@
 		if($(odiv.div).find('.md-body').length){								
 			$(odiv.div).find('.md-body').html(cnt);
 		}else{							
-			$(odiv.div).prepend('<div class="md-wrap"><div class="md-body">'+cnt+'</div></div>');
+			$(odiv.div).prepend('<div class="md-wrap"><div class="md-body">'+cnt+'</div></div>');			
 		}
+		do_action('code_highlight');
 	}
 	add_action('insertCnt',insertCntTodiv,insertCntTodiv.length);
 
@@ -536,7 +551,7 @@
 		}else{
 			obj = unit;
 		}
-		
+
 		_wangs.put(obj.id,obj);
 		idindex++;
 		needs(zone,{

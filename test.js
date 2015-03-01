@@ -368,7 +368,7 @@ function *add(){
 		page_prop;
 
 		var exist = yield function(fn){sc.hexists(path,'attr',fn);};
-		if(exist){			
+		if(exist){		
 			// 回写数据
 			if(_admin_stat||(yield hgetRight(path))){
 				page_prop = JSON.parse(yield hget(path,'attr'));
