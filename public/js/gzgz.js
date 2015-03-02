@@ -109,17 +109,16 @@
 	function initContextMenu(){
 		var 
 		gzmenu ='<div id="gzmenu" class="list-group">~lists~</div>',
-		lists = '<a class="edit list-group-item">编辑</a>\
-				 <a class="edit list-group-item">写文章 <span class="badge">14</span></a>\
-				 <a class="listarticle list-group-item">文章列表</a>\
-				 <a class="clone list-group-item">克隆</a> \
-				 <a class="remove list-group-item">删除</a>';
-
-		if(!zone.login_stat)
-			lists = '<a class="sign list-group-item">注册/登录</a>';
+		lists = zone.login_stat 
+				? 
+				'<a class="edit list-group-item">编辑 </a>\
+				<a class="listarticle list-group-item">文章列表<span class="badge">14</span></a>\
+				<a class="clone list-group-item">克隆</a> \
+				<a class="remove list-group-item">删除</a>'
+				:
+				'<a class="sign list-group-item">注册/登录</a>';
 		
 		gzmenu = gzmenu.replace('~lists~',lists);
-
 		$('#gzmenu').remove();
 		$('body').append(gzmenu); 
 
