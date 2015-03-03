@@ -7,7 +7,7 @@
 	// console.log(idindex);
 
 	var 
-	zone = {},
+	// zone = {},
 	pendraw = false,
 	_wangs = new HashMap(),
     gzgz = Class.create(); 
@@ -150,7 +150,7 @@
 		});
 	}
 	add_action('fun_menu',initContextMenu);
-	do_action('fun_menu');
+	// do_action('fun_menu');
 
 	creatstyle('gzgzgz',function(gzgzgz){
 		gzgzgz.text('#gzmenu{position:absolute;width:150px;display:none;}\
@@ -170,7 +170,7 @@
 			'list_data' : {'url':'/list','data':JSON.stringify( {'page':1 } ),'type':'html'} , 
 			'normal_tpl': {'url':'/tpl','type':'html'}
 		};
-		needs(zone, {
+		needs('zone', {
 			lists  : api['list_data'] ,
 			list_tmp : function(){			
 				// console.log(zone.lists);					
@@ -281,7 +281,7 @@
 	add_action('insertCnt',insertCntTodiv,insertCntTodiv.length);
 
 	var getLoginInfo = function(){
-		needs(zone,{
+		needs('zone',{
 			'login_info' : {'url':'/logininfo'}
 			,null:[stat]
 		});
@@ -298,8 +298,6 @@
 	getLoginInfo();
 	
 	function menuLogin(){				
-		// tanbox.attr.box['width'] = 400;
-		// tanbox.attr.box['height'] = 300;
 		maskbox("<div id='sign' style=''><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
 		$('#login').click(function(){
 			toLogin();
@@ -320,7 +318,7 @@
 		};
 
 		if(formv){
-			needs(zone,{
+			needs('zone',{
 				to_login:{'url':'/login','data':JSON.stringify(data)},
 				null:[loginStat]
 			});
@@ -553,7 +551,7 @@
 
 		_wangs.put(obj.id,obj);
 		idindex++;
-		needs(zone,{
+		needs('zone',{
 			putstat:{'url':'/add','data':JSON.stringify(obj)}
 			,afun:[addfun,[type]]
 		});
@@ -589,7 +587,7 @@
 		// if(!cb)cb = function(){};
 		// if(fromback){
 		// 	var obj = {'id':id,'location': window.location.href}
-		// 	needs(zone,{
+		// 	needs('zone',{
 		// 		getbackobj:{'url':'/get','data':JSON.stringify(obj)},
 		// 		null:[cb]
 		// 	});
@@ -622,7 +620,7 @@
 			}
 		}
 
-		needs(zone,{
+		needs('zone',{
 			dbgetobj:getdata,
 			'null':funs
 		});
@@ -648,7 +646,7 @@
 		}
 	    console.log('edit ok');
 	    __put(obj);
-	 //    needs(zone,{
+	 //    needs('zone',{
 		// 	editstat:{'url':'/edit','data':JSON.stringify(obj)}
 		// },editfun);		
 	}
@@ -722,7 +720,7 @@
 				do_action('login');
 			}
 		}
-		needs(zone,{
+		needs('zone',{
 			removestat:{'url':'/remove','data':JSON.stringify(obj)}
 		},removefun);	
 	}

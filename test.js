@@ -536,12 +536,14 @@ function *getArticleList(page){
 	looper='',
 	tpl = yield getTpl;
 
-	var $ = yield tmpl(tpl.toString());
-	for(var i=0; i<article_list.length; i++){
-		var cnt = $(article_list[i].cnt);
+	var 
+	i=0,
+	cnt
+	$ = yield tmpl(tpl.toString());
+	for(; i<article_list.length; i++){
+		cnt = $(article_list[i].cnt);
 		if(cnt[0]._nodeName=='h1'){
-			title = cnt[0].outerHTML;
-			// des = article_list[i].cnt.replace(/<[\/\!]*?[^<>]*?>/g,'').replace(/[\r\n]/g,'');
+			title = cnt[0].innerHTML;
 			des = cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,'');
 			des = _subString(des,100,true);
 		}else{
@@ -549,9 +551,11 @@ function *getArticleList(page){
 			des = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),100,true);
 		}
 		looper+=rpl($('._list').html(),{'title':title,'des':des});
-	}	
+	}
+	$('._list').html(looper);	
 
-	return $('._list').html(looper).prop('outerHTML');
+	// return $('._list').html(looper).prop('outerHTML');
+	return $('.pageto').prop('outerHTML');
 	
 }
 

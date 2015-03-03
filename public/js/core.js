@@ -162,7 +162,6 @@ function tpl(tpl,jsondata){
 */
 
 var 
-ctx,
 ajaxing=false,
 neeed={'length':0};
 
@@ -179,7 +178,7 @@ funVerStack = [];
 var 
 resault={};
 
-function needs(context,opts,callback){
+function needs(context,opts,callback){    
     var 
     req,
     ajaxitem,        
@@ -193,14 +192,21 @@ function needs(context,opts,callback){
         type:'json'
     };
 
-    ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
+    var 
+    ctx = context==window 
+    ? context 
+    : (function(){ 
+        if(window[context]) return window[context];
+        else{
+            window[context] = {}; return window[context];
+        }
+      })();
 
     for(var iii in opts){            
         if(__getClass(opts[iii])=='Object'){
             if(opts[iii].jquery){
                 var ele = opts[iii];
                 ctx['views'][iii] = ele;
-                // console.log(ele);
             }else{
                 if(opts[iii].nodeType){
                     ctx['views'][iii] = opts[iii];
@@ -218,7 +224,9 @@ function needs(context,opts,callback){
                 }                    
             }
         }else if(__getClass(opts[iii])=='Function'){
-            var fun = opts[iii];
+            var 
+            fun = opts[iii];
+            // ctx[iii] = fun;
 
             tmp_fun_stack.push(fun);
             tmp_fun_var_stack.push(iii);
@@ -256,7 +264,7 @@ function needs(context,opts,callback){
         }else{
             for(var v in resault){
                 ctx[v] = resault[v];                
-            }
+            }            
 
             if(funVerStack.length>0){                                  
                 var tfun;
@@ -266,7 +274,7 @@ function needs(context,opts,callback){
                 function execSyncFun(){
                     var tmp;
                     var ary;
-                    if(funVerStack.length>0){
+                    if(funVerStack.length>0){                        
                         var _funs = {};
                         _funs['name'] = funVerStack.shift();
                         _funs['fun']  = funStack.shift();
@@ -379,13 +387,13 @@ function do_action(name){
                         return;
                     }
                     
-                }                    
+                }                                    
                 if(tmp.propnum&&tmp.propnum>0){                        
                     if(withargs){
                         argmts = withargs;
                     }else{
                         argmts = argmts.splice(1,(1+tmp.propnum));
-                    }                        
+                    }                                        
                     // if(argmts.length>2&&argmts.length>tmp.propnum){
                     //     argmts = argmts.splice(1,(1+tmp.propnum));
                     // }else{
@@ -398,7 +406,7 @@ function do_action(name){
                     tmp.ctx[name] = tmp.fun.apply(tmp.ctx)  //tmp.fun();
                     // return tmp.ctx[name];
                 }
-            }
+            }            
         }
     }
 }
