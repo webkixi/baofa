@@ -400,10 +400,10 @@ function do_action(name){
                     //     argmts = argmts.slice(1);
                     // }
                     if(tmp.ctx=='ve')tmp.ctx = window;
-                    tmp.ctx[name] = tmp.fun.apply(tmp.ctx,argmts);
+                    tmp.ctx[name+"_return"] = tmp.fun.apply(tmp.ctx,argmts);
                     // return tmp.ctx[name];
                 }else{
-                    tmp.ctx[name] = tmp.fun.apply(tmp.ctx)  //tmp.fun();
+                    tmp.ctx[name+"_return"] = tmp.fun.apply(tmp.ctx)  //tmp.fun();
                     // return tmp.ctx[name];
                 }
             }            

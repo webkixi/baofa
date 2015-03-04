@@ -22,6 +22,7 @@
     /*custom*/
     .md-body .nimei ul {list-style:none;overflow: hidden;padding: 0;}
     .nimei ul li{float:left;margin:0;padding: 0;}
+    ._list .media-body p{padding-top: 0px;}
   </style>
 </head>
 <body>    
@@ -52,6 +53,7 @@
 <script type='text/javascript' src='js/epiceditor.js'></script>
 <script type='text/javascript' src='js/prettify.min.js'></script>
 <script type='text/javascript' src='js/gzgz.js'></script>
+<script type='text/javascript' src='js/WebSocket.js'></script>
 <script type="text/javascript">
 add_action('code_highlight',function(){
     $("pre").addClass("prettyprint");
@@ -62,6 +64,32 @@ $(function () {
     do_action('code_highlight');
     var $scrollbar = $(".md-article");
     $scrollbar.tinyscrollbar();
+
+    // var ws=new WebSocket("ws://127.0.0.1:8000");
+    // ws.onopen=function(){
+    //     //握手成功
+    //     send.removeAttribute("disabled");
+    //     send.value="发送";
+    // };
+    // ws.onmessage=function(e){
+    //     //收到消息，放到页面上
+    //     var dl,dt,dd,o=eval("("+e.data+")");
+    //     dl=document.createElement("dl");
+    //     dt=document.createElement("dt");
+    //     dd=document.createElement("dd");
+    //     dt.innerHTML=o.client;
+    //     dd.appendChild(document.createTextNode(o.content));
+    //     dl.appendChild(dt);
+    //     dl.appendChild(dd);
+    //     wall.appendChild(dl);
+    //     wall.scrollTop=1E8;
+    // };
+    // send.onclick=function(){
+    //     //发送消息
+    //     if(!message.value)return alert("请输入内容");
+    //     ws.send(message.value);
+    //     message.value="";
+    // };
 });
 
 </script>
