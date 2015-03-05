@@ -47,13 +47,14 @@
 </div>
 
 <script type='text/javascript' src='js/jq183.js'></script>
+<script type='text/javascript' src='js/socketio134.js'></script>
 <script type='text/javascript' src='js/jquery.tinyscrollbar.min.js'></script>
 <script type='text/javascript' src='js/core.js'></script>
 <script type='text/javascript' src='js/toolkit.js'></script>
 <script type='text/javascript' src='js/epiceditor.js'></script>
 <script type='text/javascript' src='js/prettify.min.js'></script>
 <script type='text/javascript' src='js/gzgz.js'></script>
-<script type='text/javascript' src='js/WebSocket.js'></script>
+<!-- <script type='text/javascript' src='js/WebSocket.js'></script> -->
 <script type="text/javascript">
 add_action('code_highlight',function(){
     $("pre").addClass("prettyprint");
@@ -64,6 +65,15 @@ $(function () {
     do_action('code_highlight');
     var $scrollbar = $(".md-article");
     $scrollbar.tinyscrollbar();
+
+
+    var socket = io();
+
+    socket.on('xxx', function(val){
+        // console.log(val.data);
+        console.log($('._list'));
+    });
+    
 
     // var ws=new WebSocket("ws://127.0.0.1:8000");
     // ws.onopen=function(){
