@@ -38,8 +38,8 @@ function __obj2str(o) {
             return r.join("");
         }
         return o.toString();
-    })(o);        
-    return str;
+    })(o);
+    return str.replace(/[\r\n]/g,'');
 } 
 
 
@@ -442,7 +442,7 @@ function add_action(name,fun,propnum,ctx){
                         if(__obj2str(funs[j].fun)==__obj2str(fun[0])){
                             hasdefine=true;
                         }
-                    }else if(__obj2str(funs[j])==__obj2str(fun)){
+                    }else if(__obj2str(funs[j].fun)==__obj2str(fun)){
                         hasdefine=true;
                     }
                 }                
