@@ -70,8 +70,17 @@ $(function () {
     var socket = io();
 
     socket.on('xxx', function(val){
-        // console.log(val.data);
-        console.log($('._list'));
+        if($('._list').length){
+            // var
+            // api_tpl = {
+            //     'url'  : '/tpl/lists/normal.html',
+            //     'data' : {}
+            // };
+            // needs('index',{
+            //     'tpl':''
+            // });
+        }
+        // console.log($('._list'));
     });
     
 

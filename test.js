@@ -46,15 +46,16 @@ io.on('connection', function(socket){
 	// io.emit('xxx', { 'data': msg });
 	// socket.on('xxx',function(msg){
 
-	// });
-	// 
-	function pushMsgToFrontEnd(msg){
-		io.emit('xxx', { 'data': msg });
-	}
+	// });	
 
 	socket.on('disconnect', function(){
 		console.log('user disconnected');
 	});
+});
+
+function pushMsgToFrontEnd(msg){
+	io.emit('xxx', { 'data': msg });
+}
 
 
 	//start 
@@ -465,7 +466,8 @@ io.on('connection', function(socket){
 		}
 		//article index
 		if(body.type&&body.type==1){
-			yield zset('article',id, body.timer);			
+			yield zset('article',id, body.timer);
+			pushMsgToFrontEnd(body);
 		}else{
 			yield removeIndex(path,body,'article');
 		}
@@ -580,6 +582,10 @@ io.on('connection', function(socket){
 		// return $('._list').html(looper).prop('outerHTML');
 		return $('.pageto').prop('outerHTML');
 		
+	}
+
+	function *formatAndRenderIO(tpl,data){
+
 	}
 
 
@@ -729,7 +735,7 @@ io.on('connection', function(socket){
 	  console.log(err);
 	});
 
-});	//io
+// });	//io
 
 // app.listen(80);
 server.listen(80);
