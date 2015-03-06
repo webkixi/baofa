@@ -38,7 +38,7 @@ function __obj2str(o) {
             return r.join("");
         }
         return o.toString();
-    })(o);
+    })(o);        
     return str.replace(/[\r\n]/g,'');
 } 
 

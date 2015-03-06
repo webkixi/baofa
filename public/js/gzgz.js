@@ -271,8 +271,8 @@
 	}
 
 	var insertCntTodiv = function(odiv,cnt){
-		if($(odiv.div).find('.md-body').length){								
-			$(odiv.div).find('.md-body').html(cnt);
+		if($(odiv.div).find('.md-article').length){								
+			$(odiv.div).find('.md-article').html(cnt);
 		}else{							
 			$(odiv.div).prepend('<div class="md-wrap"><div class="md-body">'+cnt+'</div></div>');			
 		}
