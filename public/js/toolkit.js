@@ -324,3 +324,55 @@ function one(ele,opts,cb){
         });
     }
 }
+
+
+var
+ttt;
+function countDown(opts,cb){
+    if(__getClass(opts)!="Object") return false;
+    clearInterval(ttt);
+    var
+    defaults = {
+        "second" : 60,
+        "class"  : "_cd",
+        "item"   : ""
+    },
+    options = $.extend({},defaults,opts),
+    cls = options.class,
+    count = second = options.second,
+    item = options.item;
+
+    // $('.'+cls).remove();
+
+    if(item){
+        $('.'+item).addClass(cls);
+    }else{
+        $('body').append('<div style="width:100px;height:80px;text-align:center;background-color:red;" class="count-down '+cls+'"></div>');
+    }
+
+    var
+    that = item ? $('.'+item) : $('.'+cls);
+    
+    ttt = setInterval(function(){
+        cb.call(that,--count);
+        // that.innerHTML = --count;
+        if(count==0){
+            clearInterval(ttt);
+        }
+        if(count<0){
+            clearInterval(ttt);
+        }
+     }, 1000);
+}
+
+//time单位秒
+var formatTime = function(time){
+    var _m = parseInt(time % (60 * 60) / 60); //分钟
+    var _s = parseInt(time % 60);//秒
+    _m = _m < 10 ? _m = "0" + "" + _m : _m;
+    _s = _s < 10 ? _s = "0" + "" + _s : _s;
+    return {
+        fen  : _m,
+        miao : _s 
+    }
+};

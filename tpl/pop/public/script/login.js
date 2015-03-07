@@ -44,6 +44,16 @@ var chkopts = {
                 if(tmp)
                         chk['username']['type'] = 'mobile';
         }
+        if(!tmp){
+            tmp = reg.username.test(val);   //username check
+            if(tmp){
+                var 
+                len = __strlen(val);
+                if(len<4||len>30){
+                    tmp=false;
+                }
+            }
+        }
         return tmp;
     },
     password: function(input_obj,reg){
@@ -68,7 +78,7 @@ var __pre = function(name,api,cb){
     var opts = {};
     opts[name] = api;
     opts[null] = [cb];
-    init(chk,opts);
+    init('chk',opts);
 }
 
 //预处理回调
@@ -128,10 +138,12 @@ var __aft = {
                         window.location = jump_url;
                     }
                 } else if (data.status == 0) {
-                    //用户名不存在  或者 // //密码错误                                            
-                    if(data.field_name!==''){
+                    //用户名不存在  或者密码错误                                                                
+                    if(data.field_name=='verify') {
+                        tipBehavior('verify',false);   
+                    }else{
                         tipBehavior('username',false,'用户名或密码错误');
-                    }  
+                    }
                     if(data.need_verify==1){
                         $('#verify-filed').removeClass('hide');
                     }                                                
@@ -140,7 +152,7 @@ var __aft = {
                 }
             }
         }
-        $('.changeCode').trigger('click');
+        // $('.changeCode').trigger('click');
     },
     'verify' : function(){
         var 
@@ -284,6 +296,11 @@ function bindInputDefaultEvent(){
             ptip = inputs[ele]['ptip'],
             api ;
 
+            if(ipt){
+                console.log(ipt.value);
+                ipt.value='';
+            }
+
             if(ele=='username'){
                 //blur  behavior  will  valide form then check back-end data and deal with
                 $(ipt).bind('blur',function(){
@@ -365,19 +382,19 @@ function checkAndPostForm(){
             var tmp = true;
             for(var stat  in chk['ultimate']){
                if(!chk['ultimate'][stat])
-                       tmp = false;
+                    tmp = false;
             }
             if(tmp)
                 do_action('loginto');
             else{
-                tips('请正确填写注册信息', 'alert');
-                $('.changeCode').trigger('click');
+                // tips('请正确填写登陆信息', 'alert');
+                // $('.changeCode').trigger('click');
             }
          }
-         setTimeout(delaySubmit, 600);
+         setTimeout(delaySubmit, 300);
          add_action('delaySubmit', delaySubmit);
     }else{
-        tips('请正确填写登录信息', 'alert');
+        // tips('请正确填写登录信息', 'alert');
     }
 }
 

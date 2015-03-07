@@ -5,9 +5,18 @@ var md5=function(name){
     return name;
 };
 
-function __getClass(object){
-        return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
-    };    
+function __getClass(object){return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1]; };
+
+//trim
+String.prototype.trim=function() { return this.replace(/(^\s*)(\s*$)/g,''); }
+/**
+* 删除左边的空格
+*/
+String.prototype.ltrim=function() {return this.replace(/(^\s*)/g,''); }
+/**
+* 删除右边的空格
+*/
+String.prototype.rtrim=function() {return this.replace(/(\s*$)/g,''); }
 
 var HashMap = function() {
     var size = 0;
@@ -137,189 +146,198 @@ function __obj2str(o) {
         }
         return o.toString();
     })(o);        
-    return str;
+    return str.replace(/[\r\n]/g,'');
 } 
 
 function __arg2arr(args){ return Array.prototype.slice.call(args); }
 
-/*
- * init
-*/
+
 
 var 
-ctx,
-ajaxing=false,
-neeed={'length':0};
+    ctx,
+    ajaxing=false,
+    neeed={'length':0};
 
-//ajax stack priority high
-var 
-ajaxStack=[],
-ajaxVarStack=[];
-
-//normal stack  priority low
-var 
-funStack = [],
-funVerStack = [];
-
-var 
-resault={};
-
-function needs(context,opts,callback){
+    //ajax stack priority high
     var 
-    req,
-    ajaxitem,        
-    cbk = callback,
-    tmp_fun_stack = [],
-    tmp_fun_var_stack = [],
-    defaults = {
-        url:'',
-        method:'post',
-        data:'',
-        type:'json'
-    };
+    ajaxStack=[],
+    ajaxVarStack=[];
 
-    ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
+    //normal stack  priority low
+    var 
+    funStack = [],
+    funVerStack = [];
 
-    for(var iii in opts){            
-        if(__getClass(opts[iii])=='Object'){
-            if(opts[iii].jquery){
-                var ele = opts[iii];
-                ctx['views'][iii] = ele;
-                // console.log(ele);
-            }else{
-                if(opts[iii].nodeType){
-                    ctx['views'][iii] = opts[iii];
+    var 
+    resault={};
+
+    function init(context,opts,callback){
+        var 
+        req,
+        ajaxitem,        
+        cbk = callback,
+        tmp_fun_stack = [],
+        tmp_fun_var_stack = [],
+        defaults = {
+            url:'',
+            method:'post',
+            data:'',
+            type:'json'
+        };
+
+        // ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
+
+        var 
+        ctx = context==window 
+        ? context 
+        : (function(){ 
+            if(!window[context]){
+                window[context] = {}; 
+                return window[context];
+            }
+            return window[context];
+          })();
+
+        for(var iii in opts){
+            if(__getClass(opts[iii])=='Object'){
+                if(opts[iii].jquery){
+                    var ele = opts[iii];
+                    ctx['views'][iii] = ele;
                 }else{
-                    req = opts[iii];
-                    if(!req.url||req.url==''){
-                        ctx[iii] = opts[iii];
+                    if(opts[iii].nodeType){
+                        ctx['views'][iii] = opts[iii];
                     }else{
-                        ajaxitem = $.extend({},defaults,req);
-                        ajaxitem.vari = iii;
-                        ajaxStack.push(ajaxitem);
-                        ajaxVarStack.push(iii);
-                        ajaxing = true;
-                    }
-                }                    
-            }
-        }else if(__getClass(opts[iii])=='Function'){
-            var fun = opts[iii];
-
-            tmp_fun_stack.push(fun);
-            tmp_fun_var_stack.push(iii);
-
-            add_action(iii,fun,fun.length,ctx);
-
-        }else if(__getClass(opts[iii])=='Array'){                
-            var ary = opts[iii];                
-            if(__getClass(ary[0])!=='Function') return;   
-
-            tmp_fun_stack.push(ary);
-            tmp_fun_var_stack.push(iii);
-
-            if(iii!=='null') add_action(iii,ary,ary[0].length,ctx);
-        }else{
-            ctx[iii] = opts[iii];
-        }
-    }
-
-    for(var i=(tmp_fun_var_stack.length-1); i>=0; i--){
-        funVerStack.unshift(tmp_fun_var_stack[i]);
-        funStack.unshift(tmp_fun_stack[i]);
-    }
-
-    var tmp;
-    function cb(err,data){
-        if(data) {    
-            var vtmp = ajaxVarStack.shift();
-            resault[vtmp] = data;
-            ajaxing = false;
-        }
-        if(ajaxStack.length>0){
-            tmp = ajaxStack.shift();
-            runajax(tmp);
-        }else{
-            for(var v in resault){
-                ctx[v] = resault[v];                
-            }
-
-            if(funVerStack.length>0){                                  
-                var tfun;
-                var tprompt;
-                var doact;
-
-                function execSyncFun(){
-                    var tmp;
-                    var ary;
-                    if(funVerStack.length>0){
-                        var _funs = {};
-                        _funs['name'] = funVerStack.shift();
-                        _funs['fun']  = funStack.shift();
-                        doact = _funs['name'];
-                        if(__getClass(_funs['fun'])=='Function'){
-                            ctx[doact] = _funs['fun'];
-                            tfun = _funs['fun'];
+                        req = opts[iii];
+                        if(!req.url||req.url==''){
+                            ctx[iii] = opts[iii];
+                        }else{
+                            ajaxitem = $.extend({},defaults,req);
+                            ajaxitem.vari = iii;
+                            ajaxStack.push(ajaxitem);
+                            ajaxVarStack.push(iii);
+                            ajaxing = true;
                         }
-                        else if(__getClass(_funs['fun'])=='Array'){
-                            if(doact=='null') {
-                                ary = _funs['fun'];
-                                for(var kkk=0; kkk<ary.length; kkk++){
-                                    if(__getClass(ary[kkk])!=='Function'){
-                                        // tips.pop('null后的数组元素必须为函数','alert');
-                                        tips('null后的数组元素必须为函数','alert');
-                                        return false;
+                    }                    
+                }
+            }else if(__getClass(opts[iii])=='Function'){
+                ctx[iii] = opts[iii];
+                var fun = opts[iii];
+
+                tmp_fun_stack.push(fun);
+                tmp_fun_var_stack.push(iii);
+
+                add_action(iii,fun,fun.length,ctx);
+
+            }else if(__getClass(opts[iii])=='Array'){                
+                var ary = opts[iii];                
+                if(__getClass(ary[0])!=='Function') return;   
+
+                tmp_fun_stack.push(ary);
+                tmp_fun_var_stack.push(iii);
+
+                if(iii!=='null') add_action(iii,ary,ary[0].length,ctx);
+            }else{
+                ctx[iii] = opts[iii];
+            }
+        }
+
+        for(var i=(tmp_fun_var_stack.length-1); i>=0; i--){
+            funVerStack.unshift(tmp_fun_var_stack[i]);
+            funStack.unshift(tmp_fun_stack[i]);
+        }
+
+        var tmp;
+        function cb(err,data){
+            if(data) {    
+                var vtmp = ajaxVarStack.shift();
+                resault[vtmp] = data;
+                ajaxing = false;
+            }
+            if(ajaxStack.length>0){
+                tmp = ajaxStack.shift();
+                runajax(tmp);
+            }else{
+                for(var v in resault){
+                    ctx[v] = resault[v];                
+                }
+
+                if(funVerStack.length>0){                                  
+                    var tfun;
+                    var tprompt;
+                    var doact;
+
+                    function execSyncFun(){
+                        var tmp;
+                        var ary;
+                        if(funVerStack.length>0){
+                            var _funs = {};
+                            _funs['name'] = funVerStack.shift();
+                            _funs['fun']  = funStack.shift();
+                            doact = _funs['name'];
+                            if(__getClass(_funs['fun'])=='Function'){
+                                ctx[doact] = _funs['fun'];
+                                tfun = _funs['fun'];
+                            }
+                            else if(__getClass(_funs['fun'])=='Array'){
+                                if(doact=='null') {
+                                    ary = _funs['fun'];
+                                    for(var kkk=0; kkk<ary.length; kkk++){
+                                        if(__getClass(ary[kkk])!=='Function'){
+                                            // tips.pop('null后的数组元素必须为函数','alert');
+                                            tips('null后的数组元素必须为函数','alert');
+                                            return false;
+                                        }
                                     }
+                                    for(var kkk=0; kkk<ary.length; kkk++){
+                                        (function(itr){
+                                            tmp = ary[itr].apply(ctx);
+                                        })(kkk);
+                                    }
+                                } else {
+                                    tfun = _funs['fun'][0];
+                                    tprompt = _funs['fun'].slice(1);
+                                    ctx[doact] = tfun;
                                 }
-                                for(var kkk=0; kkk<ary.length; kkk++){
-                                    (function(itr){
-                                        tmp = ary[itr].apply(ctx);
-                                    })(kkk);
-                                }
-                            } else {
-                                tfun = _funs['fun'][0];
-                                tprompt = _funs['fun'].slice(1);
-                                ctx[doact] = tfun;
+                            }
+
+                            if(tprompt&&tprompt.length>0){
+                                do_action(doact,tprompt);
+                            }else{
+                                do_action(doact);
+                            }
+
+                            if(funVerStack.length>0&&!ajaxing){
+                                execSyncFun();
                             }
                         }
-
-                        if(tprompt&&tprompt.length>0){
-                            tmp = do_action(doact,tprompt);
-                        }else{
-                            tmp = do_action(doact);
-                        }
-
-                        if(funVerStack.length>0&&!ajaxing){
-                            execSyncFun();
-                        }
                     }
+                    execSyncFun();
                 }
-                execSyncFun();
+                if(callback) callback.apply(ctx);
             }
-            if(callback) callback.apply(ctx);
         }
-    }
 
-    function runajax(ttt){            
-        $.ajax({
-            url: ttt.url,
-            dataType: ttt.type,
-            data: ttt.data,
-            type: ttt.method,
-            success: function(data){
-                if(!data||data=='')
-                    data={};
-                cb(null,data);
-            },
-            error: function(data){
-                if(!data||data=='')
-                    data={};
-                cb(null,data);
-            }
-        });
-    }
+        function runajax(ttt){            
+            $.ajax({
+                url: ttt.url,
+                dataType: ttt.type,
+                data: ttt.data,
+                type: ttt.method,
+                success: function(data){
+                    if(!data||data=='')
+                        data={};
+                    cb(null,data);
+                },
+                error: function(data){
+                    if(!data||data=='')
+                        data={};
+                    cb(null,data);
+                }
+            });
+        }
 
-    cb();
-}
+        cb();
+    }
 
 //hooks
 /*
@@ -329,7 +347,7 @@ function needs(context,opts,callback){
 * @arguments 执行hooks name对应方法所需的参数
 */
 var actmap = new HashMap();
-function do_action(name){
+function do_action(name){    
     var funs=[]; 
     var tmp;
     var tmpary = [];
@@ -376,11 +394,11 @@ function do_action(name){
                     //     argmts = argmts.slice(1);
                     // }
                     if(tmp.ctx=='ve')tmp.ctx = window;
-                    tmp.ctx[name] = tmp.fun.apply(tmp.ctx,argmts);
-                    return tmp.ctx[name];
+                        tmp.ctx[name+'_return'] = tmp.fun.apply(tmp.ctx,argmts);
+                        // return tmp.ctx[name];
                 }else{
-                    tmp.ctx[name] = tmp.fun.apply(tmp.ctx)  //tmp.fun();
-                    return tmp.ctx[name];
+                    tmp.ctx[name+'_return'] = tmp.fun.apply(tmp.ctx)  //tmp.fun();
+                    // return tmp.ctx[name];
                 }
             }
         }
@@ -414,11 +432,11 @@ function add_action(name,fun,propnum,ctx){
             if(actmap.containsKey(name)){
                 funs = actmap.get(name);                
                 for(var j=0; j<funs.length; j++){                    
-                    if(__getClass(fun)=='Array'){                              
+                    if(__getClass(fun)=='Array'){
                         if(__obj2str(funs[j].fun)==__obj2str(fun[0])){
                             hasdefine=true;
                         }
-                    }else if(__obj2str(funs[j])==__obj2str(fun)){
+                    }else if(__obj2str(funs[j].fun)==__obj2str(fun)){
                         hasdefine=true;
                     }
                 }                
@@ -440,7 +458,7 @@ function add_action(name,fun,propnum,ctx){
     // }
 
     // var timeAddAction = setTimeout(addAct, 200);
-}     
+}    
 
 /*
 * 消息弹出抽象函数
@@ -597,6 +615,9 @@ var __subString = function(str, len, hasDot)
     return newStr;
 }
 
+//中英文字符串长度
+function __strlen(str){return str.replace(/[^\x00-\xff]/g,"aaa").length;}
+
 function __measureDoc(){
     var doch = document.documentElement.clientHeight, docw = document.documentElement.clientWidth,
     docST = document.documentElement.scrollTop||document.body.scrollTop,
@@ -706,141 +727,27 @@ var msgtips = function(msg,stat,cb){
 
 window.tips = msgtips;
 
-function maskBox(msg,stat,cb){    
-    var 
-    docRect = __measureDoc()
-    scroll_left   = docRect.sl,
-    scroll_top    = docRect.st,
-    client_width  = docRect.dw,
-    client_height = docRect.dh,
-    mask_tpl='',
-    container_tpl ='',
-    cent_tpl ='';
-    tan = new core.tipsbox();
 
-    if(!stat) stat='normal';
-
-    tan.tipsBox = function(stat){
-        $('#bg_container').remove();
-        box_left  = Math.round((parseInt(client_width)-400)/2),
-        box_top   = Math.round((parseInt(client_height)-566)/2);
-        container_tpl = document.getElementById('bg_container');
-        if(!container_tpl){
-            container_tpl = document.createElement('div');
-            container_tpl.id = 'bg_container';
-            container_tpl.style.cssText = 'width:400px;height:566px;\
-                                    display:block;position:fixed;z-Index:10001;\
-                                    left:'+box_left+'px;\
-                                    top :'+box_top+'px;';
-        }
-        $('body').append(container_tpl);
-        return container_tpl;
+function oneClick(ele,opts,cb){
+    if(!$(ele).length) return;
+    var
+    count = 0,
+    defaults = {
+        method : 'click',
+        delay : 0
     };
+    if(opts&&opts!='') opts = $.extend({},defaults,opts);
+    else opts = defaults;
 
-    tan.tipsItem = function(stat){
-        $('#maskcontent').remove();
-        cent_tpl   = document.createElement('div');
-        cent_tpl.id  = 'maskcontent'
-        cent_tpl.style.cssText = 'width:100%;height:100%;display:block;position:relative;\
-                                background-color:#fff;';
-
-        return cent_tpl;
-    };
-
-    tan.anim = function(item,box,stat){
-        $('#maskbox').remove();
-        if(stat=='md'||stat!=='sign'){
-            mask_tpl = document.getElementById('mask_tpl');
-            if(!mask_tpl){
-                mask_tpl   = document.createElement('div');
-                mask_tpl.id  = 'maskbox';
-                mask_tpl.style.cssText = 'width:100%;height:100%;display:block;\
-                                          position:fixed;left:0;top:0;\
-                                          background-color:#000;opacity:0.6;z-Index:10000;';
-
-                $('body').append(mask_tpl);                    
+    if(count == 0){
+        count = 1;
+        $(ele).one(opts['method'],function(e){
+            cb(e);
+            if(opts['delay']!=0){
+                opts['ttt'] = setTimeout(function(){
+                    count = 0;
+                }, delay);
             }
-
-            var closebtn = new Image();
-            closebtn.id = 'closePop';
-            closebtn.src = '/app/Tpl/ve_2_1/vetpl/Style/Css/img/icon-close.png';
-            
-            $('#maskcontent').append(closebtn);
-            $(closebtn).css({'position':'absolute','right':'30px','top':'20px','cursor':'pointer'});
-
-            $('#maskbox').show();
-            $(box).fadeIn(300);
-            $('#closePop').click(function(){
-                    $(box).remove();
-                    $('#maskbox').remove();
-            })
-        }else{          
-            $(box).fadeIn(1000).delay(2000).fadeOut('slow');        
-        }
-    };
-
-    if(cb) tan.pop(msg,stat,cb);
-    else
-        tan.pop(msg,stat);
-
-    return tan;
+        });
+    }
 }
-
-window.maskbox = maskBox;
-
-function rsp(name,condition){
-    $(window).resize(function(){
-        if(condition==true || $(condition).length){
-            do_action(name);
-        }
-    });
-}
-window.rsp = rsp;
-
-
-
-
-// var  // for login
-// pop_login_div   = document.createElement('div');
-// pop_login_div.style.cssText = 'display:block;overflow:hidden;';
-
-// var  // for login
-// pop_login_ifram = document.createElement('iframe');
-// pop_login_ifram.frameBorder=0;
-// pop_login_ifram.scrolling='no';
-// pop_login_ifram.src = '/index.php?ctl=user&act=login';
-// pop_login_ifram.style.cssText = 'width:400px;height:566px;display:block;';
-
-
-// pop_login_div.appendChild(pop_login_ifram);
-
-// var 
-// login = pop_login_div.outerHTML;
-
-// var
-// ifr_wrap = login;
-
-// function maskPopLoginAndRegister(){
-//     maskbox(ifr_wrap,'mask');
-// }
-
-// //响应不刷新
-// function rspMaskBox(){
-//     if($('#maskbox').length){                        
-//         if($('#bg_container').css('display') == 'block'){                                                       
-//             var 
-//             docRect = vepop.__measureDoc(),
-//             client_width  = docRect.dw,
-//             client_height = docRect.dh,
-//             box_left  = Math.round((parseInt(client_width)-400)/2),
-//             box_top   = Math.round((parseInt(client_height)-566)/2),
-//             container_tpl = document.getElementById('bg_container');
-//             container_tpl.style.left = box_left+'px';
-//             container_tpl.style.top = box_top+'px';
-//         }
-//     }
-// }
-// vepop.core.add_action('rsp_maskbox',rspMaskBox);
-// vepop.core.add_action('plogin',maskPopLoginAndRegister);
-// rsp('rsp_maskbox','#maskbox');
-// maskPopLoginAndRegister();

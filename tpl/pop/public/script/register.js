@@ -5,6 +5,7 @@ chk={};
 
 chk.username={}; 
 chk.ultimate={};   //store async check state for ultimate submit
+chk.stopMultiClick = false;
 chk['event-src']='';   //who trigger event;
 
 //校验函数
@@ -17,10 +18,8 @@ function getFormData(){
           'username' :  { 'ipt' : __f['username'],'tip':$('#username-tip'), 'ptip':$('#username-poptip') }
         , 'mverify' : { 'ipt' : __f['mverify'],'tip':$('#u-tip'), 'ptip':'' }
         , 'password' : { 'ipt' : __f['password'],'tip':$('#password-tip'), 'ptip': $('#password-poptip') } 
-        , 'repassword' : { 'ipt' : __f['repassword'],'tip':$('#repassword-tip'), 'ptip':'' } 
-        , 'child' : { 'ipt' : __f['child'],'tip':$('#username-tip'), 'ptip':'' } 
-        , 'birthday' : { 'ipt' : __f['birthday'],'tip':$('#birthday-tip'), 'ptip':$('#birthday-poptip') } 
-        , 'verify' : { 'ipt' : __f['verify'],'tip':$('#verify-tip'), 'ptip':'' }
+        , 'repassword' : { 'ipt' : __f['repassword'],'tip':$('#repassword-tip'), 'ptip':'' }         
+        , 'verify' : { 'ipt' : __f['verify'],'tip':$('#verify-tip'), 'ptip':'' } 
     }
 
     var
@@ -28,10 +27,16 @@ function getFormData(){
           'username' :  { 'ipt' : __f['username'],'tip':$('#username-tip'), 'ptip':$('#username-poptip') }
         , 'mverify' : { 'ipt' : __f['mverify'],'tip':$('#u-tip'), 'ptip':'' }
         , 'password' : { 'ipt' : __f['password'],'tip':$('#password-tip'), 'ptip': ''} 
-        , 'repassword' : { 'ipt' : __f['repassword'],'tip':$('#repassword-tip'), 'ptip':'' } 
-        , 'child' : { 'ipt' : __f['child'],'tip':$('#username-tip'), 'ptip':'' } 
-        , 'birthday' : { 'ipt' : __f['birthday'],'tip':$('#birthday-tip'), 'ptip':'' } 
+        , 'repassword' : { 'ipt' : __f['repassword'],'tip':$('#repassword-tip'), 'ptip':'' }         
         , 'verify' : { 'ipt' : __f['verify'],'tip':$('#verify-tip'), 'ptip':'' } 
+    }
+
+    if(is_add_baby&&is_add_baby!=''){
+        form_data.child = { 'ipt' : __f['child'],'tip':$('#username-tip'), 'ptip':'' } ;
+        form_data.birthday = { 'ipt' : __f['birthday'],'tip':$('#birthday-tip'), 'ptip':$('#birthday-poptip') } ;
+        
+        ifr_form_data.child = { 'ipt' : __f['child'],'tip':$('#username-tip'), 'ptip':'' } ;
+        ifr_form_data.birthday = { 'ipt' : __f['birthday'],'tip':$('#birthday-tip'), 'ptip':'' } ;
     }
 
     if (top.location != self.location){
@@ -57,9 +62,9 @@ var chkopts = {
         if(tmp) chk['username']['type'] = 'email';
         // not email
         if(!tmp) {
-            tmp = reg.mobile.test(val);   //mobile check
-            if(tmp)
-                chk['username']['type'] = 'mobile';
+                tmp = reg.mobile.test(val);   //mobile check
+                if(tmp)
+                        chk['username']['type'] = 'mobile';
         }
         return tmp;
     },
@@ -118,7 +123,7 @@ var __pre = function(name,api,cb){
     var opts = {};
     opts[name] = api;
     opts[null] = [cb];
-    init(chk,opts);
+    init('chk',opts);
 }
 
 //预处理回调
@@ -133,7 +138,8 @@ var __aft = {
                 var ajaxdata = chk['pre_username'];
                 if(ajaxdata.status<0) {
                     tmp=false;
-                    $(tip).addClass('show');
+                    // $(tip).addClass('show');
+                    $(tip).addClass('show').html("返回数据不正确，请耐心等候");
                 } else{
                     switch(ajaxdata.status){
                         case 0 :
@@ -163,7 +169,7 @@ var __aft = {
     },
     'sendmsg' : function(){                       
         if(chk['pre_sendmsg']){
-                var data = chk['pre_sendmsg'];
+                var data = chk['pre_sendmsg'];                
                 tips(data['msg']);
                 // $('.changeCode').trigger('click');
         }
@@ -240,7 +246,7 @@ var __aft = {
                 if(chk['ultimate']['submit']){
                         do_action('delaySubmit');
                 }
-                if(chk['event-src']=='sendmsg'){                                                
+                if(chk['event-src']=='sendmsg'){   
                         chk['event-src']='';
                         do_action('send_mobile_msg');
                 }
@@ -265,6 +271,9 @@ var __aft = {
 //after validate input value then exec this function
 // this function implementation  interactive effect, like some tips, pop-msg
 function tipBehavior(name,booler){
+    if(name=="verify_m") {
+        name="mverify";
+    }
     var
     inputs = getFormData(),
     ipt = inputs[name] ? inputs[name]['ipt'] : '',
@@ -278,8 +287,8 @@ function tipBehavior(name,booler){
             $(tip).removeClass('show');
             $(ptip).removeClass('show');
             $('.auth-tips-top').addClass('hide');
-        }else{
-            $('.auth-tips-top').addClass('hide');
+        }else{            
+            $('.auth-tips-top').addClass('hide');   
             msg ? $(tip).html(msg).addClass('show') : $(tip).addClass('show') 
             $(ipt).addClass('u-error').removeClass('u-verified').addClass('u-verified-err');
         }
@@ -326,45 +335,41 @@ function tipBehavior(name,booler){
             $('#m_verify').addClass('hide');
         }
     }
-
-    if(name=='verify_m'){
-        commonTip();
+    if(name=='mverify'){
+            commonTip();
     }
         //in-time get password level
     if(name=='intime_password'){
-        if(chk['password']['level']){
-            var 
-            flag = chk['password']['level'];
-            flag>=4 
-                ? intimePasswordBehavior(4)
-                : flag>2 
-                    ? intimePasswordBehavior(3)
-                    :  flag>=1 
-                        ? intimePasswordBehavior(1)
-                        :  $('.pwdstr-item').removeClass('strengthA').removeClass('strengthB').removeClass('strengthC');
-        }else{
-            $('.pwdstr-item').removeClass('strengthA').removeClass('strengthB').removeClass('strengthC');
-        }
-    }
-
+            if(chk['password']['level']){
+                var 
+                flag = chk['password']['level'];
+                flag>=4 
+                    ? intimePasswordBehavior(4)
+                    : flag>2 
+                        ? intimePasswordBehavior(3)
+                        :  flag>=1 
+                            ? intimePasswordBehavior(1)
+                            :  $('.pwdstr-item').removeClass('strengthA').removeClass('strengthB').removeClass('strengthC');
+            }else{
+                $('.pwdstr-item').removeClass('strengthA').removeClass('strengthB').removeClass('strengthC');
+            }
+    }                
     if(name=='password'){                        
         commonTip();                        
         if(inputs['repassword']['ipt'].value){
             $(inputs['repassword']['ipt']).trigger('blur');
         }
     }
-
     if(name=='repassword'){
         commonTip();
     }
-
     if(name=='birthday'){
         commonTip();
     }
-
     if(name=='verify'){
         commonTip();
         if(booler){
+            
             //  if  chk['ultimate']['submit']=true , the submit opration right will change to async callback, 
             //  the function in __aft['xxx']
             chk['ultimate']['verify'] = false;
@@ -398,7 +403,6 @@ function bindInputDefaultEvent(){
     $('.u-ipt').bind('focus',function(){
         $(this).siblings('.u-placeholder').addClass('hide');
     });
-
     $('.u-ipt').bind('blur',function(){                        
         if(!this.value)
             $(this).siblings('.u-placeholder').removeClass('hide');
@@ -410,8 +414,7 @@ function bindInputDefaultEvent(){
 
     function valideThenBehavior(fckopts,ele,regu,behavior){
         //form valide
-        // tmp = valieFormElement(fckopts, ele, regu);
-        tmp = formValide(fckopts) (ele,regu) ();
+        tmp = formValide(fckopts) (ele,regu) ();  
         //thenbehavior
         if(!behavior) behavior = regu;
         tipBehavior(behavior, tmp);
@@ -419,7 +422,7 @@ function bindInputDefaultEvent(){
     
     for(var ipt in inputs){                        
         if(ipt=='child') continue;
-        var inpt = inputs[ipt]['ipt'];
+        var inpt = inputs[ipt]['ipt'];  
         if(!inpt) continue;
 
         //
@@ -431,15 +434,15 @@ function bindInputDefaultEvent(){
             api ;
 
             //refresh this page will empty input value
-            ipt.value='';
+            if(ipt)ipt.value='';
 
             //default click opration, will show info
             $(ipt).bind('click',function(){
                 $('.auth-tips').removeClass('show');
                 $('.auth-tips-top').removeClass('show');
                 if(ptip!==''){
-                    ptip.addClass('show');
-                    $('.auth-tips-top').removeClass('hide');
+                        ptip.addClass('show');
+                        $('.auth-tips-top').removeClass('hide');
                 }
             });                                
 
@@ -448,13 +451,13 @@ function bindInputDefaultEvent(){
             if(ele=='username'){
                 //blur  behavior  will  valide form then check back-end data and deal with
                 $(ipt).bind('blur',function(){
-                    //form valide
-                   // tmp = formValide(chkopts)
-                   // (inputs[ele],'username')
-                   // ();
-                   //  //valide behavior
-                   //  tipBehavior('username',tmp);
-                    valideThenBehavior(chkopts, inputs[ele], 'username');
+                        //form valide
+                       // tmp = formValide(chkopts)
+                       // (inputs[ele],'username')
+                       // ();
+                       //  //valide behavior
+                       //  tipBehavior('username',tmp);
+                        valideThenBehavior(chkopts, inputs[ele], 'username');
                 });
             }
             if(ele=='mverify'){
@@ -465,7 +468,7 @@ function bindInputDefaultEvent(){
                    // ();
                    // //valide behavior
                    // tipBehavior('verify_m',tmp);
-                   valideThenBehavior(chkopts, inputs[ele], 'verify_m');
+                   valideThenBehavior({'popmsg':false}, ipt.value, 'verify_m');
                 });
             }
             if(ele=='password'){
@@ -501,9 +504,9 @@ function bindInputDefaultEvent(){
                 });
             }
             if(is_add_baby==1){
-                if(ele=='birthday'){                    
+                if(ele=='birthday'){
                     var chd_item = inputs['child'];
-                    $(ipt).bind('blur',function(){                        
+                    $(ipt).bind('blur',function(){
                         //form valide
                        // tmp = formValide(chkopts)
                        // ([ chd_item, inputs[ele] ],'birthday')
@@ -518,23 +521,29 @@ function bindInputDefaultEvent(){
                 $(ipt).bind('blur',function(){
                        //send mobile message
                    if(arguments.length>1){
+
                         //
                         var sendmsg = arguments[1];
                         var phone = arguments[2];
                         if(sendmsg && phone && tmp){
                             //send message to user phone;
                             function sendMobileMsg(){
-                                 var that = $('.btn-send-msg');
+                                 var 
+                                 ttt,
+                                 that = $('.btn-send-msg');
                                  that.addClass('u-wait');
                                  
                                  // countdown 60 seconds
                                  var count = 60;
-                                 chk['ttt'] = setInterval(function(){
-                                    that.html(--count);
+                                 ttt = setInterval(function(){
+                                    that.html(--count+'秒');
                                     if(count==0){
-                                        clearInterval(chk['ttt']);
+                                        clearInterval(ttt);
                                         chk['msg-sendding'] = false;  // user can send message again;
                                         $('.btn-send-msg').removeClass('u-wait').html('重新发送');
+                                    }
+                                    if(count<0){
+                                        clearInterval(ttt);
                                     }
                                  }, 1000);
 
@@ -592,7 +601,7 @@ function checkAndPostForm(){
                               ();
     }
 
-    if(user_type&tmp_type){
+    if(user_type&tmp_type){        
          //wait for async opration 600 millisecond, if over 600 millisecond, please check your network
          function delaySubmit(){
             var tmp = true;                                 
@@ -601,8 +610,9 @@ function checkAndPostForm(){
             for(var stat  in chk['ultimate']){                                        
                if(!chk['ultimate'][stat])
                        tmp = false;
-            }
+            }            
             if(tmp){
+                chk.stopMultiClick=true;
                 do_action('register');  //post data
             }                               
          }
@@ -622,6 +632,22 @@ function submitUser(){
     user_type = true,
     tmp_type = true;
 
+    var child_value = (function(){
+        if(is_add_baby){
+            if(inputs['child'][ipt]) {
+                return inputs['child']['ipt'].value;            
+            }
+        }
+        return 1;
+    })();
+
+    var birthday_value = (function(){
+        if(is_add_baby){
+            if(inputs['birthday'][ipt]) return inputs['birthday']['ipt'].value;
+        }
+        return '';
+    })();
+
     // mobile
     if(chk['username']['type']=='mobile'){
         var query={
@@ -631,24 +657,23 @@ function submitUser(){
                 verify                 : inputs['verify']['ipt'].value,
                 check_mobile : inputs['mverify']['ipt'].value,
                 pid                     : register_pid,
-                child                  : inputs['child']['ipt'].value,
-                birthday          : inputs['birthday']['ipt'].value,
+                child                  : child_value ,
+                birthday          : birthday_value,
                 ajax                    :1
         };
         api = {"url" : mobile_post_url, data : query };
         __pre('pre_mobregister',api,__aft['mobregister']);
      }
-
      // pc
-     else{
+     else{             
         var query={
                 email            : inputs['username']['ipt'].value,
                 user_name : inputs['username']['ipt'].value,
                 user_pwd    : $.base64.encode(inputs['password']['ipt'].value),
                 user_pwd_confirm:$.base64.encode(inputs['repassword']['ipt'].value),
                 verify            : inputs['verify']['ipt'].value,
-                child                  : inputs['child']['ipt'].value,
-                birthday          : inputs['birthday']['ipt'].value,
+                child             : child_value ,
+                birthday          : birthday_value,
                 ajax               :1
         };
         api = {"url" : pc_post_url, data : query };                                
@@ -665,8 +690,10 @@ bindInputDefaultEvent();
 //校验
 $('.submit-btn').click(function(){
     //change the submit opration right to __aft['xxx']  function
-    chk['ultimate']['submit']=true;
-    checkAndPostForm();
+    if(!chk.stopMultiClick){
+        chk['ultimate']['submit']=true;
+        checkAndPostForm();
+    }
 });
 
 //iframe
