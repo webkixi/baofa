@@ -150,7 +150,7 @@
 		});
 	}
 	add_action('fun_menu',initContextMenu);
-	// do_action('fun_menu');
+	// do_action('fun_menu'); 
 
 	creatstyle('gzgzgz',function(gzgzgz){
 		gzgzgz.text('#gzmenu{position:absolute;width:150px;display:none;}\
@@ -170,15 +170,26 @@
 			'list_data' : {'url':'/list','data':JSON.stringify( {'page':1 } ),'type':'html'} , 
 			'normal_tpl': {'url':'/tpl','type':'html'}
 		};
-		needs('zone', {
-			lists  : api['list_data'] ,
-			list_insert_to : function(){			
-				do_action('insertCnt',opdiv,zone.lists,'list');
-			} ,
-			list_save : function(){
-				__put(opdiv.div);
-			}
-		});
+		if(src){
+			needs('zone', {
+				lists  : api['list_data'] ,
+				list_insert_to : function(){				
+					do_action('insertCnt',opdiv,zone.lists,'list');
+				} ,
+				list_save : function(){
+					//列表格子的识别class				
+					$(opdiv.div).addClass('wangwang-list');
+					__put(opdiv.div);
+				}
+			});
+		}else{
+			needs('zone', {
+				lists  : api['list_data'] ,
+				list_insert_to : function(){				
+					$('.pageto').parent().html(zone.lists);
+				}
+			});
+		}
 	}
 
 	function menuClone(src){
@@ -273,20 +284,28 @@
 		if($(odiv.div).find('.md-article').length){
 			$(odiv.div).find('.md-article').html(cnt);
 		}else{
-			if(stat=='list')
-				$(odiv.div).find('.md-body').html(cnt);			
-			else
+			if(stat=='list'){
+				if($(odiv.div).find('.md-body').length){
+					$(odiv.div).find('.md-body').html(cnt);
+				}else{
+					$(odiv.div).prepend('<div class="md-wrap clearfix"><div class="md-body">'+cnt+'</div></div>');
+				}				
+			}
+			else{
 				$(odiv.div).prepend('<div class="md-wrap clearfix"><div class="md-body ">'+cnt+'</div></div>');			
+			}
 		}
 		do_action('code_highlight');
 	}
 	add_action('insertCnt',insertCntTodiv,insertCntTodiv.length);
 
 	var getLoginInfo = function(){
+		
 		needs('zone',{
 			'login_info' : {'url':'/logininfo'}
-			,null:[stat]
+			,'loginstat' : stat
 		});
+
 		function stat(){
 			if(zone.login_info.stat == 0){
 				zone.login_stat = false;
@@ -295,9 +314,16 @@
 				do_action('fun_menu');
 			}
 		}
+		
 	}
-
+	// bug
+	function initArticleList(){
+		if($('._list').length>0){
+			renderMenuList();
+		}
+	}
 	getLoginInfo();
+	initArticleList();
 	
 	function menuLogin(){				
 		maskbox("<div id='sign' style=''><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');

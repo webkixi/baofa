@@ -54,6 +54,13 @@ io.on('connection', function(socket){
 });
 
 function pushMsgToFrontEnd(msg){
+	var
+	title = _subString(cleanHtml(msg.cnt).replace(/[\r\n]/g,''),16),
+	des = _subString(cleanHtml(msg.cnt).replace(/[\r\n]/g,''),100,true);
+
+	msg.title = title;
+	msg.des = des;
+
 	io.emit('xxx', { 'data': msg });
 }
 
@@ -369,7 +376,7 @@ function pushMsgToFrontEnd(msg){
 		if(pathname=='list'){
 			var 
 			body = yield parse.json(this);
-			if(!body.page) body.page=1;		
+			if(!body.page) body.page=1;					
 			this.body = yield getArticleList(body.page);
 		}
 	}
@@ -452,6 +459,7 @@ function pushMsgToFrontEnd(msg){
 		if(!body.id) return ;
 
 		var
+		exist=false;
 		id  = path+'__id'+body.id;
 		
 		// exist = yield function(fn){sc.zexists(theme,'attr',fn);};
@@ -466,8 +474,11 @@ function pushMsgToFrontEnd(msg){
 		}
 		//article index
 		if(body.type&&body.type==1){
-			yield zset('article',id, body.timer);
-			pushMsgToFrontEnd(body);
+			exist = yield function(fn){ sc.zexists('article',id,fn);}
+			if(!exist){
+				yield zset('article',id, body.timer);
+				pushMsgToFrontEnd(body);
+			}
 		}else{
 			yield removeIndex(path,body,'article');
 		}
@@ -577,9 +588,7 @@ function pushMsgToFrontEnd(msg){
 			}
 			looper+=rpl($('._list').html(),{'title':title,'des':des});
 		}
-		$('._list').html(looper);	
-
-		// return $('._list').html(looper).prop('outerHTML');
+		$('._list').html(looper);
 		return $('.pageto').prop('outerHTML');
 		
 	}
