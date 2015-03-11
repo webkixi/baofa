@@ -1,0 +1,427 @@
+<!-- 侧边栏 toolbar -->
+<div class="s-ve-toolbar">
+  <!-- 用户信息及购物车列表 -->
+  <div class="s-toolbar-list">
+     <div class="s-user">
+         <a class="s-mt s-mt-user">
+             <i class="icon-s-user"></i>
+         </a>
+     </div>
+     <div class="s-coupon s-mt-coupon">
+         <a class="s-mt">
+             <i class="icon-s-coupon"></i>
+         </a>
+     </div>
+     <div class="s-cart s-mt-cart">
+         <a class="s-mt">
+             <i class="icon-s-cart"></i>
+             <span class="cart-infotip">购物车<em class="carnum">1</em></span>
+         </a>
+     </div>
+  </div>
+  <!-- 用户信息及购物车列表 end/ -->
+  <!-- 附属图标列表 -->
+  <div class="s-toolbar-extra">
+    <div class="s-extra-item s-kefu posr">
+         <a class="s-mt s-mt-kefu">
+             <i class="icon-s-kefu"></i>
+         </a>
+         <div class="s-mc "><!-- s-show 显示类 -->
+            <i class="icon-s-arrR"></i>
+            <div class="s-kefu-m pop-box">
+                <div class="kefu-tit"><strong>联系客服</strong></div>
+                <div class="kefu-center">
+                <div class="kefu1-box">
+                  <a class="kf-itemLink" onclick="window.open('http://v2.live800.com/live800/chatClient/chatbox.jsp?companyID=457738&jid=3221650122&skillId=6642', 'newwindow', 'height=540, width=800, top=0,left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no')" href="javascript:;" ><i>在线咨询</i></a>
+                  <a class="kf-itemLink" onclick="window.open('http://v2.live800.com/live800/chatClient/chatbox.jsp?companyID=457738&jid=3221650122&skillId=6643', 'newwindow', 'height=540, width=800, top=0,left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no')" href="javascript:;" ><i>售后服务</i></a>
+                </div>
+                <a href="mailto:service@ve.cn" class="kefu2-box">
+                  <span class="kefu2"></span>
+                </a>
+                </div>
+            </div>
+         </div>
+     </div>
+     <div class="s-extra-item s-qrcode posr">
+         <a class="s-mt s-mt-qrcode">
+             <i class="icon-s-qrcode"></i>
+         </a>
+        <div class="s-mc ">
+            <i class="icon-s-arrR"></i>
+            <div class="s-qrcode-m pop-box">
+                <img src="{$STATIC_ROOT}ve_2_1/css/img/sidebar/weix.png?_ve_20150126" alt="扫一扫二维码" width="149" height="173">
+            </div>
+        </div>
+     </div>
+     <div class="s-extra-item s-top posr">
+         <a class="s-mt s-mt-top">
+             <i class="icon-s-top"></i>
+         </a>
+         <div class="s-mc ">
+            <i class="icon-s-arrR"></i>
+            <div class="s-top-m pop-box">
+               <span>返回顶部</span>
+            </div>
+        </div>
+     </div>
+  </div>
+  <!-- 附属图标列表 end/ -->
+  <!-- 未登录 -->
+  <div id="no-login" class="m-fixpop pop-box hidden" style="width: 280px;">
+      <div class="m-nologin-wrap posr">
+            <i class="icon-s-arrR"></i>
+            <img src="{$STATIC_ROOT}ve_2_1/css/img/member/head-f.jpg?_ve_201430"> 
+            <span class="s-login-info">您好，请先
+                <a href="javascript:login();" class="loginBtn"><em class="red">登录 | </em></a> 
+                <a href="/index.php?ctl=user&amp;act=register"><em class="red">注册</em></a>
+            </span>            
+      </div>
+  </div>
+  <!-- 未登录 end/ -->
+  <!-- 已登录 -->
+  <div id="in-login" class="m-fixpop pop-box hidden" style="width: 280px; height: auto;">
+      <div class="m-login-wrap posr">
+            <i class="icon-s-arrR"></i>
+            <img class="headpic" src="{$STATIC_ROOT}ve_2_1/css/img/member/head-f.jpg" width="50">
+            <span>您好，<em class="red">liang</em></span>
+            <a href="/uc_order.html" class="uc-order"><i class="icon-s-order"></i></a>
+      </div>
+  </div>
+  <!-- 已登录 end/ -->
+  <!-- 优惠券 -->
+  <div id="" class="m-fixpop pop-box hidden" style="width: 280px; height: 100%; top: 0px;overflow-x: hidden;overflow-y: auto; z-index:9000;">
+      <div class="m-coupon-wrap posr">
+        <div class="pop-tit">
+            <i class="icon-s-close"></i>
+            <strong>我的优惠券</strong>
+        </div>
+        <div class="m-coupon-c">
+           <!--  没有优惠券 -->
+          <!--   <div class="nocoupon-bg"></div> -->
+           <!--  没有优惠券 end/ -->
+           <ul class="m-coupon-list">
+               <li class='looper'>
+                   <div class="coupon-bg1">
+                        <div class="coupon-price">
+                            <span class="flag">￥</span>
+                            <span class="num">20</span>
+                        </div>
+                        <div class="coupon-des s-blue">满200元使用</div>
+                        <div class="coupon-date s-blue">
+                            <p>开始时间：2015-02-05</p>
+                            <p>结束时间：2015-02-28</p>
+                        </div>
+                        <div class="coupon-desc">则选择并绑定商品，否则不</div>
+                   </div>
+               </li>
+           </ul>
+           <a class="s-btn" href="/uc_youhui-index.html">
+               <span>查看更多</span>
+               <i class="icon-s-point"></i>
+           </a>
+        </div>
+      </div>
+  </div>
+  <!-- 优惠券 end/ -->
+  <!-- 购物车 -->
+  <div id="" class="m-fixpop pop-box m-carts hidden" style="width: 280px; height: 100%; top: 0px;overflow-x: hidden;overflow-y: auto; z-index:9000;">
+      <div class="m-cart-wrap posr">
+        <div class="pop-tit">
+            <i class="icon-s-close"></i>
+            <strong>购物车</strong>
+        </div>
+        <!-- 购物车列表 -->
+        <div class="fixbar-goods">
+            <div class="goods-content clear">
+                <div class="goods-cart">
+                    <ul class="goods-cart-list">
+                        <!-- <li class="goods-no"><strong>快去挑选商品吧！</strong></li> -->
+                        <li class="looper">
+                            <div class="g-shopp-c">
+                                <a class="g-thumb" href="{{ve.url}}"><img src="{{ve.icon}}"></a>
+                                <div class="g-title-c">
+                                    <div class="g-title">
+                                        <span class="g-name"><a href="{{ve.url}}">{{ve.sub_name}}</a></span><span class="g-model">{{ve.model}}</span>
+                                    </div>
+                                </div>
+                                <div class="g-num-c">
+                                    <div class="g-top-r">
+                                        <span class="g-num">x {{ve.number}}</span><img class="delgoods" delid="{{ve.id}}" jid="{{ve.jid}}" jnum="{{ve.number}}" jprice="{{ve.unit_price}}" src="http://s1.ve.cn/statics/ve_2_1/css/img/sidebar/close1.png?_ve_201430">
+                                    </div>
+                                    <span class="g-price"><i>¥</i>{{ve.unit_price}}</span>
+                                </div>
+                            </div>
+                        </li>                        
+                    </ul>
+                </div>
+            </div>
+            <div class="s-cart-foot clear">
+               <div class="s-cart-m">
+                   <span class="s-cart-money">{{ve.cart_total_price}}</span>
+                   <span class="s-cart-num">共<em class="red"> {{ve.cart_total_num}} </em>件商品</span>
+               </div>
+               <a class="s-btn" href="/uc_youhui-index.html">
+                   <span>结算</span>
+                   <i class="icon-s-point"></i>
+               </a>
+            </div>
+        </div>
+        <!-- 购物车列表 end /-->
+      </div>
+  </div>
+  <!-- 购物车 end/ -->
+</div>
+<!-- 侧边栏 toolbar end/ -->
+
+<script>
+    // $(function(){
+    //     $('.s-toolbar-extra').find('.s-extra-item').hover(function(){
+    //         $(this).find('.s-mt').addClass('s-cur')
+    //         $(this).find('.s-mc').addClass('s-show')
+    //     },function(){
+    //         $(this).find('.s-mt').removeClass('s-cur')
+    //         $(this).find('.s-mc').removeClass('s-show')
+    //     });
+    // });
+// require(['common/easy_login','sidebar/parabola','sidebar/vesiderbar','global/g'],function(c,parabola,veside,core){
+require(['common/easy_login','sidebar/parabola','sidebar/vesiderbar','global/g'],function(c,parabola,veside,core){
+    Parabola = parabola.parabola;
+
+    var
+    needs = core.needs,
+    sb_api={},
+    loginstat=false;
+
+    needs('global_siderbar',{
+        "api"       : setApi,
+        'views'     : initViews,
+        "pull_data" : pullData,
+        "init_bar"  : initBar
+    });
+
+    //
+    function setApi(){
+        sb_api = {
+            user_info : { "url":"/", "data":{ctl:'ajax',act:'logininfo'} }
+        }
+    }
+
+    function initViews(){        
+        return {
+            'no-login'   : makeView($('#no-login')),
+            'in-login'   : makeView($('#in-login')),
+            'coupon_tpl' : makeView($('.m-coupon-c')),
+            'cart_goods' : makeView($('.m-carts'))
+        };
+    }
+
+    function makeView(item){
+        if(__getClass(item)!=='Object'){
+            return [];
+        }else{
+            if(item.jquery){
+                var 
+                tmp_tpl = item.removeClass('hidden').prop('outerHTML');
+                item.remove();
+                return {
+                    'tpl': {'body'  : tmp_tpl,
+                            'looper': (function(){
+                                        return $(tmp_tpl).find('.looper').length ? $(tmp_tpl).find('.looper').prop('outerHTML') : '';
+                                    })()
+                           }
+                }
+            }
+        }
+    }
+
+    function pullData(){
+        needs('global_siderbar',{
+            jdata : sb_api.user_info,
+            setGloableData : function(){
+                loginstat = global_siderbar.jdata.status;
+            }
+        });
+    }
+
+    function initBar(){
+        var 
+        jdata = global_siderbar.jdata,
+        $s_bar     = $(".s-ve-toolbar"),
+        s_bar_pos  = __currentStyle($s_bar[0]).position;
+
+        if(s_bar_pos!="fixed")
+            $s_bar.css({'position':'fixed','right':0});
+        
+
+        var
+        $sider_bar = $s_bar.show().vesiderbar();
+
+        //用户按钮
+        $sider_bar.btn('.s-mt-user', '', function(cnt_layer){
+            $(this)
+            .mouseenter(function(){
+                (!loginstat) 
+                ? $(cnt_layer).html(global_siderbar['views_return']['no-login'].tpl.body)
+                : (function(){
+                    var
+                    tpl = global_siderbar['views_return']['in-login'].tpl.body;
+                    tpl = tpl.replace('~uu~',jdata.user_info.user_name);
+                    $(cnt_layer).html(tpl);
+                })()
+            })
+
+            .mouseleave(function(){
+
+            });
+        });
+
+        //优惠券按钮
+        $sider_bar.btn('.s-mt-coupon', '', function(cnt_layer){
+            $(this)
+            .mouseenter(function(){
+                (!loginstat)
+                ? $(cnt_layer).html(global_siderbar['views_return']['no-login'].tpl.body)
+                : $(cnt_layer).html(global_siderbar['views_return']['in-login'].tpl.body);
+            })
+
+            .mouseleave(function(){
+
+            });
+
+            function renderCouponList(){
+                var
+                body   = global_siderbar['views_return']['coupon_tpl'].tpl.body,
+                looper = global_siderbar['views_return']['coupon_tpl'].tpl.looper;
+            }
+            renderCouponList();
+        });
+
+        //购物车按钮
+        $sider_bar.btn('.s-mt-cart', '', function(cnt_layer){
+            
+            //如果jdata的购物车列表length>1加背景
+            jdata.cart_total_num >0
+            ? $(this).addClass('cart-has-bg')
+            : '';
+
+            $(this)
+            .mouseenter(function(){
+                $(cnt_layer).html('');
+            })
+
+            .mouseleave(function(){
+                // $(cnt_layer).html('');
+            })
+
+            .click(function(e){
+                e=e||arguments[0];
+                e.stopPropagation();
+
+                jdata.cart_total_num >0
+                ? clickHasCartList()
+                : clickNoCartList()
+            });
+
+            function clickHasCartList(){
+                if(jdata&&jdata.cart_total_num>0){
+                    var 
+                    body = renderCartList(global_siderbar.views_return.cart_goods.tpl,jdata);
+                    $(cnt_layer).html(body);
+                    bindFixpopDefaultEvent($(cnt_layer),jdata);
+                }
+            }
+
+            function clickNoCartList(){
+
+            }
+
+            //购物车有料的时候填充内容
+            function renderCartList(tmpobj,data){
+                var
+                jdata = data,
+                body = tmpobj.body,
+                looper = tmpobj.looper,
+                doc = __measureDoc(),
+                cartshtml = '';
+
+                $(cnt_layer).css('overflow-y','auto');
+                $(cnt_layer).stop().animate({'height':doc.dh,'top':0},150);
+
+                if(jdata.cart_total_num>0){
+                    var carts = jdata.cart_list;
+                    for(var i=0; i<carts.length; i++){
+                        var cart = carts[i];
+                        cart.jid = i;
+                        cart.sub_name = __subString(cart.sub_name,20);
+                        cart.icon = cart.icon.replace('\.\/','http://img.ve.cn/');
+                        cart.unit_price = Math.round(cart.unit_price*100)/100;
+                        cart.model = (cart.attr_str&&cart.attr_str!==0) ? '型号:'+__subString(cart.attr_str,10) : '';
+                        cartshtml += __tpl(looper,cart);
+                    }
+                }else{ 
+                    cartshtml = '<li class="goods-no"><strong>快去挑选商品吧！</strong></li>';
+                }
+                body = body.replace(looper,cartshtml);
+                return  __tpl(body,jdata);
+            }
+
+            function bindFixpopDefaultEvent(contain,data){
+                if(contain.jquery){
+                    var
+                    jdata = data,
+                    
+                    //删除购物车
+                    del_btns = contain.find('delgoods');
+                    if(del_btns.length>0){
+                        del_btns.click(function(e){
+                            var 
+                            delid = $(this).attr('delid'),   //id
+                            jid = $(this).attr('jid'),    
+                            jnum = $(this).attr('jnum'),
+                            jprice = $(this).attr('jprice');
+
+                            jdata.cart_list.splice(jid,1);
+
+                            jdata.cart_total_num = parseInt(jdata.cart_total_num - jnum);
+                            jdata.cart_total_price = Math.round((jdata.cart_total_price - jprice*jnum)*100)/100;
+
+                            if(jdata.cart_total_num<0) jdata.cart_total_num = 0;
+                            if(jdata.cart_total_price<0) jdata.cart_total_price = 0;
+
+                            core.needs('del_cart',{
+                                'cartsdel'     : {url:AJAX_DELGOODS_URL,data:{id:delid} }
+                                'cartsdel_fun' : function(){
+                                                    $('.dd'+delid).animate({'height':0,'margin':0,'padding':0},300).remove();
+                                                    $('body').trigger('relevancyBehavior');
+                                                 }
+                            });
+
+                            // function del_cart_goods(){
+                            //     $('.dd'+delid).animate({'height':0,'margin':0,'padding':0},300).remove();
+                            //     $('body').trigger('relevancyBehavior');
+                            // }
+
+                        })
+                    }
+                }
+            }
+        });
+
+        $sider_bar.fixed(function(){
+            $('body')
+            .click(function(){
+                $('#fixpop').hide();
+            });
+            
+            $('#fixpop')
+            .click(function(e){
+                e=e||arguments[0];
+                e.stopPropagation();
+            });
+            
+        });
+
+    }
+});
+
+</script>

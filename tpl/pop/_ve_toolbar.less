@@ -1,0 +1,408 @@
+//定义常用颜色值 
+@black : #333;
+.posr{position: relative;}
+.pop-box{
+  -webkit-transition: .2s linear;
+  transition: .2s linear;
+  -webkit-box-shadow: -5px 1px 8px rgba(0,0,0,.15);
+  box-shadow: -5px 1px 8px rgba(0,0,0,.15);
+  border: 1px solid #e7e7e7;
+  broder-right:0;
+}
+.icon-s-arrR{
+  position: absolute;
+  right: -4px;
+  bottom: 14px;
+  display: block;
+  .icon-ve_sidebar-arrR();
+}
+.s-ve-toolbar{
+  position: fixed;
+  z-index: 1001;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 35px;
+  background: @black;
+  /* 小图标 */
+  a.s-mt{
+    display: block;
+    width: 35px; 
+    height: 25px; 
+    padding: 7px 0 2px;
+    cursor: pointer;
+    &:hover{
+      background: #e41f62;
+    }
+    i{
+      display: block;
+      margin: 0 auto;
+    }
+    .icon-s-user{
+      .icon-ve_sidebar-user();
+    }
+    .icon-s-coupon{
+      .icon-ve_sidebar-dollar();
+    }
+    .icon-s-cart{
+      .icon-ve_sidebar-car();
+    }
+    .icon-s-kefu{
+      .icon-ve_sidebar-lian();
+    }
+    .icon-s-qrcode{
+      .icon-ve_sidebar-more();
+    }
+    .icon-s-top{
+      .icon-ve_sidebar-top();
+    }
+  }
+  .s-cur{
+      background: #e41f62;
+  }
+  /* 用户信息及购物车列表 */
+  .s-toolbar-list{
+    height: auto; 
+    background-color: @black; 
+    position: absolute;
+    right: 0;
+    top: 49%;
+    margin-top: -200px;
+    z-index: 1001;
+    text-align: center;
+    padding-top: 20%;
+    .s-user,.s-coupon,.s-cart{
+      margin-bottom: 30px;
+    }
+    .cart-has-bg{
+      background-color: #88495b;
+    }
+    .s-cur{
+      background: #e41f62;
+    }
+    .s-cart{
+      a.s-mt{
+        height: auto;
+        border-top: 1px solid #4a4a4a;
+        border-bottom: 1px solid #4a4a4a;
+        .cart-infotip{
+          color: #fff;
+          display: block;
+          margin: 4px auto 0 auto;
+          width: 18px;
+        }
+        .carnum{
+          background: #e41f62;
+          border-radius: 20px;
+          display: inline-block;
+          height: 18px;
+          line-height: 18px;
+          text-align: center;
+          width: 18px;
+          margin: 5px 0 8px 0;
+        }
+      }
+    }
+  }
+  /* 附属图标列表 */
+  .s-toolbar-extra {
+    position: absolute;
+    height: 100px;
+    right: 0;
+    bottom: 45px;
+    z-index: 1001;
+    background-color: @black;
+    .s-mc{
+      display: none;
+    }
+    .s-show{
+      display: block;
+    }
+  }
+  .s-kefu{
+    .s-mc{
+      position: absolute;
+      top:-173px;
+      right:35px;
+    }
+  }
+  .s-qrcode{
+    .s-mc{
+      position: absolute;
+      top:-160px;
+      right:35px;
+    }
+  }
+  .s-top{
+    .s-mc{
+      position: absolute;
+      top:-2px;
+      right:35px;
+    }
+  }
+
+}
+
+.m-fixpop{
+  position: fixed; 
+  width: 280px;
+  height: auto;
+  right: 35px;
+  z-index: 9000;
+  opacity: 1;
+  padding: 0px;
+  margin: 0px;
+  background-color: #fff;
+  .icon-s-arrR{
+    right: -4px;
+    top: 14px;
+  }
+  .pop-tit{
+    height: 48px;
+    line-height: 48px;
+    padding: 0 16px;
+    background: #f8f8f8;
+    font-size: 16px;
+    color: #333;
+    i.icon-s-close{
+      float:right;
+      cursor:pointer;
+      .icon-ve_sidebar-close();
+      margin-top: 20px;
+    }
+  }
+  a.s-btn{
+    display: block;
+    background: #ff4785;
+    border-radius: 3px;
+    color: #fff;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    margin: 15px 15px 0;
+    cursor: pointer;
+    .icon-s-point{
+      display: inline-block;
+      .icon-ve_sidebar-point();
+      vertical-align: -1px;
+    }
+  }
+}
+//未登录
+.m-nologin-wrap,.m-login-wrap{
+  padding: 10px 0 40px;
+  text-align: center;
+  img{
+    display: block;
+    margin: 20px auto;
+  }
+}
+.m-login-wrap{
+  padding: 10px 0 0 0;
+  .uc-order{
+    display: block;
+    width: 64px;
+    margin: 20px auto;
+    border: 1px solid #d3d3d3;
+    padding: 9px;
+    i{
+      display: block;
+      .icon-ve_sidebar-user_dan();
+    }
+  }
+}
+
+//优惠券
+.m-coupon-wrap{
+  .nocoupon-bg{
+    margin: 15px 0 0 10px;
+    .icon-ve_sidebar-quanno();
+  }
+  .m-coupon-c{
+
+  }
+}
+.m-coupon-list{
+  .coupon-bg1{
+    .icon-ve_sidebar-yhbg1();
+  }
+  .coupon-bg2{
+    .icon-ve_sidebar-yhbg2();
+  }
+  .coupon-bg3{
+    .icon-ve_sidebar-yhbg3();
+  }
+  li{
+    position: relative;
+    width: 248px;
+    height: 104px;
+    overflow: hidden;
+    margin: 15px 15px 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f3f3f3;
+  }
+  .coupon-price{
+    float: left;
+    text-align: left;
+    width: 80px;
+    margin-top: 12px;
+    color: #fff;
+    .flag {
+      font-size: 14px;
+      vertical-align: top;
+      display: inline-block;
+      margin-top: 10px;
+      margin-left: 2px;
+    }
+    .num {
+      font-size: 36px;
+      font-weight: bold;
+      font-family: arial;
+    }
+  }
+  .coupon-des{
+    position: absolute;
+    top:42px;
+    left:64px;
+    font-size: 12px;
+  }
+  .coupon-date{
+    position: absolute;
+    bottom:18px;
+    left:6px;
+    font-size: 12px;
+  }
+  .coupon-desc{
+    position: absolute;
+    right: 0;
+    color: #fff;
+    top: 22px;
+    right: 3px;
+    width: 65px;
+    line-height: 16px;
+  }
+  // 券说明的字体色
+  .s-yellow{
+    color: #af6822; 
+  }
+  .s-violet{
+    color: #6843c8;
+  }
+  .s-blue{
+    color: #2574aa;
+  }
+  .coupon-bg3{
+    .coupon-des{
+      left:84px;
+    }
+  }
+}
+
+//购物车
+.goods-cart-list{
+  li{
+    &.goods-no{
+      height: 108px;
+      line-height: 108px;
+      font-size: 16px;
+      text-align: center;
+      color: #ff4785;
+    }
+    .delgoods{
+      margin-left: 5px;
+    }
+  }
+}
+.s-cart-foot{
+  .s-cart-m{
+    margin-top: 5px;
+    padding: 10px 13px 5px 13px;
+    .s-cart-num{
+      color: #333;
+      font-size: 12px;
+      padding-top: 6px;
+    }
+    .s-cart-money{
+      float: right;
+      font-size: 16px;
+      font-family: 'Microsoft YaHei';
+      color: #ff4785;
+    }
+  }
+  a.s-btn{
+    margin: 15px 10px 0;
+  }
+}
+
+//客服
+.s-kefu-m{
+  overflow: hidden;
+  height: 206;
+  width: 264px;
+  right: 35px;
+  opacity: 1;
+  background: #fff;
+  .kefu-tit{
+    display: block;
+    width:264px;
+    height: 56px;
+    line-height: 56px;
+    background: #f8f8f8;
+    text-align: left;
+    strong{
+      padding-left: 20px;
+      font-size: 14px;
+    }
+  }
+  .kefu-center{
+    display: block;
+    height: 150px;
+    overflow: hidden;
+  }
+  .kefu1-box{
+    float: left;
+    width: 102px;
+    margin: 30px 0 0 20px;
+    a.kf-itemLink{
+      display: block;
+      margin-bottom: 14px;
+      .icon-ve_sidebar-kefu-itemb();
+      i{
+        padding-left: 38px;
+        line-height: 36px;
+        color:#fff;
+        font-style:normal;
+      }
+    }
+  }
+  .kefu2-box{
+    float: left;
+    display: block;
+    border:1px solid #ddd;
+    margin: 30px 0 0 17px;
+    padding: 10px 8px 6px 10px;
+    .kefu2{
+      margin:0 !important;
+      display: block;
+      .icon-ve_sidebar-kefu2();
+    }   
+  } 
+}
+//二维码
+.s-qrcode-m{
+  width: 172px;
+  background: #fff;
+  padding: 10px 0;
+  img{
+    width: 149px;
+    height: 173px;
+    display: block;
+    margin: 0 auto;
+  }
+}
+//返回顶部
+.s-top-m{
+  width: 50px;
+  padding: 8px 25px;
+  background: #fff;
+}
