@@ -107,6 +107,7 @@
 	}
 
 	function initContextMenu(){
+		console.l
 		var 
 		gzmenu ='<div id="gzmenu" class="list-group">~lists~</div>',
 		lists = zone.login_stat
@@ -310,9 +311,9 @@
 			if(zone.login_info.stat == 0){
 				zone.login_stat = false;
 			}else{
-				zone.login_stat = true;		
-				do_action('fun_menu');
+				zone.login_stat = true;						
 			}
+			do_action('fun_menu');
 		}
 		
 	}
@@ -348,7 +349,7 @@
 		if(formv){
 			needs('zone',{
 				to_login:{'url':'/login','data':JSON.stringify(data)},
-				null:[loginStat]
+				aft_login:loginStat
 			});
 		}
 
@@ -383,7 +384,6 @@
 		_unit.setAttribute('gzindex',$(container).attr('gzindex'));
 		_unit.gzindex = $(container).attr('gzindex');
 		__put(_unit);
-		
 		new _unitDiv(_unit,container);
 	}	
 
@@ -481,7 +481,7 @@
 				e = e||arguments[0];
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
 				e.preventDefault();
-				unitdrag = pendraw = false;				
+				unitdrag = pendraw = false;
 				that.rightmenu(e);
 				opdiv = that;
 			});		
@@ -602,7 +602,7 @@
 			}
 		}else{
 			// console.log(zone.putstat);
-			do_action('login');
+			// do_action('login');
 		}
 	}
 
