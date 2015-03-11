@@ -68,19 +68,28 @@ $(function () {
 
 
     var socket = io();
+    var tpl = '<div class="media">\n\
+                <div class="media-left">\n\
+                    <a href="#">\n\
+                      <img data-holder-rendered="true" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+PGRlZnMvPjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgZmlsbD0iI0VFRUVFRSIvPjxnPjx0ZXh0IHg9IjE0LjUiIHk9IjMyIiBzdHlsZT0iZmlsbDojQUFBQUFBO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1mYW1pbHk6QXJpYWwsIEhlbHZldGljYSwgT3BlbiBTYW5zLCBzYW5zLXNlcmlmLCBtb25vc3BhY2U7Zm9udC1zaXplOjEwcHQ7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+NjR4NjQ8L3RleHQ+PC9nPjwvc3ZnPg==" style="width: 64px; height: 64px;" class="media-object" data-src="holder.js/64x64" alt="64x64">\n\
+                    </a>\n\
+                </div>\n\
+                <div class="media-body">\n\
+                    <h4 class="media-heading">\{\{data.title\}\}</h4>\n\
+                    <p class="">\{\{data.des\}\}</p>\n\
+                </div>\n\
+            </div>\n';
+        
 
     socket.on('xxx', function(val){
+        var 
+        body = val.data;
+        tpl = rpl(tpl,body);
+
         if($('._list').length){
-            // var
-            // api_tpl = {
-            //     'url'  : '/tpl/lists/normal.html',
-            //     'data' : {}
-            // };
-            // needs('index',{
-            //     'tpl':''
-            // });
+            $('._list').prepend(tpl);
         }
-        // console.log($('._list'));
+        
     });
     
 
@@ -133,13 +142,13 @@ $(function () {
                             uuu.find('.md-wrap').remove();
                             if(unit.type==1){
                                 uuu.prepend('<div class="md-wrap">\
-                                    <div class="md-article">\
+                                    <div class="md-article clearfix">\
                                     <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>\
                                     <div class="viewport">\
                                     <div class="overview">'+unit.cnt+'</div></div></div></div>');
                             }
                             else{
-                                uuu.prepend('<div class="md-wrap"><div class="md-body">'+unit.cnt+'</div></div>');
+                                uuu.prepend('<div class="md-wrap clearfix"><div class="md-body">'+unit.cnt+'</div></div>');
                             }
                             unit.unit = uuu[0].outerHTML;
                     }

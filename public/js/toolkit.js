@@ -92,7 +92,7 @@ function creatstyle(name,cb){
 
 var rpl=function(tmp,data){
     if(!data)return false;
-    tmp = tmp.replace(/\{\{(.*?)\}\}/gi,function(a,b){
+    tmp = tmp.replace(/\{\{(.*?)\}\}/gi,function(a,b){            
             return eval(b);
         });
     return tmp;

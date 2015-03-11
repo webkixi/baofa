@@ -109,13 +109,13 @@
 	function initContextMenu(){
 		var 
 		gzmenu ='<div id="gzmenu" class="list-group">~lists~</div>',
-		lists = zone.login_stat 
-				? 
+		lists = zone.login_stat
+			  ? 
 				'<a class="edit list-group-item">编辑 </a>\
 				<a class="listarticle list-group-item">文章列表<span class="badge">14</span></a>\
 				<a class="clone list-group-item">克隆</a> \
 				<a class="remove list-group-item">删除</a>'
-				:
+			  :
 				'<a class="sign list-group-item">注册/登录</a>';
 		
 		gzmenu = gzmenu.replace('~lists~',lists);
@@ -150,7 +150,7 @@
 		});
 	}
 	add_action('fun_menu',initContextMenu);
-	// do_action('fun_menu');
+	// do_action('fun_menu'); 
 
 	creatstyle('gzgzgz',function(gzgzgz){
 		gzgzgz.text('#gzmenu{position:absolute;width:150px;display:none;}\
@@ -170,16 +170,26 @@
 			'list_data' : {'url':'/list','data':JSON.stringify( {'page':1 } ),'type':'html'} , 
 			'normal_tpl': {'url':'/tpl','type':'html'}
 		};
-		needs('zone', {
-			lists  : api['list_data'] ,
-			list_tmp : function(){			
-				// console.log(zone.lists);					
-				do_action('insertCnt',opdiv,zone.lists);
-			} ,
-			list_save : function(){
-				// console.log('aaaaaaaaaaaaaa');
-			}
-		});
+		if(src){
+			needs('zone', {
+				lists  : api['list_data'] ,
+				list_insert_to : function(){				
+					do_action('insertCnt',opdiv,zone.lists,'list');
+				} ,
+				list_save : function(){
+					//列表格子的识别class				
+					$(opdiv.div).addClass('wangwang-list');
+					__put(opdiv.div);
+				}
+			});
+		}else{
+			needs('zone', {
+				lists  : api['list_data'] ,
+				list_insert_to : function(){				
+					$('.pageto').parent().html(zone.lists);
+				}
+			});
+		}
 	}
 
 	function menuClone(src){
@@ -270,32 +280,50 @@
 		__dbget(opdiv.idindex,insertDataToEditor);
 	}
 
-	var insertCntTodiv = function(odiv,cnt){
-		if($(odiv.div).find('.md-article').length){								
+	var insertCntTodiv = function(odiv,cnt,stat){
+		if($(odiv.div).find('.md-article').length){
 			$(odiv.div).find('.md-article').html(cnt);
-		}else{							
-			$(odiv.div).prepend('<div class="md-wrap"><div class="md-body">'+cnt+'</div></div>');			
+		}else{
+			if(stat=='list'){
+				if($(odiv.div).find('.md-body').length){
+					$(odiv.div).find('.md-body').html(cnt);
+				}else{
+					$(odiv.div).prepend('<div class="md-wrap clearfix"><div class="md-body">'+cnt+'</div></div>');
+				}				
+			}
+			else{
+				$(odiv.div).prepend('<div class="md-wrap clearfix"><div class="md-body ">'+cnt+'</div></div>');			
+			}
 		}
 		do_action('code_highlight');
 	}
 	add_action('insertCnt',insertCntTodiv,insertCntTodiv.length);
 
 	var getLoginInfo = function(){
+		
 		needs('zone',{
 			'login_info' : {'url':'/logininfo'}
-			,null:[stat]
+			,'loginstat' : stat
 		});
+
 		function stat(){
 			if(zone.login_info.stat == 0){
-				zone.login_stat = false;				
+				zone.login_stat = false;
 			}else{
 				zone.login_stat = true;		
 				do_action('fun_menu');
 			}
 		}
+		
 	}
-
+	// bug
+	function initArticleList(){
+		if($('._list').length>0){
+			renderMenuList();
+		}
+	}
 	getLoginInfo();
+	initArticleList();
 	
 	function menuLogin(){				
 		maskbox("<div id='sign' style=''><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
@@ -340,15 +368,22 @@
 	var preCreatSubDiv = function(item,container,type){
 		var 
 		rect = __getRect(item),
-		crect = __getRect(container);	
-		var position;			
-		(type=='float') ? position = 'float:left;' : position = 'position:absolute;';
-		var rzunit = '<div class="rzunit" >1</div>';
+		crect = __getRect(container),
+		position,
+		_unit,
+		rzunit = '<div class="rzunit" >1</div>';
+		
+		(type=='float') 
+		? position = 'float:left;' 
+		: position = 'position:absolute;';
+
 		$(container).append('<div idindex="'+idindex+'" class="wangwang" style="left:'+(rect.left-crect.left)+'px;top:'+(rect.top-crect.top)+'px;width:'+rect.width+'px;height:'+rect.height+'px;'+position+'">'+rzunit+'</div>');		
-		var _unit = $('div[idindex='+idindex+']')[0];
+		
+		_unit = $('div[idindex='+idindex+']')[0];
 		_unit.setAttribute('gzindex',$(container).attr('gzindex'));
 		_unit.gzindex = $(container).attr('gzindex');
 		__put(_unit);
+		
 		new _unitDiv(_unit,container);
 	}	
 
@@ -550,7 +585,7 @@
 		}
 
 		_wangs.put(obj.id,obj);
-		idindex++;
+		idindex++;		
 		needs('zone',{
 			putstat:{'url':'/add','data':JSON.stringify(obj)}
 			,afun:[addfun,[type]]
