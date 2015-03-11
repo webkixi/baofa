@@ -601,8 +601,8 @@
 				tips('提交成功!');
 			}
 		}else{
-			console.log(zone.putstat);
-			// do_action('login');
+			// console.log(zone.putstat);
+			do_action('login');
 		}
 	}
 
