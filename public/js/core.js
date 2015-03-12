@@ -520,6 +520,25 @@ function needs(context,opts,callback){
     cb();
 }
 
+function makeView(item){
+    if(__getClass(item)!=='Object'){
+        return [];
+    }else{
+        if(item.jquery){
+            var 
+            tmp_tpl = item.removeClass('hidden').prop('outerHTML');
+            item.remove();
+            return {
+                'tpl': {'body'  : tmp_tpl,
+                        'looper': (function(){
+                                    return $(tmp_tpl).find('.looper').length ? $(tmp_tpl).find('.looper').prop('outerHTML') : '';
+                                })()
+                       }
+            }
+        }
+    }
+}
+
 
 //hooks
 /*
