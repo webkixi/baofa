@@ -1,103 +1,3 @@
-function CurrentStyle(element){
-    return element.currentStyle || document.defaultView.getComputedStyle(element, null);
-};   
-function __getClass(object){
-    return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
-};
-function __getRect(element) {
-  var offset = $(element).offset();
-  offset.bottom = offset.top+$(element).height();
-  offset.right = offset.left+$(element).width();
-  offset.width = $(element).width();
-  offset.height= $(element).height();
-  return offset;
-};
-
-/* 2007-11-28 XuJian */  
-//截取字符串 包含中文处理  
-//(串,长度,增加...)  
-function _subString(str, len, hasDot) {  
-    var newLength = 0;  
-    var newStr = "";  
-    var chineseRegex = /[^\x00-\xff]/g;  
-    var singleChar = "";  
-    var strLength = str.replace(chineseRegex,"**").length;  
-    for(var i = 0;i < strLength;i++) {
-        singleChar = str.charAt(i).toString();  
-        if(singleChar.match(chineseRegex) != null) newLength += 2;
-        else newLength++;
-
-        if(newLength > len) break;
-        newStr += singleChar;  
-    }
-    if(hasDot && strLength > len) newStr += "...";
-    return newStr;  
-}
-
-/** 
-/* 2015-1-13 yc   
-/* url解析
-/* @url   http://abc.com:8080/dir/index.html?id=255&m=hello#top
-//SAMPLE
-// var myURL = parseURL('http://abc.com:8080/dir/index.html?id=255&m=hello#top'); 
-// alert(myURL.file); // = 'index.html' 
-// myURL.hash; // = 'top' 
-// myURL.host; // = 'abc.com' 
-// myURL.query; // = '?id=255&m=hello' 
-// myURL.params; // = Object = { id: 255, m: hello } 
-// myURL.path; // = '/dir/index.html' 
-// myURL.segments; // = Array = ['dir', 'index.html'] 
-// myURL.port; // = '8080' 
-// myURL.protocol; // = 'http' 
-// myURL.source; // = 'http://abc.com:8080/dir/index.html?id=255&m=hello#top' 
-*/
-var urlparse = function (url) {
-    var anchor = document.createElement('a'); 
-    anchor.href = url; 
-    return { 
-        source: url, 
-        protocol: anchor.protocol.replace(':',''), 
-        host: anchor.hostname, 
-        port: anchor.port, 
-        query: anchor.search, 
-        params: (function(){ 
-            var ret = {}, 
-            seg = anchor.search.replace(/^\?/,'').split('&'), 
-            len = seg.length, i = 0, str; 
-            for (;i<len;i++) { 
-                if (!seg[i]) { continue; } 
-                str = seg[i].split('='); 
-                ret[str[0]] = str[1]; 
-            } 
-            return ret; 
-        })(), 
-        file: (anchor.pathname.match(/\/([^\/?#]+)$/i) || [,''])[1], 
-        hash: anchor.hash.replace('#',''), 
-        path: anchor.pathname.replace(/^([^\/])/,'/$1'), 
-        relative: (anchor.href.match(/tps?:\/\/[^\/]+(.+)/) || [,''])[1], 
-        segments: anchor.pathname.replace(/^\//,'').split('/') 
-    }; 
-};
-
-function creatstyle(name,cb){
-    var nstyle ;
-    if(!$('#'+name).length){
-        nstyle = $('<style type="text/css" id="'+name+'"></style>');            
-        $('head').append(nstyle);
-    }else{
-        nstyle = $('#'+name);
-    }
-    cb && cb.call(this,nstyle);
-}
-
-var rpl=function(tmp,data){
-    if(!data)return false;
-    tmp = tmp.replace(/\{\{(.*?)\}\}/gi,function(a,b){            
-            return eval(b);
-        });
-    return tmp;
-}
-
 /*
 * msgtips 消息弹出窗，为tipsbox抽象的实例
 * @msg 传入的消息
@@ -153,10 +53,7 @@ var msgtips = function(msg,stat,cb){
         msgtip.pop(msg,stat);
 }
 
-window.tips = msgtips;
-
-
-function tanbox(msg,stat,cb){    
+function tanbox(msg,stat,cb){
     var docRect = __measureDoc();
     var scrollleft = docRect.sl;
     var scrolltop = docRect.st;
@@ -207,9 +104,6 @@ function tanbox(msg,stat,cb){
         tan.pop(msg,stat);
 }
 tanbox.attr = {'box':{},'item':{}};
-window.tanbox = tanbox;
-
-
 
 function maskBox(msg,stat,cb){    
     var 
@@ -268,7 +162,7 @@ function maskBox(msg,stat,cb){
 
             var closebtn = new Image();
             closebtn.id = 'closePop';
-            closebtn.src = '/app/Tpl/ve_2_1/vetpl/Style/Css/img/icon-close.png';
+            closebtn.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QTM4MTM0MjVBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTM4MTM0MjZBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBMzgxMzQyM0EyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBMzgxMzQyNEEyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pi/jzu8AAABWSURBVHjalJDRDcBACEKF/UdzJ5u0adLzkEv5xEcUkZkVjxBeN8duOPgN4BD6eqA4pya4n9RDpWZs61XxxWP8FE1B6dEUxPTWmAqqEA0sQzzA2+wSYABDMBR7Ctr/ZwAAAABJRU5ErkJggg==';
             
             $('#maskcontent').append(closebtn);
             $(closebtn).css({'position':'absolute','right':'30px','top':'20px','cursor':'pointer'});
@@ -290,89 +184,70 @@ function maskBox(msg,stat,cb){
 
     return tan;
 }
-window.maskbox = maskBox;
 
-function rsp(name,condition){
-    $(window).resize(function(){
-        if(condition==true || $(condition).length){
-            do_action(name);
-        }
-    });
-}
-window.rsp = rsp;
 
-function one(ele,opts,cb){
-    if(!$(ele).length) return;
-    var
-    count = 0,
+function maskerBox(msg,stat,cb){
+    var 
     defaults = {
-        method : 'click',
-        delay : 0
-    };
-    if(opts&&opts!='') opts = $.extend({},defaults,opts);
-    else opts = defaults;
-
-    if(count == 0){
-        count = 1;
-        $(ele).one(opts['method'],function(e){
-            cb(e);
-            if(opts['delay']!=0){
-                opts['ttt'] = setTimeout(function(){
-                    count = 0;
-                }, delay);
-            }
-        });
-    }
-}
-
-
-var
-ttt;
-function countDown(opts,cb){
-    if(__getClass(opts)!="Object") return false;
-    clearInterval(ttt);
-    var
-    defaults = {
-        "second" : 60,
-        "class"  : "_cd",
-        "item"   : ""
+        "width"  : "400px",
+        "height" : "566px"
     },
-    options = $.extend({},defaults,opts),
-    cls = options.class,
-    count = second = options.second,
-    item = options.item;
 
-    // $('.'+cls).remove();
+    mask = '.m-layer,.m-layer .lymask{top:0;left:0;width:100%;height:100%;}\n\
+.m-layer{display:none;position:fixed;_position:absolute;z-index:999;}\n\
+.m-layer .lymask{position:absolute;background:#000;opacity:0.5;filter:alpha(opacity=50);}\n\
+.m-layer .lytable{table-layout:fixed;width:100%;height:100%;}\n\
+.m-layer .lytd{width:100%;height:100%;vertical-align:middle;}\n\
+.m-layer .lywrap{position:relative;margin:0 auto; background: #fff;}\n\
+.m-layer-show{display:block;}\n';
 
-    if(item){
-        $('.'+item).addClass(cls);
-    }else{
-        $('body').append('<div style="width:100px;height:80px;text-align:center;background-color:red;" class="count-down '+cls+'"></div>');
-    }
+    __creatStyle('maskerbox',function(style){
+        style.append(mask);
+    }),
+    tan = new core.tipsbox();
 
-    var
-    that = item ? $('.'+item) : $('.'+cls);
-    
-    ttt = setInterval(function(){
-        cb.call(that,--count);
-        // that.innerHTML = --count;
-        if(count==0){
-            clearInterval(ttt);
+    tan.tipsBox = function(stat){
+        $('.m-layer').remove();
+        var 
+        tmp_box = '<div class="m-layer m-layer-show"></div>';
+        tmp_box_o = $(tmp_box)[0];
+        $('body').append(tmp_box_o);
+
+        var box = tmp_box_o;
+        return box;
+    };
+
+    tan.tipsItem = function(stat){
+        cent_tpl   = document.createElement('div');
+        cent_tpl.className  = 'boxitem';
+
+        return cent_tpl;
+    };
+
+    tan.anim = function(item,box,stat){            
+        var box_width='width:400px;'
+        if(__getClass(stat)=='Object'){
+            if(stat.width) box_width = 'width:'+stat.width;
         }
-        if(count<0){
-            clearInterval(ttt);
-        }
-     }, 1000);
+        
+        var closebtn = new Image();
+        closebtn.id = 'closePop';
+        closebtn.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QTM4MTM0MjVBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTM4MTM0MjZBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBMzgxMzQyM0EyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBMzgxMzQyNEEyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pi/jzu8AAABWSURBVHjalJDRDcBACEKF/UdzJ5u0adLzkEv5xEcUkZkVjxBeN8duOPgN4BD6eqA4pya4n9RDpWZs61XxxWP8FE1B6dEUxPTWmAqqEA0sQzzA2+wSYABDMBR7Ctr/ZwAAAABJRU5ErkJggg==';
+
+        var ccc = '<div class="lymask"></div><table class="lytable"><tbody><tr><td class="lytd"><div class="lywrap" style="'+box_width+'"></div></td></tr></tbody></table>';
+        $(box).html(ccc);
+        $msg = $(msg);
+        $(box).find('.lywrap').html(msg);
+
+        $(box).show();
+        $(".lyclose").click(function(){
+            $(".m-layer").removeClass('m-layer-show');
+        });
+    };
+
+    if(cb) tan.pop(msg,stat,cb);
+    else
+        tan.pop(msg,stat);
+
+    return tan;
 }
-
-//time单位秒
-var formatTime = function(time){
-    var _m = parseInt(time % (60 * 60) / 60); //分钟
-    var _s = parseInt(time % 60);//秒
-    _m = _m < 10 ? _m = "0" + "" + _m : _m;
-    _s = _s < 10 ? _s = "0" + "" + _s : _s;
-    return {
-        fen  : _m,
-        miao : _s 
-    }
-};

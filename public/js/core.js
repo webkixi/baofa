@@ -1,8 +1,229 @@
-//md5
-!function(n){"use strict";function t(n,t){var r=(65535&n)+(65535&t),e=(n>>16)+(t>>16)+(r>>16);return e<<16|65535&r}function r(n,t){return n<<t|n>>>32-t}function e(n,e,u,o,c,f){return t(r(t(t(e,n),t(o,f)),c),u)}function u(n,t,r,u,o,c,f){return e(t&r|~t&u,n,t,o,c,f)}function o(n,t,r,u,o,c,f){return e(t&u|r&~u,n,t,o,c,f)}function c(n,t,r,u,o,c,f){return e(t^r^u,n,t,o,c,f)}function f(n,t,r,u,o,c,f){return e(r^(t|~u),n,t,o,c,f)}function i(n,r){n[r>>5]|=128<<r%32,n[(r+64>>>9<<4)+14]=r;var e,i,a,h,d,g=1732584193,l=-271733879,v=-1732584194,C=271733878;for(e=0;e<n.length;e+=16)i=g,a=l,h=v,d=C,g=u(g,l,v,C,n[e],7,-680876936),C=u(C,g,l,v,n[e+1],12,-389564586),v=u(v,C,g,l,n[e+2],17,606105819),l=u(l,v,C,g,n[e+3],22,-1044525330),g=u(g,l,v,C,n[e+4],7,-176418897),C=u(C,g,l,v,n[e+5],12,1200080426),v=u(v,C,g,l,n[e+6],17,-1473231341),l=u(l,v,C,g,n[e+7],22,-45705983),g=u(g,l,v,C,n[e+8],7,1770035416),C=u(C,g,l,v,n[e+9],12,-1958414417),v=u(v,C,g,l,n[e+10],17,-42063),l=u(l,v,C,g,n[e+11],22,-1990404162),g=u(g,l,v,C,n[e+12],7,1804603682),C=u(C,g,l,v,n[e+13],12,-40341101),v=u(v,C,g,l,n[e+14],17,-1502002290),l=u(l,v,C,g,n[e+15],22,1236535329),g=o(g,l,v,C,n[e+1],5,-165796510),C=o(C,g,l,v,n[e+6],9,-1069501632),v=o(v,C,g,l,n[e+11],14,643717713),l=o(l,v,C,g,n[e],20,-373897302),g=o(g,l,v,C,n[e+5],5,-701558691),C=o(C,g,l,v,n[e+10],9,38016083),v=o(v,C,g,l,n[e+15],14,-660478335),l=o(l,v,C,g,n[e+4],20,-405537848),g=o(g,l,v,C,n[e+9],5,568446438),C=o(C,g,l,v,n[e+14],9,-1019803690),v=o(v,C,g,l,n[e+3],14,-187363961),l=o(l,v,C,g,n[e+8],20,1163531501),g=o(g,l,v,C,n[e+13],5,-1444681467),C=o(C,g,l,v,n[e+2],9,-51403784),v=o(v,C,g,l,n[e+7],14,1735328473),l=o(l,v,C,g,n[e+12],20,-1926607734),g=c(g,l,v,C,n[e+5],4,-378558),C=c(C,g,l,v,n[e+8],11,-2022574463),v=c(v,C,g,l,n[e+11],16,1839030562),l=c(l,v,C,g,n[e+14],23,-35309556),g=c(g,l,v,C,n[e+1],4,-1530992060),C=c(C,g,l,v,n[e+4],11,1272893353),v=c(v,C,g,l,n[e+7],16,-155497632),l=c(l,v,C,g,n[e+10],23,-1094730640),g=c(g,l,v,C,n[e+13],4,681279174),C=c(C,g,l,v,n[e],11,-358537222),v=c(v,C,g,l,n[e+3],16,-722521979),l=c(l,v,C,g,n[e+6],23,76029189),g=c(g,l,v,C,n[e+9],4,-640364487),C=c(C,g,l,v,n[e+12],11,-421815835),v=c(v,C,g,l,n[e+15],16,530742520),l=c(l,v,C,g,n[e+2],23,-995338651),g=f(g,l,v,C,n[e],6,-198630844),C=f(C,g,l,v,n[e+7],10,1126891415),v=f(v,C,g,l,n[e+14],15,-1416354905),l=f(l,v,C,g,n[e+5],21,-57434055),g=f(g,l,v,C,n[e+12],6,1700485571),C=f(C,g,l,v,n[e+3],10,-1894986606),v=f(v,C,g,l,n[e+10],15,-1051523),l=f(l,v,C,g,n[e+1],21,-2054922799),g=f(g,l,v,C,n[e+8],6,1873313359),C=f(C,g,l,v,n[e+15],10,-30611744),v=f(v,C,g,l,n[e+6],15,-1560198380),l=f(l,v,C,g,n[e+13],21,1309151649),g=f(g,l,v,C,n[e+4],6,-145523070),C=f(C,g,l,v,n[e+11],10,-1120210379),v=f(v,C,g,l,n[e+2],15,718787259),l=f(l,v,C,g,n[e+9],21,-343485551),g=t(g,i),l=t(l,a),v=t(v,h),C=t(C,d);return[g,l,v,C]}function a(n){var t,r="";for(t=0;t<32*n.length;t+=8)r+=String.fromCharCode(255&n[t>>5]>>>t%32);return r}function h(n){var t,r=[];for(r[(n.length>>2)-1]=void 0,t=0;t<r.length;t+=1)r[t]=0;for(t=0;t<8*n.length;t+=8)r[t>>5]|=(255&n.charCodeAt(t/8))<<t%32;return r}function d(n){return a(i(h(n),8*n.length))}function g(n,t){var r,e,u=h(n),o=[],c=[];for(o[15]=c[15]=void 0,u.length>16&&(u=i(u,8*n.length)),r=0;16>r;r+=1)o[r]=909522486^u[r],c[r]=1549556828^u[r];return e=i(o.concat(h(t)),512+8*t.length),a(i(c.concat(e),640))}function l(n){var t,r,e="0123456789abcdef",u="";for(r=0;r<n.length;r+=1)t=n.charCodeAt(r),u+=e.charAt(15&t>>>4)+e.charAt(15&t);return u}function v(n){return unescape(encodeURIComponent(n))}function C(n){return d(v(n))}function m(n){return l(C(n))}function s(n,t){return g(v(n),v(t))}function A(n,t){return l(s(n,t))}function p(n,t,r){return t?r?s(t,n):A(t,n):r?C(n):m(n)}"function"==typeof define&&define.amd?define(function(){return p}):n.md5=p}(window);
+//获取对象类型
+function __getClass(object){
+    return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
+};
 
-function __arg2arr(args){ return Array.prototype.slice.call(args); }
 
+//计算当前window大小
+function __measureDoc(){
+    var doch = window.innerHeight||document.documentElement.offsetHeight||document.body.clientHieght;
+    var docw = window.innerWidth||document.documentElement.offsetWidth||document.body.clientWidth;
+    var docST = document.documentElement.scrollTop||document.body.scrollTop;
+    var docSL = document.documentElement.scrollLeft||document.body.scrollLeft;
+    return {dw:docw,dh:doch,st:docST,sl:docSL};
+};
+
+
+//获取element的实际大小及位置   依赖jquery
+function __getRect(element) {
+    if(!$(element).length) return ;
+    var offset = $(element).offset();        
+    offset.bottom = offset.top+$(element).height();
+    offset.right = offset.left+$(element).width();
+    offset.width = $(element).width();
+    offset.height= $(element).height();
+    return offset;
+};
+
+//变量是否为空
+function isEmpty(a) {
+    return void 0 == a || "-" == a || "" == a
+}
+
+//计算hash值
+function hash(a) {
+    var b, c = 1, d = 0;
+    if (!this.IsEmpty(a))
+        for (c = 0, b = a.length - 1; b >= 0; b--)
+            d = a.charCodeAt(b), c = (c << 6 & 268435455) + d + (d << 14), d = 266338304 & c, c = 0 != d ? c ^ d >> 21 : c;
+    return c
+}
+
+//计算字符变量的长度，包含处理中文
+function strlen(str){return str.replace(/[^\x00-\xff]/g,"aaa").length;}
+
+/* 2007-11-28 XuJian */  
+//截取字符串 包含中文处理  
+//(串,长度,增加...)  
+function _subString(str, len, hasDot) {  
+    var newLength = 0;  
+    var newStr = "";  
+    var chineseRegex = /[^\x00-\xff]/g;  
+    var singleChar = "";  
+    var strLength = str.replace(chineseRegex,"**").length;  
+    for(var i = 0;i < strLength;i++) {
+        singleChar = str.charAt(i).toString();  
+        if(singleChar.match(chineseRegex) != null) newLength += 2;
+        else newLength++;
+
+        if(newLength > len) break;
+        newStr += singleChar;  
+    }
+    if(hasDot && strLength > len) newStr += "...";
+    return newStr;  
+}    
+
+//dom style
+function CurrentStyle(element){
+    return element.currentStyle || document.defaultView.getComputedStyle(element, null);
+};
+
+function rpl(tmp,ve){
+    if(!ve)return false;
+    tmp = tmp.replace(/\{\{(.*?)\}\}/gi,function(a,b){
+            return eval(b);
+        });
+    return tmp;
+}
+
+//模板替换方法
+var tpl = function(tpl,jsondata){
+    return rpl(tpl,jsondata);
+}
+
+/** 
+/* 2015-1-13 yc   
+/* url解析
+/* @url   http://abc.com:8080/dir/index.html?id=255&m=hello#top
+//SAMPLE
+// var myURL = parseURL('http://abc.com:8080/dir/index.html?id=255&m=hello#top'); 
+// alert(myURL.file); // = 'index.html' 
+// myURL.hash; // = 'top' 
+// myURL.host; // = 'abc.com' 
+// myURL.query; // = '?id=255&m=hello' 
+// myURL.params; // = Object = { id: 255, m: hello } 
+// myURL.path; // = '/dir/index.html' 
+// myURL.segments; // = Array = ['dir', 'index.html'] 
+// myURL.port; // = '8080' 
+// myURL.protocol; // = 'http' 
+// myURL.source; // = 'http://abc.com:8080/dir/index.html?id=255&m=hello#top' 
+*/
+var urlparse = function (url) {
+    var anchor = document.createElement('a'); 
+    anchor.href = url; 
+    return { 
+        source: url, 
+        protocol: anchor.protocol.replace(':',''), 
+        host: anchor.hostname, 
+        port: anchor.port, 
+        query: anchor.search, 
+        params: (function(){ 
+            var ret = {}, 
+            seg = anchor.search.replace(/^\?/,'').split('&'), 
+            len = seg.length, i = 0, str; 
+            for (;i<len;i++) { 
+                if (!seg[i]) { continue; } 
+                str = seg[i].split('='); 
+                ret[str[0]] = str[1]; 
+            } 
+            return ret; 
+        })(), 
+        file: (anchor.pathname.match(/\/([^\/?#]+)$/i) || [,''])[1], 
+        hash: anchor.hash.replace('#',''), 
+        path: anchor.pathname.replace(/^([^\/])/,'/$1'), 
+        relative: (anchor.href.match(/tps?:\/\/[^\/]+(.+)/) || [,''])[1], 
+        segments: anchor.pathname.replace(/^\//,'').split('/') 
+    }; 
+};
+
+var md5=function(name){
+    return name;
+};
+
+//key-value内存数据库
+var HashMap = function() {
+    var size = 0;
+    var entry = new Object();
+    this.put = function (key, value) {
+        var nkey = md5(key);
+        entry[nkey] = value;  
+        size++;  
+    };
+    this.putAll = function (map) {  
+        if (typeof map == "object" && !map.sort) {  
+            for (var key in map) {  
+                this.put(key, map[key]);  
+            }  
+        } else {  
+            throw "输入类型不正确，必须是HashMap类型！";
+        }
+    };           
+    this.get = function (key) {
+        var nkey = md5(key);
+        if(entry[nkey])
+            return entry[nkey];
+    };            
+    this.remove = function (key) {  
+        var nkey = md5(key);
+        if(entry[nkey]){
+            if (size == 0)  
+                return;  
+            delete entry[nkey];  
+            size--;  
+        }
+    };          
+    this.containsKey = function (key) {  
+        var nkey = md5(key);
+        if (entry[nkey]) {  
+            return true;  
+        }  
+        return false;  
+    };            
+    this.containsValue = function (value) {  
+        for (var key in entry) {  
+            if (entry[key] == value) {  
+                return true;  
+            }  
+        }  
+        return false;  
+    };            
+    this.clear = function () {  
+        entry = new Object();  
+        size = 0;  
+    };            
+    this.isEmpty = function () {  
+        return size == 0;  
+    };
+    this.size = function () {
+        return size;
+    };            
+    this.keySet = function () {  
+        var keys = new Array();  
+        for (var key in entry) {  
+            keys.push(key);  
+        }  
+        return keys;  
+    };           
+    this.entrySet = function () {  
+        var entrys = new Array();  
+        for (var key in entry) {  
+            var et = new Object();  
+            et[key] = entry[key];  
+            entrys.push(et);  
+        }  
+        return entrys;  
+    };            
+    this.values = function () {  
+        var values = new Array();  
+        for (var key in entry) {  
+            values.push(entry[key]);  
+        }  
+        return values;  
+    };           
+    this.each = function (cb) {  
+        for (var key in entry) {  
+            cb.call(this, key, entry[key]);  
+        }  
+    };            
+    this.toString = function () {  
+        return __obj2str(entry);  
+    };
+}
+
+/*
+*@ 对象转换成字符串
+*  o - json obj
+*/
 function __obj2str(o) {  
     var 
     str = (function obj2str(o){
@@ -38,123 +259,76 @@ function __obj2str(o) {
             return r.join("");
         }
         return o.toString();
-    })(o);        
+    })(o);
     return str.replace(/[\r\n]/g,'');
-} 
+}
 
+function creatStyle(name,cb){
+    var nstyle ;
+    if(!$('#'+name).length){
+        nstyle = $('<style type="text/css" id="'+name+'"></style>');            
+        $('head').append(nstyle);
+    }else{
+        nstyle = $('#'+name);
+    }
+    cb && cb.call(this,nstyle);
+}
 
-function __measureDoc(){
-    var doch = window.innerHeight||document.documentElement.offsetHeight||document.body.clientHieght;
-    var docw = window.innerWidth||document.documentElement.offsetWidth||document.body.clientWidth;
-    var docST = document.documentElement.scrollTop||document.body.scrollTop;
-    var docSL = document.documentElement.scrollLeft||document.body.scrollLeft;
-    return {dw:docw,dh:doch,st:docST,sl:docSL};
+var
+ttt;
+function countDown(opts,cb){
+    if(__getClass(opts)!="Object") return false;
+    clearInterval(ttt);
+    var
+    defaults = {
+        "second" : 60,
+        "cls"  : "_cd",
+        "item"   : ""
+    },
+    options = $.extend({},defaults,opts),
+    cls = options.cls,  //IE的兼容性
+    count = second = options.second,
+    item = options.item;
+
+    // $('.'+cls).remove();
+
+    if(item){
+        $('.'+item).addClass(cls);
+    }else{
+        $('body').append('<div style="width:100px;height:80px;text-align:center;background-color:red;" class="count-down '+cls+'"></div>');
+    }
+
+    var
+    that = item ? $('.'+item) : $('.'+cls);
+    
+    ttt = setInterval(function(){
+        cb.call(that,--count);
+        // that.innerHTML = --count;
+        if(count==0){
+            clearInterval(ttt);
+        }
+        if(count<0){
+            clearInterval(ttt);
+        }
+     }, 1000);
+}
+
+//time单位秒
+var formatTime = function(time){
+    var _m = parseInt(time % (60 * 60) / 60); //分钟
+    var _s = parseInt(time % 60);//秒
+    _m = _m < 10 ? _m = "0" + "" + _m : _m;
+    _s = _s < 10 ? _s = "0" + "" + _s : _s;
+    return {
+        fen  : _m,
+        miao : _s 
+    }
 };
 
-function HashMap() {  
-    var size = 0;  
-    var entry = new Object();            
-    this.put = function (key, value) {  
-        var nkey = md5(key);
-        entry[nkey] = value;  
-        size++;  
-    };
-    this.putAll = function (map) {  
-        if (typeof map == "object" && !map.sort) {  
-            for (var key in map) {  
-                this.put(key, map[key]);  
-            }  
-        } else {  
-            throw "输入类型不正确，必须是HashMap类型！";  
-        }  
-    };           
-    this.get = function (key) {  
-        var nkey = md5(key);
-        if(entry[nkey])
-            return entry[nkey];
-    };            
-    this.remove = function (key) {  
-        var nkey = md5(key);
-        if(entry[nkey]){
-            if (size == 0)  
-                return;  
-            delete entry[nkey];  
-            size--;  
-        }
-    };          
-    this.containsKey = function (key) {  
-        var nkey = md5(key);
-        if (entry[nkey]) {  
-            return true;  
-        }  
-        return false;  
-    };            
-    this.containsValue = function (value) {  
-        for (var key in entry) {  
-            if (entry[key] == value) {  
-                return true;  
-            }  
-        }  
-        return false;  
-    };            
-    this.clear = function () {  
-        entry = new Object();  
-        size = 0;  
-    };            
-    this.isEmpty = function () {  
-        return size == 0;  
-    };            
-    this.size = function () {  
-        return size;  
-    };            
-    this.keySet = function () {  
-        var keys = new Array();  
-        for (var key in entry) {  
-            keys.push(key);  
-        }  
-        return keys;  
-    };           
-    this.entrySet = function () {  
-        var entrys = new Array();  
-        for (var key in entry) {  
-            var et = new Object();  
-            et[key] = entry[key];  
-            entrys.push(et);  
-        }  
-        return entrys;  
-    };            
-    this.values = function () {  
-        var values = new Array();  
-        for (var key in entry) {  
-            values.push(entry[key]);  
-        }  
-        return values;  
-    };           
-    this.each = function (cb) {  
-        for (var key in entry) {  
-            cb.call(this, key, entry[key]);  
-        }  
-    };            
-    this.toString = function () {  
-        return __obj2str(entry);  
-    };      
-}   
+//类数组对象转换成数组
+function __arg2arr(args){ return Array.prototype.slice.call(args); }
 
-//模板替换方法
-function tpl(tpl,jsondata){
-    if(__getClass(tpl)=='String'){
-
-    }
-    
-    if(__getClass(tpl)=='Object'){
-
-    }
-
-    if(__getClass(tpl)=='Array'){
-
-    }
-    // return vg.rpl(tpl,jsondata).gettmp();
-}
+// lib end
 
 
 /*
@@ -192,41 +366,43 @@ function needs(context,opts,callback){
         type:'json'
     };
 
-    var 
-    ctx = context==window 
-    ? context 
-    : (function(){ 
-        if(window[context]) return window[context];
-        else{
-            window[context] = {}; return window[context];
-        }
-      })();
+        // ctx = context==window ? context : (function(){ window.context = context; return window.context;})();
 
-    for(var iii in opts){            
-        if(__getClass(opts[iii])=='Object'){
-            if(opts[iii].jquery){
-                var ele = opts[iii];
-                ctx['views'][iii] = ele;
-            }else{
-                if(opts[iii].nodeType){
-                    ctx['views'][iii] = opts[iii];
-                }else{
-                    req = opts[iii];
-                    if(!req.url||req.url==''){
-                        ctx[iii] = opts[iii];
-                    }else{
-                        ajaxitem = $.extend({},defaults,req);
-                        ajaxitem.vari = iii;
-                        ajaxStack.push(ajaxitem);
-                        ajaxVarStack.push(iii);
-                        ajaxing = true;
-                    }
-                }                    
+        var 
+        ctx = context==window 
+        ? context 
+        : (function(){ 
+            if(!window[context]){
+                window[context] = {}; 
+                return window[context];
             }
-        }else if(__getClass(opts[iii])=='Function'){
-            var 
-            fun = opts[iii];
-            // ctx[iii] = fun;
+            return window[context];
+          })();
+
+        for(var iii in opts){
+            if(__getClass(opts[iii])=='Object'){
+                if(opts[iii].jquery){
+                    var ele = opts[iii];
+                    ctx['views'][iii] = ele;
+                }else{
+                    if(opts[iii].nodeType){
+                        ctx['views'][iii] = opts[iii];
+                    }else{
+                        req = opts[iii];
+                        if(!req.url||req.url==''){
+                            ctx[iii] = opts[iii];
+                        }else{
+                            ajaxitem = $.extend({},defaults,req);
+                            ajaxitem.vari = iii;
+                            ajaxStack.push(ajaxitem);
+                            ajaxVarStack.push(iii);
+                            ajaxing = true;
+                        }
+                    }                    
+                }
+            }else if(__getClass(opts[iii])=='Function'){
+                ctx[iii] = opts[iii];
+                var fun = opts[iii];
 
             tmp_fun_stack.push(fun);
             tmp_fun_var_stack.push(iii);
@@ -251,20 +427,20 @@ function needs(context,opts,callback){
         funStack.unshift(tmp_fun_stack[i]);
     }
 
-    var tmp;
-    function cb(err,data){
-        if(data) {    
-            var vtmp = ajaxVarStack.shift();
-            resault[vtmp] = data;
-            ajaxing = false;
-        }
-        if(ajaxStack.length>0){
-            tmp = ajaxStack.shift();
-            runajax(tmp);
-        }else{
-            for(var v in resault){
-                ctx[v] = resault[v];                
-            }            
+        var tmp;
+        function cb(err,data){
+            if(data) {    
+                var vtmp = ajaxVarStack.shift();
+                resault[vtmp] = data;
+            }
+            if(ajaxStack.length>0){
+                tmp = ajaxStack.shift();
+                runajax(tmp);
+            }else{
+                ajaxing = false;     //调整位置
+                for(var v in resault){
+                    ctx[v] = resault[v];                
+                }
 
             if(funVerStack.length>0){                                  
                 var tfun;
@@ -305,11 +481,11 @@ function needs(context,opts,callback){
                             }
                         }
 
-                        if(tprompt&&tprompt.length>0){
-                            tmp = do_action(doact,tprompt);
-                        }else{
-                            tmp = do_action(doact);
-                        }
+                            if(tprompt&&tprompt.length>0){
+                                do_action(doact,tprompt);
+                            }else{
+                                do_action(doact);
+                            }
 
                         if(funVerStack.length>0&&!ajaxing){
                             execSyncFun();
@@ -464,7 +640,11 @@ function add_action(name,fun,propnum,ctx){
     // }
 
     // var timeAddAction = setTimeout(addAct, 200);
-}    
+}
+
+//base end
+
+
 
 /*
 * 消息弹出抽象函数
@@ -503,6 +683,55 @@ var tipsbox = function(){
 
 }
 
+var ComponentBase = function(){
+    this.msg='';
+    this.near = function(dist,cb){
+        var
+        nele = this.container;
+
+        if(__getClass(dist)=="Object") {
+            if(dist.jquery||dist.nodeType){
+                cb.call(this,__getRect(dist));
+            }
+        }
+
+        return this;
+    }
+
+    this.delay = function(timer,cb){
+        if(!cb) return false;
+        if(!timer) timer = 1000;
+
+        clearTimeout(delayer);
+        var delayer = setTimeout(cb.call(this), timer);
+        
+        return this;
+    }
+
+    this.gun = function(cb){
+        $(window).scroll(function(){
+            var
+            docST = document.documentElement.scrollTop||document.body.scrollTop;
+            cb.call(this,docST);
+        });
+        return this;
+    }
+
+    this.item = function(){};
+
+    this.box = function(){};
+
+    this.anim = function(item,box,cb){}
+
+    this.run = function(msg,stat,cb){
+        var
+        item = this.item(stat),
+        box = this.box(stat);
+        this.msg = msg;
+        this.anim(item,box,cb);
+    }
+}
+
 /*
 * form表单校验
 * @opts  json对象，对象元素允许函数，用于替换默认block校验正则
@@ -521,7 +750,6 @@ var tipsbox = function(){
               (code,'verify','验证码不正确')
               ();
 */
-
 function form_valide(opts) {        
     var ckstat=true;
     var tmp;
@@ -531,8 +759,8 @@ function form_valide(opts) {
         email    : /^[\.a-zA-Z0-9_=-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
         username : /^[a-zA-Z0-9_\u4e00-\u9fa5]+$/, 
         verify   : /^[a-z\d]{4}$/i,
-        verify_m : /^[\d]{6}$/,            
-        mobile   : /^(13[0-9]{9}|15[012356789][0-9]{8}|18[0256789][0-9]{8}|147[0-9]{8})$/, //手机       
+        verify_m : /^[\d]{6}$/,
+        mobile   : /^(13[0-9]{9}|15[012356789][0-9]{8}|18[0256789][0-9]{8}|147[0-9]{8})$/, //手机
         url      : /^http[s]?:\/\/([\w-]+\.)+[\w-]+([\w-.\/?%&=]*)?$/, //url
         ip4      : /^(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)\.(25[0-5]|2[0-4]\d|[0-1]\d{2}|[1-9]?\d)$/, //ip地址
         notempty : /^\S+$/, //非空
@@ -592,9 +820,44 @@ function form_valide(opts) {
                 if(arguments.length==0) return ckstat; 
                 else{
                     return arguments.callee;
-            }
+                }
             };
         }
         return self;
     };
 }
+
+function rsp(name,condition){
+    $(window).resize(function(){
+        if(condition==true || $(condition).length){
+            do_action(name);
+        }
+    });
+}
+
+
+function one(ele,opts,cb){
+    if(!$(ele).length) return;
+    var
+    count = 0,
+    defaults = {
+        method : 'click',
+        delay : 0
+    };
+    if(opts&&opts!='') opts = $.extend({},defaults,opts);
+    else opts = defaults;
+
+    if(count == 0){
+        count = 1;
+        $(ele).one(opts['method'],function(e){
+            cb(e);
+            if(opts['delay']!=0){
+                opts['ttt'] = setTimeout(function(){
+                    count = 0;
+                }, delay);
+            }
+        });
+    }
+}
+
+//toolbase end
