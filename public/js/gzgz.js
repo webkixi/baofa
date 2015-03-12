@@ -153,7 +153,7 @@
 	add_action('fun_menu',initContextMenu);
 	// do_action('fun_menu'); 
 
-	creatstyle('gzgzgz',function(gzgzgz){
+	creatStyle('gzgzgz',function(gzgzgz){
 		gzgzgz.text('#gzmenu{position:absolute;width:150px;display:none;}\
 				#gzmenu .list-group-item{padding:7px 15px;}\
 			');
@@ -218,17 +218,17 @@
 		    autogrow: false
 		}
 		/*epiceditor*/
-		tanbox("<div id='epiceditor' style='width:600px;height:300px;'>\
+		maskerBox("<div id='epiceditor' style='height:300px;'>\
 			</div><div class='form'>\
 			<span id='submit'>提交</span>\
 			<span>&nbsp;&nbsp;</span>\
 			<span id='close'>取消</span>\
 			<span>&nbsp;&nbsp;</span>\
-			<span id='close'>文章</span>\
+			<span id='article'>文章</span>\
 			<div style='display:inline-block;height:18px;'><form id='cnt-property'>\
 			<input style='vertical-align:middle;' name='article' id='edit-form-article' type='checkbox' value=0> \
 			</form></div>\
-			</div>",'md');
+			</div>",{"width":"600px"});
 
 		editor = new EpicEditor(epic_opts).load();		
 
@@ -254,7 +254,7 @@
     	*/
 
     	function aftInsertDataToEditor(){
-	    	one('#submit',null,function(){
+	    	one('#submit',{"delay":10},function(){
 	    	// $('#submit').click(function(){
 	    		editor.save(true);
 				var 
@@ -273,7 +273,7 @@
 			});
 
 			$('#close').click(function(){
-				$('body').trigger('closetanbox');
+				$('body').trigger('close_masker_box');
 				editor.unload();
 			});	
 		}
@@ -311,7 +311,7 @@
 			if(zone.login_info.stat == 0){
 				zone.login_stat = false;
 			}else{
-				zone.login_stat = true;						
+				zone.login_stat = true;
 			}
 			do_action('fun_menu');
 		}
@@ -327,12 +327,25 @@
 	initArticleList();
 	
 	function menuLogin(){				
-		maskbox("<div id='sign' style=''><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",'login');
+		// maskerBox("<div id='sign' style=''><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",{"width":"400px"});
+		maskerBox('<div class="form-group">\
+				    <label for="user">用户名</label>\
+				    <input type="text" class="form-control" id="user" placeholder="输入用户名">\
+				  </div>\
+				  <div class="form-group">\
+				    <label for="passwd">Password</label>\
+				    <input type="password" class="form-control" id="passwd" placeholder="密码">\
+				  </div>\
+				  <div class="form">\
+				  	<span id="login">提交</span>\
+				  	<span>&nbsp;&nbsp;</span>\
+				  	<span class="close">取消</span>\
+				  </div>',{"width":"400px"});
 		$('#login').click(function(){
 			toLogin();
 		});
 		$('.close').click(function(){
-			$('body').trigger('closetanbox');
+			$('body').trigger('close_masker_box');
 		});
 	}
 	add_action('login',menuLogin);
@@ -349,11 +362,11 @@
 		if(formv){
 			needs('zone',{
 				to_login:{'url':'/login','data':JSON.stringify(data)},
-				aft_login:loginStat
+				aft_login:getloginStat
 			});
 		}
 
-		function loginStat(){
+		function getloginStat(){
 			if(zone.to_login.stat = 1){
 				tips('登录成功！');
 				zone.login_stat = true;
@@ -363,6 +376,7 @@
 				zone.login_stat = false;
 				tips('用户名或密码错误');
 			}
+			do_action('fun_menu');
 		}
 	}	
 

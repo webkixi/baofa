@@ -29,8 +29,8 @@ render = views('views',{
 
 app.use(router(app));
 app.use(statics('./public',{
-	// buffer: true,
-	// gzip: true
+	buffer: true,
+	gzip: true
 }));
 app.use(session(app));
 app.keys = ['gzgzmixcookie'];

@@ -696,7 +696,7 @@ var tipsbox = function(){
         var box = this.tipsBox(stat);
         item.innerHTML = mm;
         box.appendChild(item);
-        this.anim(item,box);
+        this.anim(item,box,stat);
         return;
     }
 
@@ -854,11 +854,11 @@ function rsp(name,condition){
     });
 }
 
-
+count = 0;
 function one(ele,opts,cb){
     if(!$(ele).length) return;
     var
-    count = 0,
+    ttt,    
     defaults = {
         method : 'click',
         delay : 0
@@ -866,12 +866,15 @@ function one(ele,opts,cb){
     if(opts&&opts!='') opts = $.extend({},defaults,opts);
     else opts = defaults;
 
+    if(opts.delay>10)opts.delay=10;
+
     if(count == 0){
         count = 1;
         $(ele).one(opts['method'],function(e){
             cb(e);
             if(opts['delay']!=0){
-                opts['ttt'] = setTimeout(function(){
+                // opts['ttt'] = setTimeout(function(){
+                ttt = setTimeout(function(){
                     count = 0;
                 }, delay);
             }
@@ -880,3 +883,5 @@ function one(ele,opts,cb){
 }
 
 //toolbase end
+
+window.__creatStyle = creatStyle;

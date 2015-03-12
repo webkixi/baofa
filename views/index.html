@@ -7,6 +7,9 @@
   <link rel="stylesheet" type="text/css" href="css/prettify_sunburst.css">
   <link rel="stylesheet" type="text/css" href="css/tinyscrollbar.css">
     <style>
+    body{
+        font:14px verdana;
+    }
     .wangwang{
         z-index:1000;background-color:#fff;border:1px solid #ddd;overflow: hidden;
     }
@@ -67,6 +70,7 @@ $(function () {
     $scrollbar.tinyscrollbar();
 
 
+    // var socket = io.connect('http://127.0.0.1:3000');
     var socket = io();
     var tpl = '<div class="media">\n\
                 <div class="media-left">\n\
