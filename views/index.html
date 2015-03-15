@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>A-GZGZ</title>
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
-  <link rel="stylesheet" type="text/css" href="css/prettify_sunburst.css">
-  <link rel="stylesheet" type="text/css" href="css/tinyscrollbar.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, minimun-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>A-GZGZ</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="css/prettify_sunburst.css">
+    <!-- <link rel="stylesheet" type="text/css" href="css/tinyscrollbar.css"> -->
     <style>
     body{
         font:14px verdana;
     }
+    .hide{display:none;}
+    .show{display: block;}
     .wangwang{
         z-index:1000;background-color:#fff;border:1px solid #ddd;overflow: hidden;
     }
-    .md-wrap{margin:15px 0; }
-    .md-wrap .md-article{margin:15px 15px; }
+    .nav-top{position: fixed;right:5px;bottom:20px;width:30px;height: 30px;background-color: red;z-index: 4000;text-align: center;line-height: 30px;}
+    .md-wrap{margin:15px 0;}
+    .md-wrap .md-article{margin:15px 15px;}
     .wangwang>.rzunit{z-index:3001;width:8px; height: 8px; position: absolute; bottom: 0px; right: 0px; cursor:nw-resize; font-size: 0; background-color: red; }
     
 
@@ -30,6 +36,9 @@
 </head>
 <body>    
 <div class="container">
+    <div class='nav-top hide'>
+        ^
+    </div>
 
     <div class='outer' style="width:100%;height:auto;">
         <div class='inner' style='height:auto;position:relative'>
@@ -51,13 +60,12 @@
 
 <script type='text/javascript' src='js/jq183.js'></script>
 <script type='text/javascript' src='js/socketio134.js'></script>
-<script type='text/javascript' src='js/jquery.tinyscrollbar.min.js'></script>
+<!-- <script type='text/javascript' src='js/jquery.tinyscrollbar.js'></script> -->
 <script type='text/javascript' src='js/core.js'></script>
 <script type='text/javascript' src='js/toolkit.js'></script>
 <script type='text/javascript' src='js/epiceditor.js'></script>
 <script type='text/javascript' src='js/prettify.min.js'></script>
 <script type='text/javascript' src='js/gzgz.js'></script>
-<!-- <script type='text/javascript' src='js/WebSocket.js'></script> -->
 <script type="text/javascript">
 add_action('code_highlight',function(){
     $("pre").addClass("prettyprint");
@@ -66,11 +74,10 @@ add_action('code_highlight',function(){
 
 $(function () {
     do_action('code_highlight');
-    var $scrollbar = $(".md-article");
-    $scrollbar.tinyscrollbar();
-
-
-    // var socket = io.connect('http://127.0.0.1:3000');
+    // var
+    // $scrollbar = $(".md-article");
+    // $scrollbar.tinyscrollbar({'trackSize':300});
+     
     var socket = io();
     var tpl = '<div class="media">\n\
                 <div class="media-left">\n\
@@ -146,10 +153,13 @@ $(function () {
                             uuu.find('.md-wrap').remove();
                             if(unit.type==1){
                                 uuu.prepend('<div class="md-wrap">\
-                                    <div class="md-article clearfix">\
-                                    <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>\
-                                    <div class="viewport">\
-                                    <div class="overview">'+unit.cnt+'</div></div></div></div>');
+                                    <div class="md-article clearfix">'+unit.cnt+'</div></div>');
+
+                                // uuu.prepend('<div class="md-wrap">\
+                                //     <div class="md-article clearfix">\
+                                //     <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>\
+                                //     <div class="viewport">\
+                                //     <div class="overview">'+unit.cnt+'</div></div></div></div>');
                             }
                             else{
                                 uuu.prepend('<div class="md-wrap clearfix"><div class="md-body">'+unit.cnt+'</div></div>');

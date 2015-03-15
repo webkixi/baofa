@@ -13,6 +13,11 @@
     gzgz = Class.create(); 
 
     gzgz.prototype = {
+	    
+	    /*
+	    * @item is a gzgz
+	    */
+
 	    initialize: function(item) {	    	
 	    	var 
 	    	login_button='';
@@ -30,6 +35,7 @@
 	    	_that = this;
 	    	this.length = item.length;
 
+	    	//init page then put per wangwang to _wangs stack;
 	    	$(item).each(function(i){
 	    		 var thegz = this;
 	    		 item[i].setAttribute('gzindex',i); _that._gzs.push(item[i]);
@@ -103,11 +109,13 @@
 			});
 			
 	        return this;
+	    },
+	    run:function(cb){
+	    	cb.call(this,_wangs);
 	    }
 	}
 
 	function initContextMenu(){
-		console.l
 		var 
 		gzmenu ='<div id="gzmenu" class="list-group">~lists~</div>',
 		lists = zone.login_stat
@@ -228,7 +236,7 @@
 			<div style='display:inline-block;height:18px;'><form id='cnt-property'>\
 			<input style='vertical-align:middle;' name='article' id='edit-form-article' type='checkbox' value=0> \
 			</form></div>\
-			</div>",{"width":"600px"});
+			</div>",{"width":"70%"});
 
 		editor = new EpicEditor(epic_opts).load();		
 
@@ -340,7 +348,7 @@
 				  	<span id="login">提交</span>\
 				  	<span>&nbsp;&nbsp;</span>\
 				  	<span class="close">取消</span>\
-				  </div>',{"width":"400px"});
+				  </div>',{"width":"70%"});
 		$('#login').click(function(){
 			toLogin();
 		});
@@ -389,7 +397,7 @@
 		rzunit = '<div class="rzunit" >1</div>';
 		
 		(type=='float') 
-		? position = 'float:left;' 
+		? position = 'position:relative;float:left;' 
 		: position = 'position:absolute;';
 
 		$(container).append('<div idindex="'+idindex+'" class="wangwang" style="left:'+(rect.left-crect.left)+'px;top:'+(rect.top-crect.top)+'px;width:'+rect.width+'px;height:'+rect.height+'px;'+position+'">'+rzunit+'</div>');		
@@ -632,16 +640,6 @@
 
 	// function __get(id,fromback,cb){
 	function __get(id){
-
-		// if(!cb)cb = function(){};
-		// if(fromback){
-		// 	var obj = {'id':id,'location': window.location.href}
-		// 	needs('zone',{
-		// 		getbackobj:{'url':'/get','data':JSON.stringify(obj)},
-		// 		null:[cb]
-		// 	});
-		// }
-		// else
 		return _wangs.get(id);
 	}	
 
@@ -782,5 +780,47 @@
 })(jQuery);
 
 $(function(){
-	$('.gzgz').gzgz();
+	var 
+	st,
+	gz = $('.gzgz').gzgz();
+	gz.run(function(_wangs){		
+		$('.wangwang')
+		.mouseenter(function(){
+			$(this).css('overflow-y','auto');
+		})
+		.mouseleave(function(){
+			$(this).css('overflow','hidden');	
+		});
+
+		function rzRespons(){
+			var
+			doc = __measureDoc();	
+			if(doc.dw<768){
+				$('.nav-top').removeClass('hide');
+				$('.wangwang').each(function(){
+					this.style.cssText = 'margin-bottom:10px;';
+					$(this).addClass('col-sm-12');
+					$(this).find('.md-article').css({'margin':'0 0'});		
+				});
+			}else{
+				var
+				ididx=0;
+				$('.wangwang').each(function(){
+					$(this).removeClass('col-sm-12');
+					ididx = $(this).attr('idindex');
+					var
+					item_feather = _wangs.get(ididx);
+					this.style.cssText = item_feather.css;
+					this.className = item_feather['class'];
+					$(this).find('.md-article').css({'margin':'15px 15px'});
+				});
+				$('.nav-top').addClass('hide');
+			}
+		}
+
+		rzRespons();
+		$(window).resize(function(){
+			rzRespons();
+		});
+	});
 });
