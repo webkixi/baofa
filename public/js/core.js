@@ -876,7 +876,7 @@ function one(ele,opts,cb){
                 // opts['ttt'] = setTimeout(function(){
                 ttt = setTimeout(function(){
                     count = 0;
-                }, delay);
+                }, opts.delay);
             }
         });
     }

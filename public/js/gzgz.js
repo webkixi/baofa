@@ -228,13 +228,37 @@
 		/*epiceditor*/
 		maskerBox("<div id='epiceditor' style='height:300px;'>\
 			</div><div class='form'>\
-			<span id='submit'>提交</span>\
-			<span>&nbsp;&nbsp;</span>\
-			<span id='close'>取消</span>\
-			<span>&nbsp;&nbsp;</span>\
-			<span id='article'>文章</span>\
+			<a class='btn btn-default' id='submit'>提交</a>\
+			<a class='btn btn-default' id='close'>取消</a>\
+			<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>\
+			<span id='article'>选项</span>\
 			<div style='display:inline-block;height:18px;'><form id='cnt-property'>\
-			<input style='vertical-align:middle;' name='article' id='edit-form-article' type='checkbox' value=0> \
+			<select name='article' id='edit-form-article'>\
+			<option value='0'>类型</option>\
+			<option value='1'>文章</option>\
+			<option value='2'>tile</option>\
+			</select>\
+			<select name='colors' id='edit-form-colors'>\
+			<option value='0'>颜色</option>\
+			<option class='asks' value='asks'>asks</option>\
+			<option class='feels' value='feels'>feels</option>\
+			<option class='has' value='has'>has</option>\
+			<option class='hates' value='hates'>hates</option>\
+			<option class='hopes' value='hopes'>hopes</option>\
+			<option class='is' value='is'>is</option>\
+			<option class='likes' value='likes'>likes</option>\
+			<option class='loves' value='loves'>loves</option>\
+			<option class='needs' value='needs'>needs</option>\
+			<option class='says' value='says'>says</option>\
+			<option class='shares' value='shares'>shares</option>\
+			<option class='thinks' value='thinks'>thinks</option>\
+			<option class='wants' value='wants'>wants</option>\
+			<option class='was' value='was'>was</option>\
+			<option class='will' value='will'>will</option>\
+			<option class='white' value='white'>white</option>\
+			<option class='wonders' value='wonders'>wonders</option>\
+			<option class='empty' value='empty'>empty</option>\
+			</select>\
 			</form></div>\
 			</div>",{"width":"70%"});
 
@@ -246,8 +270,10 @@
 			}
 
 			//article
-			if(zone.dbgetobj.type&&zone.dbgetobj.type==1)
-				$('#edit-form-article').attr('checked',true);
+			if(zone.dbgetobj.type&&zone.dbgetobj.type==1){
+				// $('#edit-form-article').attr('checked',true);
+				$("#edit-form-article").val("1");
+			}
 			
 			aftInsertDataToEditor();
 		}
@@ -270,7 +296,12 @@
 				Tcontent = editor.exportFile(null, 'text', true),
 				data = {'cnt':content,'tcnt':Tcontent},
 				cnt_form = $('#cnt-property')[0];
-				data['is-article'] = cnt_form['article'].checked ? 1 : 0;
+				// data['is-article'] = cnt_form['article'].checked ? 1 : 0;
+				data['is-article'] = cnt_form['article'].value;
+				data['is-color'] = cnt_form['colors'].value;
+
+				opdiv.div.className = '';
+				$(opdiv.div).addClass('wangwang').addClass( (data['is-color']==0 ? '' : data['is-color']) );				
 
 				// save data to local store
 				editor.save(true);
@@ -297,11 +328,11 @@
 				if($(odiv.div).find('.md-body').length){
 					$(odiv.div).find('.md-body').html(cnt);
 				}else{
-					$(odiv.div).prepend('<div class="md-wrap clearfix"><div class="md-body">'+cnt+'</div></div>');
+					$(odiv.div).html('<div class="md-wrap clearfix"><div class="md-body">'+cnt+'</div></div>');
 				}				
 			}
 			else{
-				$(odiv.div).prepend('<div class="md-wrap clearfix"><div class="md-body ">'+cnt+'</div></div>');			
+				$(odiv.div).html('<div class="md-wrap clearfix"><div class="md-body ">'+cnt+'</div></div>');			
 			}
 		}
 		do_action('code_highlight');
@@ -348,7 +379,7 @@
 				  	<span id="login">提交</span>\
 				  	<span>&nbsp;&nbsp;</span>\
 				  	<span class="close">取消</span>\
-				  </div>',{"width":"70%"});
+				  </div>',{"width":"50%"});
 		$('#login').click(function(){
 			toLogin();
 		});
@@ -669,7 +700,7 @@
 
 		needs('zone',{
 			dbgetobj:getdata,
-			'null':funs
+			'gogogo':funs
 		});
 
 	}
