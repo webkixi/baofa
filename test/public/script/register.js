@@ -321,7 +321,7 @@ function tipBehavior(name,booler){
 
             //get data from back-end that to deal with
             api = {url:'/',data:{'ctl':'ajax' , 'act':'check_email_and_mobile' , 'email' : ipt.value, 'type':chk['username']['type'] ,'async' : false}};
-            __pre('pre_username', api, __aft['username']);
+            __pre('pre_username', api, __aft['username']); 
 
             //send mobile verify code
             $('.btn-send-msg').bind('click',function(){

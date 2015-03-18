@@ -265,27 +265,31 @@ function pushMsgToFrontEnd(msg){
 		var 
 		body = yield parse.json(this),
 		user = body.user,
-		cookie_data = '';
-		cookie_tmp='';
-		passwd = body.passwd;		
-		reset_passwd = body.reset_passwd;
+		cookie_data = '',
+		cookie_tmp='',
+		passwd = body.passwd,
+		stat = body.stat,
+		reset_passwd = body.newpasswd,
+		reset_cf_passwd = body.cfpasswd;
 
-		var valid_stat = formv()(user,'username');
+		var valid_stat = formv()(user,'username')();
 		if(!valid_stat){
 			this.body =  '{"stat":0,"info":"username invalide"}';
 		}else{
 			passwd = encrypt(passwd,mixstr);
-			var db_user = JSON.parse(yield hget('user',user));
-			if(db_user&&db_user['passwd']==passwd){			
+			var 
+			db_user = JSON.parse(yield hget('user',user));
+			if(db_user&&db_user['passwd']==passwd){
 				cookie_tmp = passwd;
-				if(reset_passwd){
-					reset_passwd = encrypt(reset_passwd,mixstr);
+				if(stat=='reset'&&reset_passwd&&reset_passwd==reset_cf_passwd){
+					reset_passwd = encrypt(reset_passwd,mixstr);					
+					cookie_tmp = reset_passwd;
+					// passwd = reset_passwd;
 					db_user['passwd'] = reset_passwd;
 					yield hset('user',user,JSON.stringify(db_user));
-					cookie_tmp = reset_passwd;
 				}
-				db_user['passwd'] = passwd;
-				yield hset('user',user,JSON.stringify(db_user));
+				// db_user['passwd'] = passwd;
+				// yield hset('user',user,JSON.stringify(db_user));
 				if(user=='admin'){
 					cookie_data = '{"user":"admin","pwd":"'+cookie_tmp+'"}';
 					this.body = '{"stat":1,"info":"admin login sucess"}';
@@ -296,8 +300,11 @@ function pushMsgToFrontEnd(msg){
 				//store cookie
 				cookie_data = encrypt(cookie_data,mixstr);
 				this.cookies.set('gzgz',cookie_data,{'signed':true,'maxAge':7*24*3600*1000,'httpOnly':true});
-			} else
-				this.body = '{"stat":0,"info":"login failed"}';
+			} else{
+				var
+				return_stat = '{"stat":0,"info":"login failed"}';
+				this.body = return_stat;
+			}
 		}
 	}
 

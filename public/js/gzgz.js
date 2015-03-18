@@ -7,16 +7,25 @@
 	// console.log(idindex);
 
 	var 
-	// zone = {},
 	pendraw = false,
 	_wangs = new HashMap(),
     gzgz = Class.create(); 
 
+	var 
+	_nrect,
+	_rzrect, 
+	_rzobj, 
+	_rzaction=false,  //drga item  to resize wangwang
+	unitdrag = false,   //
+	cloneunit = false,
+	tt,
+	opdiv;  //use for clone, remove 
+
+
+    /*
+    * @item is a gzgz
+    */
     gzgz.prototype = {
-	    
-	    /*
-	    * @item is a gzgz
-	    */
 
 	    initialize: function(item) {	    	
 	    	var 
@@ -115,6 +124,7 @@
 	    }
 	}
 
+	//右键菜单初始化
 	function initContextMenu(){
 		var 
 		gzmenu ='<div id="gzmenu" class="list-group">~lists~</div>',
@@ -122,10 +132,11 @@
 			  ? 
 				'<a class="edit list-group-item">编辑 </a>\
 				<a class="listarticle list-group-item">文章列表<span class="badge">14</span></a>\
+				<a class="resetpwd list-group-item">更改密码</a> \
 				<a class="clone list-group-item">克隆</a> \
 				<a class="remove list-group-item">删除</a>'
 			  :
-				'<a class="sign list-group-item">注册/登录</a>';
+			  	'<a class="sign list-group-item">注册/登录</a>';			  	
 		
 		gzmenu = gzmenu.replace('~lists~',lists);
 		$('#gzmenu').remove();
@@ -136,7 +147,12 @@
 			e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);				
 			
 			if(this.className.indexOf('sign')>-1){
-				menuLogin();		
+				menuLogin();	
+				// do_action('login');
+			}
+			if(this.className.indexOf('resetpwd')>-1){
+				menuLogin('reset');
+				// do_action('login');
 			}
 			if(this.className.indexOf('listarticle')>-1){
 				renderMenuList(opdiv);
@@ -161,6 +177,7 @@
 	add_action('fun_menu',initContextMenu);
 	// do_action('fun_menu'); 
 
+	//动态插入css
 	creatStyle('gzgzgz',function(gzgzgz){
 		gzgzgz.text('#gzmenu{position:absolute;width:150px;display:none;}\
 				#gzmenu .list-group-item{padding:7px 15px;}\
@@ -172,6 +189,7 @@
 		// 			#gzmenu li:hover{background:#eee;color:black;} ');
 	});	
 
+	//文章列表渲染
 	function renderMenuList(src){
 		var 
 		tpl,
@@ -201,6 +219,7 @@
 		}
 	}
 
+	//clone odiv
 	function menuClone(src){
 		var clone = src.div.cloneNode(true);
 		$(clone).attr('idindex',idindex);
@@ -212,6 +231,7 @@
 		tips('clone ok',1000);
 	}
 
+	//弹出文章编辑框
 	function menuEdit(){
 		var epic_opts = {
 		    container: 'epiceditor',
@@ -225,7 +245,8 @@
 		    },    
 		    autogrow: false
 		}
-		/*epiceditor*/
+
+		/*弹出编辑框*/
 		maskerBox("<div id='epiceditor' style='height:300px;'>\
 			</div><div class='form'>\
 			<a class='btn btn-default' id='submit'>提交</a>\
@@ -264,6 +285,7 @@
 
 		editor = new EpicEditor(epic_opts).load();		
 
+		//从数据接口中拿到数据后第一步
 		function insertDataToEditor(){
 			if(zone.dbgetobj.tcnt){
 				editor.importFile(null,zone.dbgetobj.tcnt,'text');
@@ -286,7 +308,8 @@
     	editor.setAutoScrollEditorIntoView(true);
     	editor.setOption("maxLines", 60);	
     	*/
-
+    
+    	//从数据接口中拿到数据后第二步
     	function aftInsertDataToEditor(){
 	    	one('#submit',{"delay":10},function(){
 	    	// $('#submit').click(function(){
@@ -317,29 +340,183 @@
 			});	
 		}
 
+		//初始化编辑框内的内容
 		__dbget(opdiv.idindex,insertDataToEditor);
 	}
 
-	var insertCntTodiv = function(odiv,cnt,stat){
+	//init login pop pannle
+	function menuLogin(stat){		
+		maskerBox('<div class="form-group">\
+				    <label for="user">用户名</label>\
+				    <input type="text" class="form-control" id="user" placeholder="输入用户名">\
+				  </div>\
+				  <div class="form-group">\
+				    <label for="passwd">Password</label>\
+				    <input type="password" class="form-control" id="passwd" placeholder="密码">\
+				  </div>\
+				  <div id="resetpwd" class="hide">\
+				  	<div class="form-group">\
+				    	<label for="newpasswd">新密码</label>\
+				    	<input type="password" class="form-control" name="newpwd" id="newpasswd" placeholder="新密码">\
+				    </div>\
+				    <div class="form-group">\
+				    	<label for="cfpasswd">确认新密码</label>\
+				    	<input type="password" class="form-control" name="cfpwd"  id="cfpasswd" placeholder="确认新密码">\
+			    	</div>\
+				  </div>\
+				  <div class="form">\
+				  	<span id="login">提交</span>\
+				  	<span>&nbsp;&nbsp;</span>\
+				  	<span class="close">取消</span>\
+				  </div>',{"width":"35%"});
+		
+		if(stat=='reset'){
+			$('#resetpwd').removeClass('hide');
+		}
+		$('#login').click(function(){
+			toLogin(stat);
+		});
+		$('.close').click(function(){
+			$('body').trigger('close_masker_box');
+		});
+	}
+	add_action('login',menuLogin);
+
+	//put login info to back-end;
+	function toLogin(stat){
+		var
+		chkopts = {
+			username: function(val,reg){   // username 长度大于8，小于20 
+		        	var 		        
+			        tmp = reg.email.test(val);    //email check		        
+			        if(!tmp) {
+			            tmp = reg.mobile.test(val);   //mobile check
+			            if(!tmp){
+			            	tmp = reg.username.test(val);
+			            	if(tmp){
+			            		zone['usertype'] = 'text';
+			            	}
+			            }else{
+			            	zone['usertype'] = 'mobile';	
+			            }
+			        }else{
+			        	zone['usertype'] = 'email';
+			        }
+			        if(tmp){
+		                var 
+		                len = strlen(val);
+		                if(len<4||len>30){
+		                    tmp=false;
+		                }
+		            }
+			        return tmp;
+		    },	
+		    password: function(val,reg){
+		        var 		        
+		        tmp = true,
+		        level = (val.length>5) ? 0 + (val.length>7) + (/[a-z]/.test(val) && /[A-Z]/.test(val)) + (/\d/.test(val) && /\D/.test(val)) + (/\W/.test(val) && /\w/.test(val)) + (val.length > 12) : 0;  //level  0  1  2  3  4  password stronger
+		        
+		        if(val.length>20||/\s/.test(val)) level=0; //不包括空格
+		        if(level==0||!level){
+		            tmp = false;
+		        }
+		        zone['password']={};
+		        zone['password']['level']=level;
+		        return tmp;
+		    },
+		    repassword: function(input_obj,reg){
+		        var 
+		        pobj = input_obj[0],   //password object
+		        pval = pobj.value,
+		        iobj = input_obj[1],    //repassword object
+		        val = iobj.value,
+		        tmp = true;
+		        if(val!==pval)
+	                tmp = false;
+
+		        return tmp;
+		    }
+		},
+		user = $('#user').val(),
+		passwd = $('#passwd').val(),
+		newpasswd = $('#newpasswd').val(),
+		cfpasswd = $('#cfpasswd').val(),
+		formv = false;
+
+		if(!stat){			
+			formv = form_valide(chkopts)
+							   (user,'username')
+							   ();
+		}
+		else if(stat=='reset'){		
+			formv = form_valide(chkopts)
+							   (user,'username')
+							   (newpasswd,'password')
+							   ([$('#newpasswd')[0],$('#cfpasswd')[0]],'repassword')
+							   ();
+		}
+
+		if(formv){
+			var
+			data = {
+				'user':user,
+				'passwd':passwd
+			};
+
+			if(stat=='reset'){
+				data['newpasswd'] = newpasswd;
+				data['cfpasswd'] = cfpasswd;
+				data['stat'] = 'reset';
+			}
+
+			needs('zone',{
+				to_login:{'url':'/login','data':JSON.stringify(data)},
+				aft_login:getloginStat
+			});
+		}
+
+		function getloginStat(){
+			if(zone.to_login.stat == 1){
+				stat=='reset'? tips('修改成功！') : tips('登录成功！');
+				zone.login_stat = true;
+				$('.sign').remove();
+			}
+			else{
+				zone.login_stat = false;
+				tips('用户名或密码错误');
+			}
+			do_action('fun_menu');
+		}
+	}	
+
+	//插入内容到odiv
+	function insertCntTodiv(odiv,cnt,stat){
 		if($(odiv.div).find('.md-article').length){
 			$(odiv.div).find('.md-article').html(cnt);
 		}else{
-			if(stat=='list'){
-				if($(odiv.div).find('.md-body').length){
-					$(odiv.div).find('.md-body').html(cnt);
-				}else{
-					$(odiv.div).html('<div class="md-wrap clearfix"><div class="md-body">'+cnt+'</div></div>');
-				}				
-			}
-			else{
-				$(odiv.div).html('<div class="md-wrap clearfix"><div class="md-body ">'+cnt+'</div></div>');			
-			}
+			if($(odiv.div).find('.md-body').length){
+				$(odiv.div).find('.md-body').html(cnt);
+			}else{
+				$(odiv.div).prepend('<div class="md-wrap clearfix"><div class="md-body">'+cnt+'</div></div>');
+			}		
+			// if(stat=='list'){
+			// 	if($(odiv.div).find('.md-body').length){
+			// 		$(odiv.div).find('.md-body').html(cnt);
+			// 	}else{
+			// 		$(odiv.div).prepend('<div class="md-wrap clearfix"><div class="md-body">'+cnt+'</div></div>');
+			// 	}				
+			// }
+			// else{
+			// 	$(odiv.div).prepend('<div class="md-wrap clearfix"><div class="md-body ">'+cnt+'</div></div>');			
+			// }
 		}
 		do_action('code_highlight');
-	}
+	}	
 	add_action('insertCnt',insertCntTodiv,insertCntTodiv.length);
 
-	var getLoginInfo = function(){
+	
+	//获取登录信息
+	function getLoginInfo(){
 		
 		needs('zone',{
 			'login_info' : {'url':'/logininfo'}
@@ -354,71 +531,21 @@
 			}
 			do_action('fun_menu');
 		}
-		
 	}
-	// bug
+
+	//初始化文章列表
 	function initArticleList(){
 		if($('._list').length>0){
 			renderMenuList();
 		}
 	}
+	//渲染页面后第一步同步用户状态
 	getLoginInfo();
 	initArticleList();
 	
-	function menuLogin(){				
-		// maskerBox("<div id='sign' style=''><br/><br/><input type='text' id='user' /><br/><br /><input type='password' id='passwd' /></div><div class='form'><span id='login'>提交</span><span>&nbsp;&nbsp;</span><span class='close'>取消</span></div>",{"width":"400px"});
-		maskerBox('<div class="form-group">\
-				    <label for="user">用户名</label>\
-				    <input type="text" class="form-control" id="user" placeholder="输入用户名">\
-				  </div>\
-				  <div class="form-group">\
-				    <label for="passwd">Password</label>\
-				    <input type="password" class="form-control" id="passwd" placeholder="密码">\
-				  </div>\
-				  <div class="form">\
-				  	<span id="login">提交</span>\
-				  	<span>&nbsp;&nbsp;</span>\
-				  	<span class="close">取消</span>\
-				  </div>',{"width":"50%"});
-		$('#login').click(function(){
-			toLogin();
-		});
-		$('.close').click(function(){
-			$('body').trigger('close_masker_box');
-		});
-	}
-	add_action('login',menuLogin);
+	
 
-	function toLogin(){
-		var user = $('#user').val();
-		var passwd = $('#passwd').val();
-		var formv = form_valide()(user,'username');
-		var data = {
-			'user':user,
-			'passwd':passwd
-		};
-
-		if(formv){
-			needs('zone',{
-				to_login:{'url':'/login','data':JSON.stringify(data)},
-				aft_login:getloginStat
-			});
-		}
-
-		function getloginStat(){
-			if(zone.to_login.stat = 1){
-				tips('登录成功！');
-				zone.login_stat = true;
-				$('.sign').remove();
-			}
-			else{
-				zone.login_stat = false;
-				tips('用户名或密码错误');
-			}
-			do_action('fun_menu');
-		}
-	}	
-
+	//_unitDiv的准备工作
 	var preCreatSubDiv = function(item,container,type){
 		var 
 		rect = __getRect(item),
@@ -440,6 +567,7 @@
 		new _unitDiv(_unit,container);
 	}	
 
+	//resize grid size
 	$(document).mousemove(function(e){
 		e = e||arguments[0];
 		if(e.which==1&&_rzaction===true){
@@ -451,17 +579,9 @@
 	$(document).bind('resizeunit',function(){
 		__edit(_rzobj);
 	});
+	
 
-	var 
-	_nrect,
-	_rzrect, 
-	_rzobj, 
-	_rzaction=false,  //drga item  to resize wangwang
-	unitdrag = false,   //
-	cloneunit = false,
-	tt,
-	opdiv,  //use for clone, remove 
-
+	//build a obj and init it's property;
 	_unitDiv = Class.create();
 	_unitDiv.prototype = {
 		initialize: function(item,container) {			
@@ -482,15 +602,19 @@
 			that.container = container;
 			that.dragitem;
 			
-			$(_unit).children('.rzunit').mousedown(function(e){
-				e = e||arguments[0];
-				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
-				_rzaction=true;
-				_rzrect = __getRect(this.parentNode);
-				// _rzobj = this.parentNode;
-				_rzobj = that;
-			});					
+			if(zone.login_stat){
+				//start resize grid
+				$(_unit).children('.rzunit').mousedown(function(e){
+					e = e||arguments[0];
+					e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
+					_rzaction=true;
+					_rzrect = __getRect(this.parentNode);
+					// _rzobj = this.parentNode;
+					_rzobj = that;
+				});
+			}
 			
+			//put one grid into a other grid that one is father one is son
 			$(_unit).mouseover(function(e){						
 				e = e||arguments[0];				
 				if(cloneunit) {
@@ -512,24 +636,29 @@
 				}
 			});
 
-			
+			//start drag one grid
 			$(_unit).mousedown(function(e){	
-				// _rect = __getRect(e.target);
-				_rect = __getRect(this);
-				_crect = __getRect(that.container);	
-				e = e||arguments[0];				
-				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
-				$(this).css('z-index',2000);
-				unitdrag   = true;
-				cloneunit  = false;
-				_nrect     = __getRect(this);
-				pos.startX = e.pageX;
-				pos.startY = e.pageY;	
-				if(e.ctrlKey){
-					that.dragitem = that.div;
-				}
+				if(zone.login_stat){
+					// _rect = __getRect(e.target);
+					_rect = __getRect(this);
+					_crect = __getRect(that.container);
+					$('#gzmenu').hide();
 
-			}).contextmenu(function(e){				
+					e = e||arguments[0];				
+					e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
+					$(this).css('z-index',2000);
+					unitdrag   = true;
+					cloneunit  = false;
+					_nrect     = __getRect(this);
+					pos.startX = e.pageX;
+					pos.startY = e.pageY;	
+					if(e.ctrlKey){
+						that.dragitem = that.div;
+					}
+				}
+			})
+			//right click one gird then pop a oprate menu list,then ....
+			.contextmenu(function(e){				
 				opdiv = null;
 				e = e||arguments[0];
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
@@ -537,10 +666,9 @@
 				unitdrag = pendraw = false;
 				that.rightmenu(e);
 				opdiv = that;
-			});		
+			});
 
-			
-
+			//drag one grid move in container
 			var endleft,endtop;
 			$(container).mousemove(function(e){
 				e = e||arguments[0];							
@@ -556,6 +684,7 @@
 				}
 			});
 
+			//end drag one grid
 			$(_unit).mouseup(function(e){
 				e = e||arguments[0];
 				e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
@@ -583,14 +712,17 @@
 		rect:function(){
 			return __getRect(this.div);
 		},
+		//set menulist pop at where that your mouse right click
 		rightmenu:function(e){
 			var rightmenu = $('#gzmenu');
 			rightmenu.css({'display':'block','left':e.pageX-5+'px','top':e.pageY-5+'px','z-index':9999});			
 		}
-	}//end unit
+	}
+	//end unit
 
 
-	//stack opration
+
+	//equipment one gird to a json object and put it to global stack "_wangs" in memery
 	function __clientput(unit){
 		var 
 		obj;
@@ -614,7 +746,8 @@
 		idindex++;
 	}
 
-	function __put(unit,content,type){
+	//equipment one grid as a json object then put the json object to back-end;
+	function __put(unit,content,type){		
 		var 
 		obj={},
 		tcnt;		
@@ -659,7 +792,7 @@
 		}
 	}
 
-	//stack opration
+	//clone one grid then show it and save it to back-end
 	function __clone(src,clone){
 		var obj;
 		if(src.hasOwnProperty('father')&&src.father!=='gzgz'){			
@@ -670,10 +803,12 @@
 	}	
 
 	// function __get(id,fromback,cb){
+	// get json object from global stack that we had put it into global stack "_wangs"
 	function __get(id){
 		return _wangs.get(id);
 	}	
 
+	//get json object from back-end
 	function __dbget(id,cb){
 		var 
 		funs = [],
@@ -705,6 +840,7 @@
 
 	}
 
+	//resize one grid and save it to back-end
 	function __edit(item){
 		if(!item)return false;
 
@@ -735,6 +871,7 @@
 		}
 	}
 
+	//move one grid and save it to back-end
 	function __move(item){    	
 		if(!item)return false;
 
@@ -762,6 +899,7 @@
 		__put(obj);
 	}
 
+	//delete one grid and sava it to back-end;
 	function __remove(item){
 		if(!item)return false;
 
@@ -802,8 +940,8 @@
 			removestat:{'url':'/remove','data':JSON.stringify(obj)}
 		},removefun);	
 	}
-	
 
+	//jquery plugin;
 	$.fn.gzgz = function(){
       	return new gzgz(this);
     };
@@ -823,6 +961,7 @@ $(function(){
 			$(this).css('overflow','hidden');	
 		});
 
+		//response style for mobile
 		function rzRespons(){
 			var
 			doc = __measureDoc();	
@@ -849,6 +988,7 @@ $(function(){
 			}
 		}
 
+		//init response style
 		rzRespons();
 		$(window).resize(function(){
 			rzRespons();
