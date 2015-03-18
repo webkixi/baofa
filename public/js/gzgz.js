@@ -968,7 +968,7 @@ $(function(){
 			if(doc.dw<768){
 				$('.nav-top').removeClass('hide');
 				$('.wangwang').each(function(){
-					this.style.cssText = 'margin-bottom:10px;';
+					this.style.cssText = 'margin-bottom:10px;max-height:500px;overflow-y:auto;';
 					$(this).addClass('col-sm-12');
 					$(this).find('.md-article').css({'margin':'0 0'});		
 				});
