@@ -1,3 +1,4 @@
+//why has the bug, i don't know,so i git push again and try it
 (function(){	
 
 	var 
