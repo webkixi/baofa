@@ -985,13 +985,16 @@ $(function(){
 			doc = __measureDoc();	
 			if(doc.dw<768){
 				zone['rsp']=true;
+				// $('body').prepend('<div id="bx-slider"></div>');
 				$('.nav-top').removeClass('hide');
 				$('.wangwang').each(function(){					
 					$(this).addClass('col-sm-12 hide');
 					this.style.cssText = 'margin-bottom:10px;max-height:500px;overflow-y:auto;';
 					$(this).find('.md-article').css({'margin':'0 0'});
-					$(this).removeClass('hide');
+					// $('#bx-slider').append(this);
+					
 				});
+				$('.wangwang').removeClass('hide');
 			}else{
 				var
 				ididx=0;
