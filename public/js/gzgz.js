@@ -191,11 +191,12 @@
 	});	
 
 	//文章列表渲染
-	function renderMenuList(src){
+	function renderMenuList(src,page){
 		var 
 		tpl,
+		page = !page ? 1 : page;
 		api = {
-			'list_data' : {'url':'/list','data':JSON.stringify( {'page':1 } ),'type':'html'} , 
+			'list_data' : {'url':'/list','data':JSON.stringify( {'page':page } ),'type':'html'} , 
 			'normal_tpl': {'url':'/tpl','type':'html'}
 		};
 		if(src){
@@ -219,6 +220,7 @@
 			});
 		}
 	}
+	add_action('renderList',renderMenuList,renderMenuList.length);
 
 	//clone odiv
 	function menuClone(src){
@@ -346,7 +348,12 @@
 	}
 
 	//init login pop pannle
-	function menuLogin(stat){		
+	function menuLogin(stat){
+		var
+		custom_width = {"width":"35%"};
+		if(zone['rsp']){
+			custom_width = {"width":"70%"};
+		}
 		maskerBox('<div class="form-group">\
 				    <label for="user">用户名</label>\
 				    <input type="text" class="form-control" id="user" placeholder="输入用户名">\
@@ -366,10 +373,10 @@
 			    	</div>\
 				  </div>\
 				  <div class="form">\
-				  	<span id="login">提交</span>\
+				  	<span id="login">登录</span>\
 				  	<span>&nbsp;&nbsp;</span>\
 				  	<span class="close">取消</span>\
-				  </div>',{"width":"35%"});
+				  </div>',custom_width);
 		
 		if(stat=='reset'){
 			$('#resetpwd').removeClass('hide');
@@ -407,9 +414,11 @@
 		                var 
 		                len = strlen(val);
 		                if(len<4||len>30){
+		                	tips('用户名必须大于4字，小于20字');
 		                    tmp=false;
 		                }
 		            }
+		            if(!tmp)tips('请正确填写用户名');
 			        return tmp;
 		    },	
 		    password: function(val,reg){
@@ -419,6 +428,7 @@
 		        
 		        if(val.length>20||/\s/.test(val)) level=0; //不包括空格
 		        if(level==0||!level){
+		        	tips('请输入6～20位密码');
 		            tmp = false;
 		        }
 		        zone['password']={};
@@ -432,8 +442,10 @@
 		        iobj = input_obj[1],    //repassword object
 		        val = iobj.value,
 		        tmp = true;
-		        if(val!==pval)
+		        if(val!==pval){
+		        	tips('两次输入密码不匹配');
 	                tmp = false;
+		        }
 
 		        return tmp;
 		    }
@@ -931,11 +943,12 @@
 		var removefun=function(){
 			if(zone.removestat.responseText=='ok'){				
 				zone.removestat= null;
-				console.log('remove ok');			
+				console.log('remove ok');
 				$(opdiv.div).remove();
 			}else{
 				do_action('login');
 			}
+			do_action('renderList');
 		}
 		needs('zone',{
 			removestat:{'url':'/remove','data':JSON.stringify(obj)}
@@ -954,6 +967,8 @@ $(function(){
 	st,
 	gz = $('.gzgz').gzgz();
 	gz.run(function(_wangs){		
+		
+		//make scroll true
 		$('.wangwang')
 		.mouseenter(function(){
 			$(this).css('overflow-y','auto');
@@ -962,20 +977,25 @@ $(function(){
 			$(this).css('overflow','hidden');	
 		});
 
+		do_action('renderList');
+
 		//response style for mobile
 		function rzRespons(){
 			var
 			doc = __measureDoc();	
 			if(doc.dw<768){
+				zone['rsp']=true;
 				$('.nav-top').removeClass('hide');
-				$('.wangwang').each(function(){
+				$('.wangwang').each(function(){					
+					$(this).addClass('col-sm-12 hide');
 					this.style.cssText = 'margin-bottom:10px;max-height:500px;overflow-y:auto;';
-					$(this).addClass('col-sm-12');
-					$(this).find('.md-article').css({'margin':'0 0'});		
+					$(this).find('.md-article').css({'margin':'0 0'});
+					$(this).removeClass('hide');
 				});
 			}else{
 				var
 				ididx=0;
+				zone['rsp']=false;
 				$('.wangwang').each(function(){
 					$(this).removeClass('col-sm-12');
 					ididx = $(this).attr('idindex');

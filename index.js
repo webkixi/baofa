@@ -553,7 +553,7 @@ function pushMsgToFrontEnd(msg){
 		page_end = parseInt(page)*page_size-1;
 		
 		var 
-		list = yield function(fn){sc.zrange('article',page_start,page_end,fn)},
+		list = yield function(fn){sc.zrrange('article',page_start,page_end,fn)},
 		article_list=[],
 		article_titles=[];
 
@@ -581,10 +581,12 @@ function pushMsgToFrontEnd(msg){
 
 		var 
 		i=0,
-		cnt
+		cnt,
+		loc,
 		$ = yield tmpl(tpl.toString());
 		for(; i<article_list.length; i++){
 			cnt = $(article_list[i].cnt);
+			loc = article_list[i].location;
 			if(cnt[0]._nodeName=='h1'){
 				title = cnt[0].innerHTML;
 				des = cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,'');
@@ -593,7 +595,7 @@ function pushMsgToFrontEnd(msg){
 				title = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),16);
 				des = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),100,true);
 			}
-			looper+=rpl($('._list').html(),{'title':title,'des':des});
+			looper+=rpl($('._list').html(),{'title':title,'des':des,'loc':loc});
 		}
 		$('._list').html(looper);
 		return $('.pageto').prop('outerHTML');

@@ -68,8 +68,8 @@ function CurrentStyle(element){
     return element.currentStyle || document.defaultView.getComputedStyle(element, null);
 };
 
-function rpl(tmp,ve){
-    if(!ve)return false;
+function rpl(tmp,data){
+    if(!data)return false;
     tmp = tmp.replace(/\{\{(.*?)\}\}/gi,function(a,b){
             return eval(b);
         });

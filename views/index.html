@@ -170,7 +170,9 @@ $(function () {
                     </a>\n\
                 </div>\n\
                 <div class="media-body">\n\
-                    <h4 class="media-heading">\{\{data.title\}\}</h4>\n\
+                    <a target="_blank" href="\{\{data.location\}\}">\n\
+                        <h4 class="media-heading">\{\{data.title\}\}</h4>\n\
+                    </a>\
                     <p class="">\{\{data.des\}\}</p>\n\
                 </div>\n\
             </div>\n';
@@ -180,6 +182,7 @@ $(function () {
         var 
         body = val.data;
         tpl = rpl(tpl,body);
+        console.log(body);
 
         if($('._list').length){
             $('._list').prepend(tpl);
