@@ -603,17 +603,17 @@
 			that.container = container;
 			that.dragitem;
 			
-			if(zone.login_stat){
-				//start resize grid
-				$(_unit).children('.rzunit').mousedown(function(e){
+			
+			//start resize grid
+			$(_unit).children('.rzunit').mousedown(function(e){
+				if(zone.login_stat){
 					e = e||arguments[0];
 					e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true);
 					_rzaction=true;
 					_rzrect = __getRect(this.parentNode);
-					// _rzobj = this.parentNode;
 					_rzobj = that;
-				});
-			}
+				}
+			});			
 			
 			//put one grid into a other grid that one is father one is son
 			$(_unit).mouseover(function(e){						
