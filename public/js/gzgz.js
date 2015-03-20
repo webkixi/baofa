@@ -126,13 +126,14 @@
 	}
 
 	//右键菜单初始化
-	function initContextMenu(){
+	function initContextMenu(badge){
+		badge = !badge ? 0 : badge;
 		var 
 		gzmenu ='<div id="gzmenu" class="list-group">~lists~</div>',
 		lists = zone.login_stat
 			  ? 
 				'<a class="edit list-group-item">编辑 </a>\
-				<a class="listarticle list-group-item">文章列表<span class="badge">14</span></a>\
+				<a class="listarticle list-group-item">文章列表<span class="badge">'+badge+'</span></a>\
 				<a class="resetpwd list-group-item">更改密码</a> \
 				<a class="clone list-group-item">克隆</a> \
 				<a class="remove list-group-item">删除</a>'
@@ -216,9 +217,24 @@
 				lists  : api['list_data'] ,
 				list_insert_to : function(){				
 					$('.pageto').parent().html(zone.lists);
+
+					//init pager event
+					$('.page-pre').click(function(){
+						var
+						page_to = $(this).attr('pageid');
+						do_action('renderList',null,page_to);
+					});
+
+					$('.page-next').click(function(){
+						var
+						page_to = $(this).attr('pageid');
+						do_action('renderList',null,page_to);
+					});
 				}
 			});
 		}
+
+
 	}
 	add_action('renderList',renderMenuList,renderMenuList.length);
 
@@ -948,7 +964,7 @@
 			}else{
 				do_action('login');
 			}
-			do_action('renderList');
+			// do_action('renderList');
 		}
 		needs('zone',{
 			removestat:{'url':'/remove','data':JSON.stringify(obj)}
@@ -979,23 +995,32 @@ $(function(){
 
 		do_action('renderList');
 
+
+		var ne = MonoEvent;
+		$box = ne( '.wangwang' );
+
 		//response style for mobile
 		function rzRespons(){
 			var
 			doc = __measureDoc();	
 			if(doc.dw<768){
+
 				zone['rsp']=true;
-				// $('body').prepend('<div id="bx-slider"></div>');
 				$('.nav-top').removeClass('hide');
+
 				$('.wangwang').each(function(){					
-					$(this).addClass('col-sm-12 hide');
-					this.style.cssText = 'margin-bottom:10px;max-height:500px;overflow-y:auto;';
+					$(this).addClass('col-sm-12');
+					this.style.cssText = 'margin-bottom:10px;overflow-y:auto;';
 					$(this).find('.md-article').css({'margin':'0 0'});
-					// $('#bx-slider').append(this);
-					
 				});
-				$('.wangwang').removeClass('hide');
+
+				$box.on( 'swipeLeft swipeRight swipeUp swipeDown', function( e ){
+					// this.style.display = 'none';
+					alert(e.type);
+				});
 			}else{
+				$box.un( 'swipeLeft swipeRight swipeUp swipeDown' );
+
 				var
 				ididx=0;
 				zone['rsp']=false;

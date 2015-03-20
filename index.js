@@ -64,6 +64,11 @@ function pushMsgToFrontEnd(msg){
 	io.emit('xxx', { 'data': msg });
 }
 
+function pushInfoToFED(name,msg){	
+
+	io.emit(name, { 'data': msg });
+}
+
 
 	//start 
 	var
@@ -373,6 +378,14 @@ function pushMsgToFrontEnd(msg){
 			tmp = yield render('index');
 		    tmp = tmp.split(/[=]{5,}/)[0];	    
 		    this.body = tmp;
+
+		    //push文章数到前端FED(front-end)
+			var
+			article_count = yield function(fn){sc.zsize('article',fn)};
+
+			setTimeout(function(){
+				pushInfoToFED('article_count',article_count);
+			}, 2000);
 		}
 	}
 
@@ -484,7 +497,7 @@ function pushMsgToFrontEnd(msg){
 			exist = yield function(fn){ sc.zexists('article',id,fn);}
 			if(!exist){
 				yield zset('article',id, body.timer);
-				pushMsgToFrontEnd(body);
+				yield pushBehaviors(body);
 			}
 		}else{
 			yield removeIndex(path,body,'article');
@@ -512,6 +525,21 @@ function pushMsgToFrontEnd(msg){
 		if(type=='article'){
 			yield zdel('article',id);	
 		}
+
+		yield pushBehaviors;
+	}
+
+	//batch push info to FED
+	function *pushBehaviors(data){
+		if(data){
+			//push body to FED and change the list dom
+			pushMsgToFrontEnd(data);
+		}
+
+		//push articles count and change badge
+		var
+		article_count = yield getArticleSize;
+		pushInfoToFED('article_count',article_count);
 	}
 
 	/**
@@ -533,6 +561,11 @@ function pushMsgToFrontEnd(msg){
 		}else{
 			this.body = 'null';
 		}
+	}
+
+	//获取文章数
+	function *getArticleSize(){
+		return yield function(fn){sc.zsize('article',fn)};
 	}
 
 	/**
@@ -583,10 +616,12 @@ function pushMsgToFrontEnd(msg){
 		i=0,
 		cnt,
 		loc,
+		looperid=0,
 		$ = yield tmpl(tpl.toString());
 		for(; i<article_list.length; i++){
 			cnt = $(article_list[i].cnt);
 			loc = article_list[i].location;
+			looperid = article_list[i].id;
 			if(cnt[0]._nodeName=='h1'){
 				title = cnt[0].innerHTML;
 				des = cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,'');
@@ -595,9 +630,31 @@ function pushMsgToFrontEnd(msg){
 				title = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),16);
 				des = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),100,true);
 			}
-			looper+=rpl($('._list').html(),{'title':title,'des':des,'loc':loc});
+			looper+=rpl($('._list').html(),{'title':title,'des':des,'loc':loc,'looperid':looperid});
 		}
+		//list looper
 		$('._list').html(looper);
+
+		//pager
+		var
+		pre=1,
+		next=2,
+		max_page,
+		pager = {
+			"preious" : function(){
+				return page==1 ? 1 : page-1;
+			},
+			"next" : function(){
+				max_page = Math.ceil(article_list.length/page_size);
+				return page == max_page ? page : page+1;
+			},
+			"make" : function(){
+				return '<li><a class="page-pre" pageid="'+this.preious()+'">上一页</a></li>\n\
+					    <li><a class="page-next" pageid="'+this.next()+'">下一页</a></li>';
+			}
+		}
+		$('.pager').html(pager.make());
+
 		return $('.pageto').prop('outerHTML');
 		
 	}

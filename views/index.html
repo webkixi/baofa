@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, minimun-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, minimun-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>A-GZGZ</title>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
-    <link rel="stylesheet" type="text/css" href="css/jquery.bxslider.css">
+    <!-- <link rel="stylesheet" type="text/css" href="css/jquery.bxslider.css"> -->
     <link rel="stylesheet" type="text/css" href="css/prettify_sunburst.css">
     <!-- <link rel="stylesheet" type="text/css" href="css/tinyscrollbar.css"> -->
     <style>
@@ -141,12 +141,14 @@
         </div>
     </div>
 
+
 </div>
 
 <script type='text/javascript' src='js/jq183.js'></script>
-<script type='text/javascript' src='js/jquery.bxslider.min.js'></script>
+<!-- <script type='text/javascript' src='js/jquery.bxslider.min.js'></script> -->
 <script type='text/javascript' src='js/socketio134.js'></script>
 <!-- <script type='text/javascript' src='js/jquery.tinyscrollbar.js'></script> -->
+<script type='text/javascript' src='js/monoevent.js'></script>
 <script type='text/javascript' src='js/core.js'></script>
 <script type='text/javascript' src='js/toolkit.js'></script>
 <script type='text/javascript' src='js/epiceditor.js'></script>
@@ -189,35 +191,14 @@ $(function () {
         if($('._list').length){
             $('._list').prepend(tpl);
         }
-        
     });
-    
 
-    // var ws=new WebSocket("ws://127.0.0.1:8000");
-    // ws.onopen=function(){
-    //     //握手成功
-    //     send.removeAttribute("disabled");
-    //     send.value="发送";
-    // };
-    // ws.onmessage=function(e){
-    //     //收到消息，放到页面上
-    //     var dl,dt,dd,o=eval("("+e.data+")");
-    //     dl=document.createElement("dl");
-    //     dt=document.createElement("dt");
-    //     dd=document.createElement("dd");
-    //     dt.innerHTML=o.client;
-    //     dd.appendChild(document.createTextNode(o.content));
-    //     dl.appendChild(dt);
-    //     dl.appendChild(dd);
-    //     wall.appendChild(dl);
-    //     wall.scrollTop=1E8;
-    // };
-    // send.onclick=function(){
-    //     //发送消息
-    //     if(!message.value)return alert("请输入内容");
-    //     ws.send(message.value);
-    //     message.value="";
-    // };
+    socket.on('article_count', function(val){
+        var 
+        article_count = val.data;
+        do_action('fun_menu',article_count);
+        do_action('renderList');
+    });
 });
 
 </script>
