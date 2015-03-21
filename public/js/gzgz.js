@@ -996,7 +996,9 @@ $(function(){
 		do_action('renderList');
 
 
-		var ne = MonoEvent;
+		var 
+		ne_i=1;
+		ne = MonoEvent;
 		$box = ne( '.wangwang' );
 
 		//response style for mobile
@@ -1004,19 +1006,53 @@ $(function(){
 			var
 			doc = __measureDoc();	
 			if(doc.dw<768){
-
 				zone['rsp']=true;
+
+				var diff = doc.dw;
 				$('.nav-top').removeClass('hide');
 
 				$('.wangwang').each(function(){					
-					$(this).addClass('col-sm-12');
-					this.style.cssText = 'margin-bottom:10px;overflow-y:auto;';
-					$(this).find('.md-article').css({'margin':'0 0'});
+					// $(this).addClass('col-sm-12');
+					this.style.cssText = 'width:100%;min-height:100%;border:none;float: left;';
 				});
 
-				$box.on( 'swipeLeft swipeRight swipeUp swipeDown', function( e ){
-					// this.style.display = 'none';
-					alert(e.type);
+				$box.on( 'swipeLeft', function( e ){
+					// alert(e.type);
+					if(ne_i<$box.length){						
+						ne_animate(ne_i,-diff);
+						ne_i++;
+					}
+				});				
+
+				$box.on( 'swipeRight', function( e ){
+					if(ne_i>1){						
+						ne_animate(ne_i,diff,'right');
+						ne_i--;
+					}
+				});
+
+				function ne_animate(iii,diff,stat){
+					
+					var 
+					len = $('.wangwang').length;
+					$('.wangwang').each(function(i,v){						
+						if(stat == 'right'){
+							var tmp_mleft = parseInt($(this).css('margin-left'));
+							if(tmp_mleft<0)
+								$(this).animate({'margin-left': "+="+diff},'300');
+							else{
+								$(this).css('margin-left','0');
+							}
+						}else{
+							var							
+							to_left = diff*(len-1);
+							$(this).animate({'margin-left': "+="+to_left},'300');
+							len--;
+						}
+					});
+				}
+
+				$box.on( 'swipeUp swipeDown', function( e ){					
 				});
 			}else{
 				$box.un( 'swipeLeft swipeRight swipeUp swipeDown' );
@@ -1031,7 +1067,7 @@ $(function(){
 					item_feather = _wangs.get(ididx);
 					this.style.cssText = item_feather.css;
 					this.className = item_feather['class'];
-					$(this).find('.md-article').css({'margin':'15px 15px'});
+					$(this).find('.md-article').css({'margin':'15px'});
 				});
 				$('.nav-top').addClass('hide');
 			}
