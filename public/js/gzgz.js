@@ -996,30 +996,38 @@ $(function(){
 		do_action('renderList');
 
 
+
 		var 
 		ne_i=1;
 		ne = MonoEvent;
-		$box = ne( '.wangwang' );
 
 		//response style for mobile
 		function rzRespons(){
 			var
-			doc = __measureDoc();	
+			doc = __measureDoc();
+			con = __getRect($('.container'));
 			if(doc.dw<768){
 				zone['rsp']=true;
 
-				var diff = doc.dw;
+				var 
+				w_left=0,
+				diff = doc.dw,
+				diff_w = con.width,
+				diff_h = doc.dh;
 				$('.nav-top').removeClass('hide');
 
-				$('.wangwang').each(function(){					
-					// $(this).addClass('col-sm-12');
-					this.style.cssText = 'width:100%;min-height:100%;border:none;float: left;';
+				$('.wangwang').each(function(i,v){					
+					this.style.cssText = 'width:'+diff_w+'px;min-height:'+diff_h+'px;border:none;float: left;display:none;';
+					if(i==0){
+						this.style.display = 'block';
+					}
 				});
 
+				$box = ne( '.wangwang' );
+
 				$box.on( 'swipeLeft', function( e ){
-					// alert(e.type);
 					if(ne_i<$box.length){						
-						ne_animate(ne_i,-diff);
+						ne_animate(ne_i,diff,'left');
 						ne_i++;
 					}
 				});				
@@ -1031,29 +1039,32 @@ $(function(){
 					}
 				});
 
-				function ne_animate(iii,diff,stat){
-					
+				$box.on( 'swipeUp swipeDown', function( e ){});
+
+				function ne_animate(iii,diff,stat,cb){
 					var 
-					len = $('.wangwang').length;
+					to_left;
 					$('.wangwang').each(function(i,v){						
 						if(stat == 'right'){
-							var tmp_mleft = parseInt($(this).css('margin-left'));
-							if(tmp_mleft<0)
-								$(this).animate({'margin-left': "+="+diff},'300');
-							else{
-								$(this).css('margin-left','0');
+							if(i==iii-1){
+								// $(this).show();
+								$($box[iii-2]).show().animate({'margin-left': "+="+diff},'2000',function(){
+									$($box[iii-1]).hide();
+									if(cb)cb();
+								});
 							}
 						}else{
-							var							
-							to_left = diff*(len-1);
-							$(this).animate({'margin-left': "+="+to_left},'300');
-							len--;
+							if(i==iii-1){
+								$(this).animate({'margin-left': "-="+diff},'2000',function(){
+									$(this).hide();
+									$($box[iii]).show();
+									if(cb)cb();
+								});
+							}
 						}
 					});
 				}
 
-				$box.on( 'swipeUp swipeDown', function( e ){					
-				});
 			}else{
 				$box.un( 'swipeLeft swipeRight swipeUp swipeDown' );
 
