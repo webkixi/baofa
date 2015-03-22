@@ -361,13 +361,13 @@ eventHooks.swipe = {
                     e.type = options.type;
 
                     if( Math.abs(distanceX) >= Math.abs(distanceY) ){
-                        if( distanceX > 20 ){
+                        if( distanceX > 60 ){
                             isSwipe = true;
                             if( options.type === 'swipeLeft' ){
                                 originalHandle.call( this, e );
                             }
                         }
-                        else if( distanceX < -20 ){
+                        else if( distanceX < -60 ){
                             isSwipe = true;
                             if( options.type === 'swipeRight' ){
                                 originalHandle.call( this, e );
@@ -375,13 +375,13 @@ eventHooks.swipe = {
                         }
                     }
                     else{
-                        if( distanceY > 20 ){
+                        if( distanceY > 60 ){
                             isSwipe = true;                            
                             if( options.type === 'swipeUp' ){
                                 originalHandle.call( this, e );
                             }
                         }
-                        else if( distanceY < -20 ){
+                        else if( distanceY < -60 ){
                             isSwipe = true;     
                             if( options.type === 'swipeDown' ){
                                 originalHandle.call( this, e );
