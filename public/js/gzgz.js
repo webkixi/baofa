@@ -998,17 +998,17 @@ $(function(){
 
 
 		var 
-		ne_i=1;
-		ne = MonoEvent;
+		ne_i=1,
+		ne = MonoEvent,
+		$box = ne( '.wangwang' );
 
 		//response style for mobile
 		function rzRespons(){
 			var
 			doc = __measureDoc();
-			con = __getRect($('.container'));
+			con = __getRect($('.container'));				
 			if(doc.dw<768){
 				zone['rsp']=true;
-
 				var 
 				w_left=0,
 				diff = doc.dw,
@@ -1022,8 +1022,6 @@ $(function(){
 						this.style.display = 'block';
 					}
 				});
-
-				$box = ne( '.wangwang' );
 
 				$box.on( 'swipeLeft', function( e ){
 					if(ne_i<$box.length){						
@@ -1086,7 +1084,7 @@ $(function(){
 
 		//init response style
 		rzRespons();
-		$(window).resize(function(){
+		$(window).resize(function() {
 			rzRespons();
 		});
 	});
