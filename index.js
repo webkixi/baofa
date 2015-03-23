@@ -429,10 +429,16 @@ function pushInfoToFED(name,msg){
 						exist = yield function(fn){sc.hexists(path+'_data',id,fn);};					
 						if(exist){
 							var old = yield hget(path+'_data',id);
-							old = JSON.parse(old);
+							old = JSON.parse(old);	
+							if(!body.cnt&&old.tcnt){
+								body.cnt = old.cnt;
+							}
 							if(!body.tcnt&&old.tcnt){
 								var tmp = old.tcnt;
 								body.tcnt = tmp;
+							}
+							if(!body.type&&old.type){
+								body.type = old.type;
 							}
 						}
 						body.timer = t.getTime();
@@ -586,76 +592,86 @@ function pushInfoToFED(name,msg){
 		page_end = parseInt(page)*page_size-1;
 		
 		var 
-		list = yield function(fn){sc.zrrange('article',page_start,page_end,fn)},
-		article_list=[],
-		article_titles=[];
+		list = yield function(fn){sc.zrrange('article',page_start,page_end,fn)};
+		
+		if(list){			
+			var
+			article_list=[],
+			article_titles=[];
 
-		var
-		tmp,
-		tmp_page,
-		tmp_id,
-		tmp_obj;
+			var
+			tmp,
+			tmp_page,
+			tmp_id,
+			tmp_obj;
 
-		for(var i=0; i<len; i=i+2){
-			if(typeof list[i] == 'string'){
-				tmp = list[i].split('__');
-				tmp_page = tmp[0];
-				tmp_id = tmp[1];
-				tmp_obj = yield hget(tmp_page+'_data',tmp_id);
-				article_list.push(JSON.parse(tmp_obj));
+			for(var i=0; i<len; i=i+2){
+				if(typeof list[i] == 'string'){
+					tmp = list[i].split('__');
+					tmp_page = tmp[0];
+					tmp_id = tmp[1];
+					try{
+						tmp_obj = yield hget(tmp_page+'_data',tmp_id);
+						article_list.push(JSON.parse(tmp_obj));
+					}catch(e){
+						console.log(e.name);
+						console.log(e.message);
+						return false;
+					}
+				}
+			}			
+
+			var 
+			title,
+			des,
+			looper='',
+			tpl = yield getTpl;
+
+			var 
+			i=0,
+			cnt,
+			loc,
+			looperid=0,
+			$ = yield tmpl(tpl.toString());
+			for(; i<article_list.length; i++){				
+				cnt = $(article_list[i].cnt);
+				loc = article_list[i].location;
+				looperid = article_list[i].id;
+				if(cnt[0]._nodeName=='h1'){
+					title = cnt[0].innerHTML;
+					des = cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,'');
+					des = _subString(des,100,true);
+				}else{
+					title = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),16);
+					des = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),100,true);
+				}
+				looper+=rpl($('._list').html(),{'title':title,'des':des,'loc':loc,'looperid':looperid});
 			}
-		}
+			//list looper
+			$('._list').html(looper);
 
-		var 
-		title,
-		des,
-		looper='',
-		tpl = yield getTpl;
-
-		var 
-		i=0,
-		cnt,
-		loc,
-		looperid=0,
-		$ = yield tmpl(tpl.toString());
-		for(; i<article_list.length; i++){
-			cnt = $(article_list[i].cnt);
-			loc = article_list[i].location;
-			looperid = article_list[i].id;
-			if(cnt[0]._nodeName=='h1'){
-				title = cnt[0].innerHTML;
-				des = cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,'');
-				des = _subString(des,100,true);
-			}else{
-				title = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),16);
-				des = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),100,true);
+			//pager
+			var
+			pre=1,
+			next=2,
+			max_page,
+			pager = {
+				"preious" : function(){
+					return page==1 ? 1 : page-1;
+				},
+				"next" : function(){
+					max_page = Math.ceil(article_list.length/page_size);
+					return page == max_page ? page : page+1;
+				},
+				"make" : function(){
+					return '<li><a class="page-pre" pageid="'+this.preious()+'">上一页</a></li>\n\
+						    <li><a class="page-next" pageid="'+this.next()+'">下一页</a></li>';
+				}
 			}
-			looper+=rpl($('._list').html(),{'title':title,'des':des,'loc':loc,'looperid':looperid});
-		}
-		//list looper
-		$('._list').html(looper);
+			$('.pager').html(pager.make());
 
-		//pager
-		var
-		pre=1,
-		next=2,
-		max_page,
-		pager = {
-			"preious" : function(){
-				return page==1 ? 1 : page-1;
-			},
-			"next" : function(){
-				max_page = Math.ceil(article_list.length/page_size);
-				return page == max_page ? page : page+1;
-			},
-			"make" : function(){
-				return '<li><a class="page-pre" pageid="'+this.preious()+'">上一页</a></li>\n\
-					    <li><a class="page-next" pageid="'+this.next()+'">下一页</a></li>';
-			}
+			return $('.pageto').prop('outerHTML');
 		}
-		$('.pager').html(pager.make());
-
-		return $('.pageto').prop('outerHTML');
 		
 	}
 

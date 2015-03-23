@@ -133,9 +133,10 @@
 		lists = zone.login_stat
 			  ? 
 				'<a class="edit list-group-item">编辑 </a>\
+				<a class="updattime list-group-item" title="移动端置前显示,暂未开启">更新置前</a>\
 				<a class="listarticle list-group-item">文章列表<span class="badge">'+badge+'</span></a>\
-				<a class="resetpwd list-group-item">更改密码</a> \
 				<a class="clone list-group-item">克隆</a> \
+				<a class="resetpwd list-group-item">更改密码</a> \
 				<a class="remove list-group-item">删除</a>'
 			  :
 			  	'<a class="sign list-group-item">注册/登录</a>';			  	
