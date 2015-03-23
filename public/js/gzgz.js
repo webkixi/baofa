@@ -996,7 +996,6 @@ $(function(){
 		do_action('renderList');
 
 
-
 		var 
 		ne_i=1,
 		ne = MonoEvent,
@@ -1013,7 +1012,7 @@ $(function(){
 				w_left=0,
 				diff = doc.dw,
 				diff_w = con.width,
-				diff_h = doc.dh;
+				diff_h = doc.dh;				
 				$('.nav-top').removeClass('hide');
 
 				$('.wangwang').each(function(i,v){					
@@ -1045,24 +1044,26 @@ $(function(){
 					$('.wangwang').each(function(i,v){						
 						if(stat == 'right'){
 							if(i==iii-1){
-								// $(this).show();
-								$($box[iii-2]).show().animate({'margin-left': "+="+diff},'2000',function(){
+								$('.gzgz').css('width',diff_w*2+'px');
+								$($box[iii-2]).show().animate({'margin-left': "+="+diff},800,function(){
 									$($box[iii-1]).hide();
+									$('.gzgz').css('width','100%');
 									if(cb)cb();
 								});
 							}
 						}else{
 							if(i==iii-1){
-								$(this).animate({'margin-left': "-="+diff},'2000',function(){
+								$($box[iii]).show();
+								$('.gzgz').css('width',diff_w*2+'px');
+								$(this).animate({'margin-left': "-="+diff},800,function(){
 									$(this).hide();
-									$($box[iii]).show();
+									$('.gzgz').css('width','100%');
 									if(cb)cb();
 								});
 							}
 						}
 					});
 				}
-
 			}else{
 				$box.un( 'swipeLeft swipeRight swipeUp swipeDown' );
 
