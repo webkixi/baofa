@@ -349,7 +349,7 @@ function pushInfoToFED(name,msg){
 				if(dataitem){
 					data.push(JSON.parse(dataitem));
 				}
-			}		
+			}
 			yield renderPage;
 			tmp = yield render('index');
 		    tmp = yield tpl(tmp,data);
@@ -633,18 +633,24 @@ function pushInfoToFED(name,msg){
 			loc,
 			looperid=0,
 			$ = yield tmpl(tpl.toString());
-			for(; i<article_list.length; i++){				
-				cnt = $(article_list[i].cnt);
-				loc = article_list[i].location;
-				looperid = article_list[i].id;
-				if(cnt[0]._nodeName=='h1'){
-					title = cnt[0].innerHTML;
-					des = cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,'');
-					des = _subString(des,100,true);
-				}else{
-					title = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),16);
-					des = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),100,true);
-				}
+			for(; i<article_list.length; i++){
+				var
+				tmp_cnt = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),200);
+				title = _subString(tmp_cnt,16);
+				des = _subString(tmp_cnt,100,true);
+
+				// cnt = $(article_list[i].cnt);
+				// loc = article_list[i].location;
+				// looperid = article_list[i].id;
+				// if(cnt[0]._nodeName=='h1'){
+				// 	title = cnt[0].innerHTML;
+				// 	des = cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,'');
+				// 	des = _subString(des,100,true);
+				// }else{
+				// 	title = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),16);
+				// 	des = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),100,true);
+				// }
+
 				looper+=rpl($('._list').html(),{'title':title,'des':des,'loc':loc,'looperid':looperid});
 			}
 			//list looper
