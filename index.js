@@ -636,6 +636,8 @@ function pushInfoToFED(name,msg){
 			for(; i<article_list.length; i++){
 				var
 				tmp_cnt = _subString(cleanHtml(article_list[i].cnt).replace(/[\r\n]/g,''),200);
+				loc = article_list[i].location;
+				looperid = article_list[i].id;
 				title = _subString(tmp_cnt,16);
 				des = _subString(tmp_cnt,100,true);
 
