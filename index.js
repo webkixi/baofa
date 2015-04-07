@@ -28,7 +28,7 @@ render = views('views',{
 });
 
 app.use(router(app));
-app.use(statics('./public',{
+app.use(statics('./public/dist',{
 	buffer: true,
 	gzip: true
 }));

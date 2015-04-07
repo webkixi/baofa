@@ -52,7 +52,6 @@ var msgtips = function(msg,stat,cb){
     else
         msgtip.pop(msg,stat);
 }
-tips = msgtips;
 
 function tanbox(msg,stat,cb){
     var docRect = __measureDoc();
@@ -195,17 +194,17 @@ function maskerBox(msg,stat,cb){
     },
 
     mask = '.m-layer,.m-layer .lymask{top:0;left:0;width:100%;height:100%;}\n\
-.m-layer{display:none;position:fixed;_position:absolute;z-index:2999;}\n\
+.m-layer{display:none;position:fixed;_position:absolute;z-index:999;}\n\
 .m-layer .lymask{position:absolute;background:#000;opacity:0.5;filter:alpha(opacity=50);}\n\
 .m-layer .lytable{table-layout:fixed;width:100%;height:100%;}\n\
 .m-layer .lytd{width:100%;height:100%;vertical-align:middle;}\n\
-.m-layer .lywrap{position:relative;margin:0 auto; background: #fff;padding:15px;}\n\
+.m-layer .lywrap{position:relative;margin:0 auto; background: #fff;}\n\
 .m-layer-show{display:block;}\n';
 
     __creatStyle('maskerbox',function(style){
         style.append(mask);
     }),
-    tan = new tipsbox();
+    tan = new core.tipsbox();
 
     tan.tipsBox = function(stat){
         $('.m-layer').remove();
@@ -226,30 +225,23 @@ function maskerBox(msg,stat,cb){
     };
 
     tan.anim = function(item,box,stat){            
-        var 
-        box_width='width:400px;'        
-        
-        if(__getClass(stat)=='Object'){            
+        var box_width='width:400px;'
+        if(__getClass(stat)=='Object'){
             if(stat.width) box_width = 'width:'+stat.width;
         }
         
-        var 
-        closebtn = '<img id="closePop" style="position:absolute;right:20px;top:20px;cursor:pointer" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QTM4MTM0MjVBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTM4MTM0MjZBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBMzgxMzQyM0EyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBMzgxMzQyNEEyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pi/jzu8AAABWSURBVHjalJDRDcBACEKF/UdzJ5u0adLzkEv5xEcUkZkVjxBeN8duOPgN4BD6eqA4pya4n9RDpWZs61XxxWP8FE1B6dEUxPTWmAqqEA0sQzzA2+wSYABDMBR7Ctr/ZwAAAABJRU5ErkJggg==">',
-        ccc = '<div class="lymask"></div><table class="lytable"><tbody><tr><td class="lytd"><div class="lywrap" style="'+box_width+'"></div></td></tr></tbody></table>';
+        var closebtn = new Image();
+        closebtn.id = 'closePop';
+        closebtn.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QTM4MTM0MjVBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTM4MTM0MjZBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBMzgxMzQyM0EyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBMzgxMzQyNEEyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pi/jzu8AAABWSURBVHjalJDRDcBACEKF/UdzJ5u0adLzkEv5xEcUkZkVjxBeN8duOPgN4BD6eqA4pya4n9RDpWZs61XxxWP8FE1B6dEUxPTWmAqqEA0sQzzA2+wSYABDMBR7Ctr/ZwAAAABJRU5ErkJggg==';
 
+        var ccc = '<div class="lymask"></div><table class="lytable"><tbody><tr><td class="lytd"><div class="lywrap" style="'+box_width+'"></div></td></tr></tbody></table>';
         $(box).html(ccc);
         $msg = $(msg);
-        $(box).find('.lywrap').html(msg).append(closebtn);
+        $(box).find('.lywrap').html(msg);
 
         $(box).show();
-        $("#closePop").click(function(){
+        $(".lyclose").click(function(){
             $(".m-layer").removeClass('m-layer-show');
-            // $(box).remove();
-        });
-
-        $('body').bind('close_masker_box',function(){
-            $(".m-layer").removeClass('m-layer-show');
-            // $(box).remove();
         });
     };
 
