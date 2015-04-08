@@ -105,7 +105,7 @@ var combo_dev_js = [];
 $ = require('gulp-load-plugins')()
 
 gulp.task('clean',function(){
-    gulp.src('./dist/*',{read:false})
+    gulp.src(['./dist/css/*.css','./dist/js/*.js'],{read:false})
     .pipe(clean());
 });
 
@@ -183,6 +183,8 @@ gulp.task('default',[],function(){
         gulp.start('js')
     })
 });
+
+gulp.watch(['./src/js/vendor/*.js','./src/js/global/*.js','./src/js/modules/*.js'],['js']);
 
 
 /*

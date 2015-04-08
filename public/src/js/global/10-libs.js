@@ -329,4 +329,29 @@ var formatTime = function(time){
 //类数组对象转换成数组
 function __arg2arr(args){ return Array.prototype.slice.call(args); }
 
+
+function oneClick(ele,opts,cb){
+    if(!$(ele).length) return;
+    var
+    count = 0,
+    defaults = {
+        method : 'click',
+        delay : 0
+    };
+    if(opts&&opts!='') opts = $.extend({},defaults,opts);
+    else opts = defaults;
+
+    if(count == 0){
+        count = 1;
+        $(ele).one(opts['method'],function(e){
+            cb(e);
+            if(opts['delay']!=0){
+                opts['ttt'] = setTimeout(function(){
+                    count = 0;
+                }, delay);
+            }
+        });
+    }
+}
+
 // lib end

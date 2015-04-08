@@ -29,7 +29,7 @@ var tipsbox = function(){
         var box = this.tipsBox(stat);
         item.innerHTML = mm;
         box.appendChild(item);
-        this.anim(item,box);
+        this.anim(item,box,stat);
         return;
     }
 

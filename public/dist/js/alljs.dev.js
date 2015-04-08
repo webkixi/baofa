@@ -1518,6 +1518,31 @@ var formatTime = function(time){
 //类数组对象转换成数组
 function __arg2arr(args){ return Array.prototype.slice.call(args); }
 
+
+function oneClick(ele,opts,cb){
+    if(!$(ele).length) return;
+    var
+    count = 0,
+    defaults = {
+        method : 'click',
+        delay : 0
+    };
+    if(opts&&opts!='') opts = $.extend({},defaults,opts);
+    else opts = defaults;
+
+    if(count == 0){
+        count = 1;
+        $(ele).one(opts['method'],function(e){
+            cb(e);
+            if(opts['delay']!=0){
+                opts['ttt'] = setTimeout(function(){
+                    count = 0;
+                }, delay);
+            }
+        });
+    }
+}
+
 // lib end
 /*
  * init
@@ -1860,7 +1885,7 @@ var tipsbox = function(){
         var box = this.tipsBox(stat);
         item.innerHTML = mm;
         box.appendChild(item);
-        this.anim(item,box);
+        this.anim(item,box,stat);
         return;
     }
 
@@ -2205,17 +2230,18 @@ function maskerBox(msg,stat,cb){
     },
 
     mask = '.m-layer,.m-layer .lymask{top:0;left:0;width:100%;height:100%;}\n\
-.m-layer{display:none;position:fixed;_position:absolute;z-index:999;}\n\
+.m-layer{display:none;position:fixed;_position:absolute;z-index:5000;}\n\
 .m-layer .lymask{position:absolute;background:#000;opacity:0.5;filter:alpha(opacity=50);}\n\
 .m-layer .lytable{table-layout:fixed;width:100%;height:100%;}\n\
 .m-layer .lytd{width:100%;height:100%;vertical-align:middle;}\n\
 .m-layer .lywrap{position:relative;margin:0 auto; background: #fff;}\n\
-.m-layer-show{display:block;}\n';
+.m-layer-show{display:block;}\n\
+#closePop{position:absolute;right:10px;top:10px;}';
 
     __creatStyle('maskerbox',function(style){
         style.append(mask);
     }),
-    tan = new core.tipsbox();
+    tan = new tipsbox();
 
     tan.tipsBox = function(stat){
         $('.m-layer').remove();
@@ -2245,14 +2271,21 @@ function maskerBox(msg,stat,cb){
         closebtn.id = 'closePop';
         closebtn.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QTM4MTM0MjVBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QTM4MTM0MjZBMkQwMTFFNEIwOTA4MDQ4M0IwOUIzQTUiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBMzgxMzQyM0EyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpBMzgxMzQyNEEyRDAxMUU0QjA5MDgwNDgzQjA5QjNBNSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pi/jzu8AAABWSURBVHjalJDRDcBACEKF/UdzJ5u0adLzkEv5xEcUkZkVjxBeN8duOPgN4BD6eqA4pya4n9RDpWZs61XxxWP8FE1B6dEUxPTWmAqqEA0sQzzA2+wSYABDMBR7Ctr/ZwAAAABJRU5ErkJggg==';
 
-        var ccc = '<div class="lymask"></div><table class="lytable"><tbody><tr><td class="lytd"><div class="lywrap" style="'+box_width+'"></div></td></tr></tbody></table>';
+        var ccc = '<div class="lymask"></div><table class="lytable"><tbody><tr><td class="lytd"><div class="lywrap" style="padding:10px;'+box_width+'"></div></td></tr></tbody></table>';
         $(box).html(ccc);
         $msg = $(msg);
         $(box).find('.lywrap').html(msg);
+        $('.lywrap').append(closebtn);
 
         $(box).show();
-        $(".lyclose").click(function(){
+
+        $('body').on('close_masker_box',function(){
             $(".m-layer").removeClass('m-layer-show');
+        });
+
+        $(".lyclose").click(function(){
+            // $(".m-layer").removeClass('m-layer-show');
+            $('body').trigger('close_masker_box');
         });
     };
 
@@ -2595,7 +2628,7 @@ function maskerBox(msg,stat,cb){
     
     	//从数据接口中拿到数据后第二步
     	function aftInsertDataToEditor(){
-	    	one('#submit',{"delay":10},function(){
+	    	oneClick('#submit',{"delay":10},function(){
 	    	// $('#submit').click(function(){
 	    		editor.save(true);
 				var 

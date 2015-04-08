@@ -331,7 +331,7 @@
     
     	//从数据接口中拿到数据后第二步
     	function aftInsertDataToEditor(){
-	    	one('#submit',{"delay":10},function(){
+	    	oneClick('#submit',{"delay":10},function(){
 	    	// $('#submit').click(function(){
 	    		editor.save(true);
 				var 
