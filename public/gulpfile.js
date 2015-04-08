@@ -157,17 +157,21 @@ gulp.task('modules',function(){
 
 gulp.task('js',function(){
     // gulp.start('vendor');
-    gulp.start(['vendor','global','modules'],function(){
-        gulp.src(combo_js)
-        .pipe(concat('alljs.js'))
-        .pipe(gulp.dest('./dist/js'))
-        .on('end',function(){
-            gulp.src(combo_dev_js)
-            .pipe(concat('alljs.dev.js'))
-            .pipe(gulp.dest('./dist/js'))
-            .on('end',function(){
-                cp.exec('rm ./dist/js/tmp -r',function(){
-                    return console.log('tmp dir clean');
+    gulp.start(['vendor'],function(){
+        gulp.start(['global'],function(){            
+            gulp.start(['modules'],function(){
+                gulp.src(combo_js)
+                .pipe(concat('alljs.js'))
+                .pipe(gulp.dest('./dist/js'))
+                .on('end',function(){
+                    gulp.src(combo_dev_js)
+                    .pipe(concat('alljs.dev.js'))
+                    .pipe(gulp.dest('./dist/js'))
+                    .on('end',function(){
+                        cp.exec('rm ./dist/js/tmp -r',function(){
+                            return console.log('tmp dir clean');
+                        })
+                    })
                 })
             })
         })
