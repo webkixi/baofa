@@ -52,6 +52,7 @@ var msgtips = function(msg,stat,cb){
     else
         msgtip.pop(msg,stat);
 }
+window.tips = msgtips;
 
 function tanbox(msg,stat,cb){
     var docRect = __measureDoc();
