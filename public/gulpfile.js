@@ -5,10 +5,10 @@ gutil               = require('gulp-util');
 webpack             = require('webpack');
 //WebpackDevServer    = require("webpack-dev-server");
 pkg                 = require('./package.json');
-webpackDevConfig    = require('./webpack.config.js')
-webpackProductionConfig    = require('./webpack.production.config.js')
-webpackDevCompiler  = webpack(webpackDevConfig);
-webpackProductionCompiler  = webpack(webpackProductionConfig);
+// webpackDevConfig    = require('./webpack.config.js')
+// webpackProductionConfig    = require('./webpack.production.config.js')
+// webpackDevCompiler  = webpack(webpackDevConfig);
+// webpackProductionCompiler  = webpack(webpackProductionConfig);
 
 browserSync = require('browser-sync');
 reload = browserSync.reload;
@@ -174,7 +174,11 @@ gulp.task('js',function(){
     });
 });
 
-gulp.task('default',['clean','css','js']);
+gulp.task('default',[],function(){
+    gulp.start(['clean','css'],function(){
+        gulp.start('js')
+    })
+});
 
 
 /*

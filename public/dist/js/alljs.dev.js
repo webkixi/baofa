@@ -1462,6 +1462,7 @@ function creatStyle(name,cb){
     }
     cb && cb.call(this,nstyle);
 }
+window.__creatStyle = creatStyle
 
 var
 ttt;
