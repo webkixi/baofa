@@ -537,10 +537,10 @@ function pushInfoToFED(name,msg){
 
 	//batch push info to FED
 	function *pushBehaviors(data){
-		if(data){
-			//push body to FED and change the list dom
-			pushMsgToFrontEnd(data);
-		}
+		// if(data){
+		// 	//push body to FED and change the list dom
+		// 	pushMsgToFrontEnd(data);
+		// }
 
 		//push articles count and change badge
 		var
@@ -605,7 +605,7 @@ function pushInfoToFED(name,msg){
 			tmp_id,
 			tmp_obj;
 
-			for(var i=0; i<len; i=i+2){
+			for(var i=0; i<len*2; i=i+2){
 				if(typeof list[i] == 'string'){
 					tmp = list[i].split('__');
 					tmp_page = tmp[0];

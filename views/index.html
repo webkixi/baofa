@@ -143,7 +143,7 @@
 
 </div>
 
-<script type='text/javascript' src='js/alljs.js'></script>
+<script type='text/javascript' src='js/alljs.dev.js'></script>
 <script type="text/javascript">
 add_action('code_highlight',function(){
     $("pre").addClass("prettyprint");
@@ -170,24 +170,14 @@ $(function () {
                     <p class="">\{\{data.des\}\}</p>\n\
                 </div>\n\
             </div>\n';
-        
-
-    socket.on('xxx', function(val){
-        var 
-        body = val.data;
-        tpl = rpl(tpl,body);
-        console.log(body);
-
-        if($('._list').length){
-            $('._list').prepend(tpl);
-        }
-    });
 
     socket.on('article_count', function(val){
         var 
         article_count = val.data;
-        do_action('fun_menu',article_count);
-        do_action('renderList');
+        setTimeout(function(){
+            do_action('fun_menu',article_count);
+            do_action('renderList');
+        }, 1000);
     });
 });
 
