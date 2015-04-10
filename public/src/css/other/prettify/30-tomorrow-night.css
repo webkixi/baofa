@@ -1,0 +1,41 @@
+/* Tomorrow Night Theme */
+
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+pre .prettyprint { background: #1d1f21; font-family: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace; font-size: 12px; line-height: 1.5; border: 1px solid #ccc; padding: 10px; }
+pre .pln { color: #c5c8c6; }
+@media screen {
+  pre .str { color: #b5bd68; }
+  pre .kwd { color: #b294bb; }
+  pre .com { color: #969896; }
+  pre .typ { color: #81a2be; }
+  pre .lit { color: #de935f; }
+  pre .pun { color: #c5c8c6; }
+  pre .opn { color: #c5c8c6; }
+  pre .clo { color: #c5c8c6; }
+  pre .tag { color: #cc6666; }
+  pre .atn { color: #de935f; }
+  pre .atv { color: #8abeb7; }
+  pre .dec { color: #de935f; }
+  pre .var { color: #cc6666; }
+  pre .fun { color: #81a2be; }
+}
+@media print, projection {
+  pre .str { color: #006600; }
+  pre .kwd { color: #006; font-weight: bold; }
+  pre .com { color: #600; font-style: italic; }
+  pre .typ { color: #404; font-weight: bold; }
+  pre .lit { color: #004444; }
+  pre .pun, pre .opn, pre .clo { color: #444400; }
+  pre .tag { color: #006; font-weight: bold; }
+  pre .atn { color: #440044; }
+  pre .atv { color: #006600; }
+}
+
+/* Specify class=linenums on a pre to get line numbering */
+ol.linenums { margin-top: 0; margin-bottom: 0; }
+
+/* IE indents via margin-left */
+li.L0, li.L1, li.L2, li.L3, li.L4, li.L5, li.L6, li.L7, li.L8, li.L9 {  /* */ }
+
+/* Alternate shading for lines */
+li.L1, li.L3, li.L5, li.L7, li.L9 {  /* */ }
