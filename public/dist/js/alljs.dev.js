@@ -2566,7 +2566,8 @@ function maskerBox(msg,stat,cb){
 
 		/*弹出编辑框*/
 		maskerBox("<div id='epiceditor' style='height:300px;'>\
-			</div><div class='form'>\
+			</div>\
+			<div class='form'>\
 			<a class='btn btn-default' id='submit'>提交</a>\
 			<a class='btn btn-default' id='close'>取消</a>\
 			<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>\
@@ -2601,18 +2602,18 @@ function maskerBox(msg,stat,cb){
 			</form></div>\
 			</div>",{"width":"70%"});
 
-		editor = new EpicEditor(epic_opts).load();		
+		editor = new EpicEditor(epic_opts).load();
 
 		//从数据接口中拿到数据后第一步
+		//设置编辑器状态
 		function insertDataToEditor(){
 			if(zone.dbgetobj.tcnt){
 				editor.importFile(null,zone.dbgetobj.tcnt,'text');
 			}
 
-			//article
-			if(zone.dbgetobj.type&&zone.dbgetobj.type==1){
-				// $('#edit-form-article').attr('checked',true);
-				$("#edit-form-article").val("1");
+			//type
+			if(zone.dbgetobj.type){
+				$("#edit-form-article").val(zone.dbgetobj.type);
 			}
 			
 			aftInsertDataToEditor();
@@ -2628,6 +2629,7 @@ function maskerBox(msg,stat,cb){
     	*/
     
     	//从数据接口中拿到数据后第二步
+    	//bind some event
     	function aftInsertDataToEditor(){
 	    	oneClick('#submit',{"delay":10},function(){
 	    	// $('#submit').click(function(){

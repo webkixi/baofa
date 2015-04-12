@@ -9,6 +9,10 @@ function trim(s){
     return s.replace(/(\/\/)[^\n]*/g,'').replace(/(^\s*)|(\s*$)/g, '').replace(/\s+/g,' ');
 }
 
+function __getClass(object){
+    return Object.prototype.toString.call(object).match(/^\[object\s(.*)\]$/)[1];
+};
+
 var tpl = function(tpl,data){   
     return function(fn){        
         var tmp = tpl.split(/[=]{5,}/);         
