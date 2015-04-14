@@ -95,6 +95,16 @@
     		})
     		.mousemove(function(e){
 				e=e||arguments[0];
+
+				//resize wangwang
+				if(e.which==1&&_rzaction===true){
+					var the_div = $(_rzobj.div);
+					the_div.css({'width':e.pageX-_rzrect.left,'height':e.pageY-_rzrect.top});
+					if(the_div.hasClass('md-tile')){
+						the_div.css('line-height',(e.pageY-_rzrect.top)+'px');
+					}
+				}
+
 				if(e.which==1&&pendraw){
 					if(e.pageX<thegzrect.left){
     					tips('超出绘制区域，请在绘制区域操作!',1000);
@@ -600,13 +610,6 @@
 	}	
 
 	//resize grid size
-	$(document).mousemove(function(e){
-		e = e||arguments[0];
-		if(e.which==1&&_rzaction===true){
-			$(_rzobj.div).css({'width':e.pageX-_rzrect.left,'height':e.pageY-_rzrect.top});
-		}
-	});
-
 	//reszie wangwangs 
 	$(document).bind('resizeunit',function(){
 		__edit(_rzobj);
