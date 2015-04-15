@@ -612,6 +612,13 @@
 	//resize grid size
 	//reszie wangwangs 
 	$(document).bind('resizeunit',function(){
+		var
+		md_tile,
+		$wangs = $(_rzobj.div);
+		if(md_tile = $wangs.find('.md-tile')){
+			$(md_tile).children('h1').css('line-height',($wangs.height()-70)+'px');
+			$wangs.children('.md-wrap').html($(md_tile).prop('outerHTML'));
+		}
 		__edit(_rzobj);
 	});
 	
@@ -993,7 +1000,8 @@ $(function(){
 		//make scroll true
 		$('.wangwang')
 		.mouseenter(function(){
-			$(this).css('overflow-y','auto');
+			if(!$(this).find('.md-tile').length)
+				$(this).css('overflow-y','auto');
 		})
 		.mouseleave(function(){
 			$(this).css('overflow','hidden');	
