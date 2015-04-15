@@ -33,6 +33,71 @@ Array.prototype.in_array=function(e) {
     return (r.test(this.S+this.join(this.S)+this.S));
 }
 
+// function comboDirs(xxx){
+//     var 
+//     comboContent = [],
+//     cnt = '',
+//     cur_dir = '',
+//     files = [],
+//     ext_name = '.js',
+//     len = 0;
+//     iii = 1;
+
+//     if(!xxx)xxx='\n';
+
+//     return through.obj(function comboFile(file,enc,cb){
+//         if (file.isNull()) {
+//             cb();
+//             return;
+//         }
+
+//         if (file.isStream()) {
+//             this.emit('error', new PluginError('gulp-concat',  'Streaming not supported'));
+//             cb();
+//             return;
+//         }
+        
+//         cur_dir = path.dirname(file.path);
+//         if(cur_dir+'/' !== file.base){
+//             cur_dir = cur_dir.replace(file.base,'');
+//             files = fs.readdirSync(file.base+cur_dir);
+//         }else{
+//             cur_dir = cur_dir.substr(cur_dir.lastIndexOf('/')+1)
+//             files = fs.readdirSync(file.base);
+//         }
+//         ext_name = path.extname(file.path);
+//         if(files.in_array('index'+ext_name)){
+//             this.push(file);
+//         }else{
+//             len = files.length;                     
+//             file.path = file.base + cur_dir + ext_name;
+
+//             if(len==1){
+//                 this.push(file);
+//             }else{
+//                 if(iii==1){                 
+//                     comboContent.push(file.contents.toString('utf-8'));
+//                     iii++;
+//                 }else{
+//                     if(iii == len){                     
+//                         cnt = comboContent.join(xxx)+file.contents.toString('utf-8');
+//                         file.contents = new Buffer(cnt);
+//                         comboContent = [];
+//                         iii = 1;
+//                         this.push(file);
+//                     }else{                      
+//                         iii++;
+//                         comboContent.push(file.contents.toString('utf-8'));
+//                     }
+//                 }
+//             }
+//         }
+//         cb();
+//     });
+// }
+
+// module.exports = comboDirs;
+
 function comboDirs(xxx){
     var 
     comboContent = [],
@@ -45,7 +110,9 @@ function comboDirs(xxx){
 
     if(!xxx)xxx='\n';
 
-    return through.obj(function comboFile(file,enc,cb){
+
+    function comboFile(file,enc,cb){
+        
         if (file.isNull()) {
             cb();
             return;
@@ -58,45 +125,49 @@ function comboDirs(xxx){
         }
         
         cur_dir = path.dirname(file.path);
+
         if(cur_dir+'/' !== file.base){
-            cur_dir = cur_dir.replace(file.base,'');
-            files = fs.readdirSync(file.base+cur_dir);
+           cur_dir = cur_dir.replace(file.base,'');
+           files = fs.readdirSync(file.base+cur_dir);
         }else{
-            cur_dir = cur_dir.substr(cur_dir.lastIndexOf('/')+1)
-            files = fs.readdirSync(file.base);
+           cur_dir = cur_dir.substr(cur_dir.lastIndexOf('/')+1)
+           files = fs.readdirSync(file.base);
         }
         ext_name = path.extname(file.path);
-        if(files.in_array('index'+ext_name)){
-            this.push(file);
-        }else{
-            len = files.length;                     
-            file.path = file.base + cur_dir + ext_name;
+       file.path = file.base + cur_dir + ext_name;
 
-            if(len==1){
+        if(files.in_array('index'+ext_name)){
+           this.push(file);
+        }else{
+           len = files.length; 
+
+           if(len==1){
                 this.push(file);
-            }else{
+           }else{
                 if(iii==1){                 
-                    comboContent.push(file.contents.toString('utf-8'));
+                    comboContent.push(file.contents);
                     iii++;
                 }else{
                     if(iii == len){                     
-                        cnt = comboContent.join(xxx)+file.contents.toString('utf-8');
-                        file.contents = new Buffer(cnt);
+                        // cnt = comboContent.join(xxx)+file.contents.toString('utf-8');
+                        // file.contents = new Buffer(cnt);
+                        comboContent.push(file.contents);
+                        file.contents = Buffer.concat(comboContent);
                         comboContent = [];
                         iii = 1;
                         this.push(file);
                     }else{                      
                         iii++;
-                        comboContent.push(file.contents.toString('utf-8'));
+                        comboContent.push(file.contents);
                     }
                 }
             }
         }
         cb();
-    });
-}
+    };
 
-module.exports = comboDirs;
+    return through.obj(comboFile);
+}
 
 var combo_js = [];
 var combo_dev_js = [];
