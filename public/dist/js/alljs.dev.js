@@ -2919,6 +2919,12 @@ function maskerBox(msg,stat,cb){
 		}
 		__edit(_rzobj);
 	});
+
+	function bindkey(obj,fun){
+		return function(e){
+			fun.call(obj,e);
+		}
+	}
 	
 
 	//build a obj and init it's property;
@@ -2993,7 +2999,9 @@ function maskerBox(msg,stat,cb){
 					pos.startX = e.pageX;
 					pos.startY = e.pageY;	
 					if(e.ctrlKey){
-						that.dragitem = that.div;
+						that.dragitem = that.div;		
+						// $(document).keyup(that.keymove);
+						$(document).keyup(bindkey(that.div,that.keymove));
 					}
 				}
 			})
@@ -3056,6 +3064,23 @@ function maskerBox(msg,stat,cb){
 		rightmenu:function(e){
 			var rightmenu = $('#gzmenu');
 			rightmenu.css({'display':'block','left':e.pageX-5+'px','top':e.pageY-5+'px','z-index':9999});			
+		},
+		// keycode   37 = Left
+		// keycode   38 = Up
+		// keycode   39 = Right
+		// keycode   40 = Down
+		keymove:function(e){
+			e = e||arguments[0];			
+			if(e.keyCode==13){
+				this.move = {"left":this.div.style.left,"top":this.div.style.top}
+				__move(this);
+			}
+			if(e.keyCode==37){	
+				if(e.shiftKey)			
+					$(this).animate({left: '-=10px'}, 100);
+				else
+					$(this).animate({left: '-=1px'}, 100);
+			}
 		}
 	}
 	//end unit
