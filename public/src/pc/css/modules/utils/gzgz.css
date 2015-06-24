@@ -1,0 +1,171 @@
+body {
+    /*font: 14px verdana;*/
+}
+.wangwang {
+    z-index: 1000;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    overflow: hidden;
+}
+.nav-top {
+    position: fixed;
+    right: 5px;
+    bottom: 20px;
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    z-index: 4000;
+    text-align: center;
+    line-height: 30px;
+}
+/*
+.md-wrap {
+    margin: 15px 0;
+}
+.md-wrap .md-article {
+    margin: 15px;
+}
+.md-wrap .md-tile {
+    position: relative;
+    text-align: center;
+}
+.md-wrap .md-tile h1{
+
+}*/
+.wangwang>.rzunit {
+    z-index: 3001;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    cursor: nw-resize;
+    font-size: 0;
+    background-color: red;
+}
+._list .media-body p {
+    padding-top: 0px;
+}
+.form {
+    padding: 6px 6px 6px 0;
+}
+.form select {
+    font-size: 14px;
+    padding: 3px 0;
+}
+.form span {
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+}
+.form .input {
+    vertical-align: middle;
+    margin: auto;
+    height: 18px;
+    padding: 0;
+}
+#editor {
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 300p;
+}
+
+/*custom*/
+.md-body .nimei ul {
+    list-style: none;
+    overflow: hidden;
+    padding: 0;
+}
+.nimei ul li {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+
+.reds {
+    color: red;
+    font-weight: bold;
+}
+.asks {
+    color: #fff;
+    background: #8361bc;
+}
+.feels {
+    color: #fff;
+    background: #2d83be;
+}
+.has {
+    color: #fff;
+    background: #777;
+}
+.hates {
+    color: #fff;
+    background: #333;
+}
+.hopes {
+    color: #fff;
+    background: #5bb017;
+}
+.is {
+    color: #fff;
+    background: #e57c43;
+}
+.likes {
+    color: #fff;
+    background: #cb2728;
+}
+.loves {
+    color: #fff;
+    background: #c20c0c;
+}
+.needs {
+    color: #fff;
+    background: #479e80;
+}
+.says {
+    color: #fff;
+    background: #e2560b;
+}
+.shares {
+    color: #fff;
+    background: #c95e7c;
+}
+.thinks {
+    color: #fff;
+    background: #538fa0;
+}
+.wants {
+    color: #fff;
+    background: #8db241;
+}
+.was {
+    color: #fff;
+    background: #a47e5f;
+}
+.will {
+    color: #fff;
+    background: #b46db9;
+}
+.white {
+    color: #000;
+    background: #fff;
+}
+.wonders {
+    color: #fff;
+    background: #2e4e9e;
+}
+.empty {
+    color: #fff;
+    background: #eee;
+}
+.asks a, .feels a, .has a, .hates a, .hopes a, .is a, .likes a, .loves a, .needs a, .says a, .shares a, .thinks a, .wants a, .was a, .will a, .wonders a, .empty a {
+    color: #fff;
+}
+.white a {
+    color: #666;
+}
